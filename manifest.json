@@ -4,8 +4,8 @@
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#f5f7f3",
-  "theme_color": "#f5f7f3",
+  "background_color": "#fff6f6",
+  "theme_color": "#c71732",
   "description": "A simple workout tracker with offline access and on-device saving.",
   "icons": [
     {"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
