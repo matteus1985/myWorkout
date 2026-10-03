@@ -264,14 +264,15 @@
   }
   function adaptDuration(day){
     const copy={...day,exercises:day.exercises.map(e=>({...e,sets:e.sets.map(s=>({...s}))}))};
-    const limit=Math.max(70,Math.min(90,Number(state.workoutDuration)||75));let cursor=0,guard=0;
-    while(estimateMinutes(copy.exercises)<limit-5&&guard++<80){
+    const limit=Math.max(70,Math.min(90,Number(state.workoutDuration)||75));
+    const budget=Math.max(estimateMinutes(copy.exercises),limit-15);let cursor=0,guard=0;
+    while(estimateMinutes(copy.exercises)<budget-2&&guard++<80){
       const candidates=copy.exercises.filter(e=>e.sets.length<5);
-      if(candidates.length){const e=candidates[cursor++%candidates.length],old=e.sets.length;e.sets.push({...e.sets[old-1]});if(estimateMinutes(copy.exercises)>limit)e.sets.pop();if(e.sets.length===old)break;}
+      if(candidates.length){const e=candidates[cursor++%candidates.length],old=e.sets.length;e.sets.push({...e.sets[old-1]});if(estimateMinutes(copy.exercises)>budget)e.sets.pop();if(e.sets.length===old)break;}
       else {
         const regions=[...new Set(copy.exercises.flatMap(e=>e.muscle.toLowerCase().split(/[·,]/).map(x=>x.trim())))],used=new Set(copy.exercises.map(e=>e.id));
         const accessory=sourceDays.flatMap(d=>d.exercises).find(e=>!used.has(e.id)&&regions.some(r=>r&&e.muscle.toLowerCase().includes(r)));
-        if(!accessory)break;const added={...accessory,sets:accessory.sets.slice(0,2).map(s=>({...s}))};copy.exercises.push(added);if(estimateMinutes(copy.exercises)>limit){copy.exercises.pop();break;}
+        if(!accessory)break;const added={...accessory,sets:accessory.sets.slice(0,2).map(s=>({...s}))};copy.exercises.push(added);if(estimateMinutes(copy.exercises)>budget){copy.exercises.pop();break;}
       }
     }
     copy.minutes=Math.min(limit,estimateMinutes(copy.exercises));return copy;
