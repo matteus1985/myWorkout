@@ -1,6 +1,5 @@
-const CACHE = 'lift-log-shell-v4';
-const FILES = ['./', './index.html', './manifest.json', './icon.svg', './exercise-data.js',
-  ...['incline-press','chest-press','row','vertical-pull','fly','lateral-raise','hip-thrust','hinge','knee-extension','leg-curl','calf-raise','crunch','rear-delt','curl','triceps','leg-raise','pullover','dip'].map(name=>'./media/'+name+'.gif')];
+const CACHE = 'lift-log-shell-v5';
+const FILES = ['./', './index.html', './manifest.json', './icon.svg', './exercise-data.js'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
 });
