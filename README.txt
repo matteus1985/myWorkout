@@ -1,22 +1,20 @@
 LIFT LOG — IPHONE WORKOUT APP
 
-The app is entirely in English. It saves entries on the device and includes an offline cache and manual backup/restore.
+Lift Log is an English workout tracker with a dark red interface. It stores workout history in the browser on this device and works offline after the first successful visit.
 
-In Settings, choose 3, 4, 5 or 6 workouts per week and tick the equipment you have. Tap Update plan to reorganize the current week. Earlier workout logs remain in Progress and backups. Session times are estimates and the generated sessions stay under 90 minutes; there is no minimum duration to fill. Bodyweight pulling exercises require a secure bar.
-
-Each exercise has an (i) button with a short technique guide and an original, lightweight movement GIF. The GIF is a simple movement cue, not a substitute for a coach checking your form. The Alternatives menu contains at least seven variants per movement family. Variants that need equipment you did not select are shown as unavailable.
-
-IMPORTANT: An interactive iPhone home-screen app needs to be served from an HTTPS website. A file saved in Google Drive does not itself provide the working app link, and opening an HTML preview from Drive is not a reliable way to run it.
-
-Once this folder is hosted at an HTTPS address:
-1. Open the link in Safari on your iPhone while online.
+GET STARTED ON IPHONE
+1. Open https://matteus1985.github.io/myWorkout/ in Safari while online.
 2. Tap Share, then Add to Home Screen, then Add.
-3. Open Lift Log from the new icon. The app can then load offline after the first successful visit.
-4. In Settings, tap Export Backup. In the share menu choose Save to Files, then select your Google Drive folder and tap Save. Do this regularly. If the share menu does not appear, find the downloaded JSON file in Files and move it to Google Drive.
-5. To restore, download the JSON backup from Drive to Files, open Lift Log > Settings > Import Backup, and choose the downloaded file.
+3. Open Lift Log from the new Home Screen icon.
+4. In Settings, choose your experience, weekly schedule and available equipment.
 
-The workout log is stored in Safari's local storage on that iPhone. A backup is needed to recover it if website data is cleared or you move to another phone.
+The app offers adaptive 3–6 day plans and the separate five-day Valentin plan. Workout targets use completed sets in your history. End week reviews missed sessions and prepares the next week's targets. Exercise guides contain original, offline vector sketches and short form instructions.
 
-This folder contains the site files: index.html, exercise-data.js, manifest.json, sw.js, icon.svg, and the media folder. Upload the contents of this folder to an HTTPS static web host; do not upload just index.html if you want the exercise guides and offline features. The optional generate-gifs.js file is the source for the original GIF assets.
+BACK UP YOUR RECORDS
+Workout history is saved on this iPhone. In Settings, tap Export Backup and save the JSON file in Google Drive or Files regularly. To restore, download the backup to the iPhone, tap Import Backup, and choose the file. A backup helps recover records if Safari data is cleared or you switch phones.
 
-Training logic follows gradual resistance training progression: completed reps are logged, the next target rises within the planned rep range, and a small load increase is suggested only after all sets reach the top of the range. Reference: American College of Sports Medicine, Resistance Training Prescription for Muscle Function, Hypertrophy, and Physical Performance in Healthy Adults (2026), https://pmc.ncbi.nlm.nih.gov/articles/PMC12965823/
+ABOUT THE TRAINING TARGETS
+Adaptive plans use three working sets by default, usually 6–12 repetitions for compound lifts and 10–20 for accessories, with longer rests for heavier compound work. The app suggests gradual rep increases and only suggests a load increase when logged performance meets the progression rule. These are general training guidelines; choose loads and exercises you can perform with controlled, comfortable technique.
+
+FILES
+Keep index.html, app.js, catalogue.js, planner.js, sketches.js, material.css, manifest.json, sw.js and icon.svg together when hosting the app. The service worker caches the app files for offline use and updates its cache when the app is updated.

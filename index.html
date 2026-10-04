@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#fff6f6">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#161616">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Lift Log">
@@ -21,6 +21,7 @@
     html,body{width:100%;max-width:100%;overflow-x:hidden}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
+  <link rel="stylesheet" href="material.css">
 </head>
 <body>
   <div class="app">
@@ -46,7 +47,8 @@
         </div>
         <div class="section-head"><h2>Your plan</h2><span id="plan-count">5 days</span></div>
         <div class="panel hidden" id="valentin-cardio"><strong>Weekly cardio plan</strong><p class="small-print">Monday, Wednesday, Friday: incline walk 15 min at 3.2 mph / 6%. Tuesday and Saturday: 10,000 steps. Thursday and Sunday: relaxed 45 min walk.</p></div>
-        <div class="days" id="day-list"></div>
+        <div class="panel setup-panel hidden" id="setup-level"><strong>Choose your experience level</strong><p>Your level helps us choose appropriate exercises. Your logged weights do not determine it.</p><button class="btn btn-primary btn-small" id="choose-level">Choose level</button></div>
+        <div class="days" id="day-list"></div><p class="volume-note hidden" id="volume-warning"></p><details class="panel"><summary>Weekly training volume</summary><div class="volume-grid" id="week-volume"></div><p class="small-print">Direct work sets are shown. Compound exercises also train supporting muscles.</p></details><button class="btn btn-primary end-week" id="end-week">End week</button>
         <div class="status-line"><i class="dot" id="online-dot"></i><span id="online-label">Ready to save on this iPhone</span></div>
       </section>
 
@@ -57,7 +59,7 @@
           <button class="btn btn-outline btn-small" id="finish-button">Finish</button>
         </div>
         <div class="session-banner"><div class="progress-bar" role="progressbar" aria-label="Workout progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="session-progress" style="width:0%"></i></div><p id="warmup-text"></p></div>
-        <div class="exercise-list" id="exercise-list"></div>
+        <div class="exercise-list" id="exercise-list"></div><button class="btn btn-outline end-week" id="add-exercise">＋ Add exercise</button>
       </section>
 
       <section class="screen" id="progress-screen">
@@ -71,29 +73,23 @@
         <div id="week-history" class="history-list"></div>
         <div class="section-head"><h2>Training charts</h2></div>
         <div id="progress-charts" class="chart-list"></div>
-        <div class="panel">
-          <div class="row"><strong>Next training week</strong><span>↗</span></div>
-          <p class="sub" style="font-size:12px;margin:8px 0 13px">Your next week uses your logged reps to suggest the next target. Weight only goes up after you hit the top of the rep range for every set.</p>
-          <button class="btn btn-soft btn-small" id="next-week-button">Start Week 21</button>
-          <div class="small-print" style="margin-top:9px">This keeps your past weeks available in your history.</div>
-        </div>
+
       </section>
 
       <section class="screen" id="settings-screen">
         <div class="eyebrow">Your app, your pace</div><h1>Settings & backup</h1>
         <p class="sub">Everything is saved on this iPhone. Keep a backup in Google Drive for extra peace of mind.</p>
-        <div class="tool-grid">
+        <div class="tool-grid"><div class="tool-card"><strong>Exercise catalogue</strong><p id="catalogue-size"></p><button class="btn btn-soft" id="browse-catalogue">Browse exercises</button></div>
           <div class="tool-card">
             <strong>Your training plan</strong>
             <p>Choose your weekly schedule and the equipment you can use. Workouts are kept under 90 minutes.</p>
             <label class="settings-label" for="weekly-days">Workouts per week</label>
             <select class="select" id="weekly-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option><option value="valentin">Valentin</option></select>
-            <label class="settings-label" for="workout-duration">Workout time limit</label>
-            <select class="select" id="workout-duration"><option>70</option><option>75</option><option>80</option><option>85</option><option>90</option></select> <span>minutes</span>
+            <label class="settings-label" for="experience-level">Experience level</label><select class="select" id="experience-level"><option value="">Choose your level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select><p class="settings-note">Beginner: learning stable movement and technique. Intermediate: confident with compound lifts and consistent training. Advanced: extensive practice and control of demanding variations.</p>
             <div class="settings-label">Weight button steps</div><div id="weight-steps" class="equipment-grid"></div>
             <div class="settings-label">Available equipment</div><div class="settings-note">The Valentin plan keeps the equipment listed in its spreadsheet; this filter applies to adaptive plans.</div>
             <div class="equipment-grid" id="equipment-grid"></div>
-            <div class="settings-note">Bodyweight back exercises need a secure bar. Adaptive plans add useful sets and accessories up to your chosen time limit.</div>
+            <div class="settings-note">Bodyweight pulling exercises require a secure bar. Session length follows the planned work and rest, with no time to fill.</div>
             <button class="btn btn-primary btn-small" id="apply-plan">Update plan</button>
             <div class="settings-note" id="plan-summary"></div>
           </div>
@@ -112,8 +108,8 @@
           </div>
           <div class="tool-card">
             <strong>Weekly progression</strong>
-            <p>First, aim for one more rep while staying within the target range. Once every set reaches the top of its range, the app suggests a small weight increase.</p>
-            <div class="hint">Your incline dumbbell press stays at or below 28 kg per hand. Hip thrust stays at or below 85 kg. Your saved log is never changed by a suggestion until you start the next week.</div>
+            <p>First, aim for one more rep while staying within the target range. Once every set reaches the top of its range with at least two reps left, the app suggests a small weight increase. Without effort logging, two successful exposures are required.</p>
+            <div class="hint">Aim to finish most work sets with 2–3 reps left. Log your effort optionally. End week prepares the next targets from completed sets; skipped work never triggers an increase.</div>
           </div>
           <div class="tool-card">
             <strong>Using the app offline</strong>
@@ -133,429 +129,18 @@
   <div class="session-foot hidden" id="session-foot"><div><button class="btn btn-outline" id="discard-session">Close</button><button class="btn btn-primary" id="finish-session">Finish workout</button></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="modal-backdrop hidden" id="confirm-modal"><div class="modal"><h2 id="modal-title">Finish this workout?</h2><p id="modal-copy">Your entries have been saved on this iPhone.</p><div class="modal-buttons"><button class="btn btn-outline" id="modal-cancel">Keep going</button><button class="btn btn-primary" id="modal-confirm">Finish</button></div></div></div>
-  <div class="modal-backdrop hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-title"><div class="modal"><div class="row"><h2 id="guide-title">Exercise guide</h2><button class="back" id="guide-close" aria-label="Close exercise guide">×</button></div><div class="exercise-guide" id="guide-content"></div></div></div>
+  <div class="modal-backdrop guide-modal hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-title"><div class="modal"><div class="row"><h2 id="guide-title">Exercise guide</h2><button class="back" id="guide-close" aria-label="Close exercise guide">×</button></div><div class="exercise-guide" id="guide-content"></div></div></div>
 
-<script src="exercise-data.js"></script>
-<script>
-(() => {
-  'use strict';
-  const KEY = 'lift-log-v1';
-  const sourceDays = [
-    {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
-      ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
-      ex('tbar-row','Chest-Supported T-Bar Row','Back',[[null,8,10],[null,8,10],[null,8,10]],'machine',120,'Choose a comfortable starting weight; leave 1–2 good reps in reserve.'),
-      ex('machine-press','Machine Chest Press','Chest',[[80,10,12],[80,10,12],[77.5,10,12]],'machine',120),
-      ex('low-high-fly','Low-to-High Cable Fly','Chest',[[null,12,15],[null,12,15],[null,12,15]],'cable',75,'Keep this exercise in your plan.'),
-      ex('cable-lateral','Cable Lateral Raise','Side delts',[[5,15,18],[5,15,18],[5,15,18]],'cable',60)
-    ]},
-    {id:'d2',name:'Lower Body + Abs',short:'Lower body · Abs',minutes:60,exercises:[
-      ex('hip-thrust','Hip Thrust','Glutes',[[85,8,8],[80,10,10],[80,10,10]],'barbell',150,'Maximum planned load: 85 kg. A resistance band is optional.'),
-      ex('rdl','Romanian Deadlift','Hamstrings · Glutes',[[70,10,10],[70,9,10],[70,8,9]],'barbell',150),
-      ex('leg-extension','Leg Extension','Quadriceps',[[null,10,12],[null,10,12],[null,10,12]],'machine',75,'Keep this exercise in your plan.'),
-      ex('seated-curl','Seated Leg Curl','Hamstrings',[[null,10,12],[null,10,12],[null,10,12]],'machine',75),
-      ex('calf-raise','Standing Calf Raise','Calves',[[112,12,15],[110,12,15],[110,12,15]],'machine',60),
-      ex('cable-crunch','Cable Crunch','Abs',[[35,12,15],[35,12,15],[32.5,12,15]],'cable',60)
-    ]},
-    {id:'d3',name:'Delts + Arms',short:'Shoulders · Arms',minutes:55,exercises:[
-      ex('reverse-pec','Reverse Pec Deck','Rear delts',[[null,15,20],[null,15,20],[null,15,20]],'machine',60),
-      ex('preacher','Preacher Curl','Biceps',[[32.5,8,10],[30,10,12],[30,10,12]],'machine',75),
-      ex('single-triceps','Single-Arm Cable Triceps Extension','Triceps',[[null,12,15],[null,12,15],[null,12,15]],'cable',60,'Enter the weight used for one arm; reps are per arm.'),
-      ex('db-lateral','Dumbbell Lateral Raise','Side delts',[[12,12,12],[10,15,20],[10,15,20]],'dumbbell',60),
-      ex('bayesian-curl','Bayesian Cable Curl','Biceps',[[null,10,15],[null,10,15],[null,10,15]],'cable',60)
-    ]},
-    {id:'d4',name:'Chest + Back Volume',short:'Chest · Back',minutes:60,exercises:[
-      ex('incline-db','Incline Dumbbell Press','Chest',[[28,8,10],[26,10,12],[26,10,12]],'dumbbell',150,'Maximum planned load: 28 kg per hand. Do not go above this.'),
-      ex('neutral-pulldown','Neutral-Grip Lat Pulldown','Back · Lats',[[72.5,9,10],[70,10,12],[67.5,10,12]],'machine',120),
-      ex('chest-row','Chest-Supported Row','Back',[[72,10,12],[72,9,12],[68,10,12]],'machine',120,'Starting weights reflect your recent logged performance. Keep this exercise in your plan.'),
-      ex('pec-deck','Pec Deck Fly','Chest',[[null,12,15],[null,12,15],[null,12,15]],'machine',60),
-      ex('rear-delt','Rear Delt Fly Machine','Rear delts',[[40,12,15],[40,12,15],[37.5,12,15]],'machine',60),
-      ex('hanging-raise','Weighted Hanging Leg Raise','Abs',[[7,12,15],[7,12,15],[7,10,12]],'bodyweight',60,'Add 7 kg if comfortable; reps are per set.')
-    ]},
-    {id:'d5',name:'Aesthetic Accessories',short:'Back · Arms · Abs',minutes:50,exercises:[
-      ex('straight-pulldown','Straight-Arm Pulldown','Back · Lats',[[null,12,15],[null,12,15],[null,12,15]],'cable',60),
-      ex('cable-curl','Cable Curl','Biceps',[[25,12,12],[22.5,12,15],[20,12,15]],'cable',60),
-      ex('rope-pushdown','Rope Pushdown','Triceps',[[25,12,12],[22.5,12,15],[20,12,15]],'cable',60),
-      ex('machine-lateral','Machine Lateral Raise','Side delts',[[null,12,20],[null,12,20],[null,12,20]],'machine',60),
-      ex('ab-crunch','Ab Crunch Machine','Abs',[[30,12,15],[30,12,15],[30,12,15]],'machine',60)
-    ]},
-    {id:'d6',name:'Optional Weak Points',short:'Optional · Weak points',minutes:40,optional:true,exercises:[
-      ex('dips','Weighted Dips','Chest · Triceps',[[10,8,10],[10,8,10],[10,8,10]],'bodyweight',120,'Enter added weight in kg; if 10 kg is not comfortable, use bodyweight.'),
-      ex('pullover','Dumbbell Pullover','Chest · Back',[[22,12,12],[22,12,12],[20,12,15]],'dumbbell',75),
-      ex('behind-lateral','Behind-the-Body Cable Lateral Raise','Side delts',[[null,15,20],[null,15,20],[null,15,20]],'cable',60),
-      ex('hammer-curl','Hammer Curl','Biceps · Forearms',[[14,10,12],[14,10,12],[12,12,15]],'dumbbell',60)
-    ]}
-  ];
-  const valentinDays = [
-    {id:'v1',name:'Day 1 · Chest + Legs',warmup:'Warm-up: Incline DB Press 2 sets; Back Squat 2 sets; Leg Extension 1 set; Standing Calf Raise 1 set. Cardio: incline walk 15 min at 3.2 mph / 6%.',exercises:[
-      ex('v-incline-db','Incline Dumbbell Press','Chest',[[30,8,10],[30,8,10],[30,8,10]],'dumbbell',150,'Excel note: P = 34, V = 30; using the listed 30 kg target.'),ex('v-squat','Back Squat','Quadriceps · Glutes',[[75,5,5],[75,5,5],[75,5,5]],'barbell',180),ex('v-low-high','Low-to-High Cable Flye','Chest',[[13.75,15,15],[13.75,15,15],[13.75,15,15]],'cable',90),ex('v-leg-extension','Leg Extension','Quadriceps',[[51.8,15,15],[51.8,15,15],[51.8,15,15]],'machine',90),ex('v-calf','Standing Calf Raise','Calves',[[85.5,10,10],[85.5,10,10],[85.5,10,10]],'machine',90,'Excel note: (+2.3); using listed 85.5 kg.') ]},
-    {id:'v2',name:'Day 2 · Back + Delts',warmup:'Warm-up: Weighted Pull-Up 2 sets; Wide Pronated Pulldown 1 set. Cardio: steps target 10,000.',exercises:[
-      ex('v-pullup','Weighted Pull-Up','Back · Biceps',[[21.25,6,8],[21.25,6,8],[21.25,6,8]],'bodyweight',150,'Added weight; note says 6 reps at 21.25 kg.'),ex('v-db-lateral','Dumbbell Lateral Raise','Side delts',[[16,15,20],[16,15,20],[16,15,20],[16,15,20]],'dumbbell',60),ex('v-pulldown','Wide-Grip Pronated Lat Pulldown','Back · Lats',[[68,10,12],[68,10,12],[68,10,12]],'machine',120,'Excel note “+1 (10x)” retained as note; target stays 68 kg.'),ex('v-pullover','Straight-Arm Pullover','Back · Lats',[[28.7,12,15],[28.7,12,15],[28.7,12,15]],'cable',90),ex('v-facepull','Rope Face Pull','Rear delts',[[27,20,20],[27,20,20],[27,20,20]],'cable',60,'Excel note (+0.6) retained as note.') ]},
-    {id:'v3',name:'Day 3 · Posterior Chain + Abs',warmup:'Warm-up: Reset Deadlift 2 sets; Barbell RDL 1 set; Lying Leg Curl 1 set; Cable Crunch 1 set. Cardio: incline walk 15 min at 3.2 mph / 6%.',exercises:[
-      ex('v-deadlift','Reset Deadlift','Back · Hamstrings',[[105,5,5],[105,5,5],[105,5,5]],'barbell',240),ex('v-rdl','Barbell Romanian Deadlift','Hamstrings · Glutes',[[60,10,12],[60,10,12],[60,10,12]],'barbell',150),ex('v-legcurl','Lying Leg Curl','Hamstrings',[[59,10,10],[59,10,10],[59,10,10]],'machine',90),ex('v-crunch','Weighted Cable Crunch','Abs',[[0,12,15],[0,12,15],[0,12,15]],'cable',90,'No load listed in Excel; adjust from your logged performance.'),ex('v-raise','Hanging Leg Raise','Abs',[[0,12,12],[0,12,12],[0,12,12]],'bodyweight',90) ]},
-    {id:'v4',name:'Day 4 · Chest + Delts',warmup:'Warm-up: Incline Barbell Bench 2 sets; Arnold Press 1 set. Cardio: incline walk 15 min at 3.2 mph / 6%.',exercises:[
-      ex('v-incline-bb','Incline Barbell Bench Press','Chest',[[70,6,8],[70,6,8],[70,6,8]],'barbell',150),ex('v-db-lateral-d4','Dumbbell Lateral Raise','Side delts',[[14,15,20],[14,15,20],[14,15,20],[14,15,20]],'dumbbell',60),ex('v-upright','Cable Rope Upright Row','Shoulders',[[28.75,10,12],[28.75,10,12],[28.75,10,12]],'cable',90,'Excel note (+0.6) retained as note.'),ex('v-facepull-d4','Rope Face Pull','Rear delts',[[28.75,20,20],[28.75,20,20],[28.75,20,20]],'cable',60,'Excel note (+0.6) retained as note.'),ex('v-arnold','Dumbbell Arnold Press','Shoulders',[[18,10,10],[18,10,10],[18,10,10]],'dumbbell',120) ]},
-    {id:'v5',name:'Day 5 · Back + Arms',warmup:'Warm-up: Chest-Supported Row 1 set; Lying Leg Curl 1 set; EZ Bar Skull Crusher 1 set. Cardio: steps target 10,000.',exercises:[
-      ex('v-row','Chest-Supported Row','Back',[[103.5,12,15],[103.5,12,15],[103.5,12,15]],'machine',120,'Excel note: 103.5 x 8.'),ex('v-humble','Humble Row','Back',[[24,10,12],[24,10,12],[24,10,12]],'dumbbell',120,'Load follows the listed 24; note says 24 x 12.'),ex('v-skull','EZ Bar Skull Crusher','Triceps',[[32.5,15,15],[32.5,15,15],[32.5,15,15]],'barbell',90,'Excel note “10 kg + 25 kg” conflicts with Kg column; using 32.5 kg listed.'),ex('v-hammer','Hammer Curl','Biceps',[[20,8,10],[20,8,10],[20,8,10]],'dumbbell',90,'Excel note: 20 x 12.'),ex('v-pushdown','Tricep Pressdown','Triceps',[[28.75,15,15],[28.75,15,15],[28.75,15,15]],'cable',90,'Excel note: 16 reps at 28.75 kg.'),ex('v-ez-curl','Supinated EZ Bar Curl','Biceps',[[32,15,15],[32,15,15],[32,15,15]],'barbell',90,'Excel note says 40 kg; using 32 kg listed in Kg column.') ]}
-  ];
-  const valentinRpe={'v-incline-db':9,'v-squat':8,'v-low-high':9,'v-leg-extension':8,'v-calf':9,'v-pullup':9,'v-db-lateral':9,'v-pulldown':8,'v-pullover':8,'v-facepull':8,'v-deadlift':8,'v-rdl':8,'v-legcurl':8,'v-crunch':9,'v-raise':9,'v-incline-bb':8.5,'v-db-lateral-d4':10,'v-upright':8,'v-facepull-d4':8,'v-arnold':8,'v-row':8,'v-humble':9,'v-skull':8,'v-hammer':9,'v-pushdown':9,'v-ez-curl':10};
-  valentinDays.forEach(d=>d.exercises.forEach(e=>{e.rpe=valentinRpe[e.id];e.sets.forEach(s=>s.rpe=e.rpe);e.note='RPE '+e.rpe+(e.note?' · '+e.note:'');}));
-  function ex(id,name,muscle,sets,equipment,rest,note=''){return {id,name,muscle,sets:sets.map(([weight,min,max])=>({weight,min,max})),equipment,rest,note};}
-  const $ = s => document.querySelector(s);
-  const $$ = s => [...document.querySelectorAll(s)];
-  const fresh = () => ({week:20,valentinWeek:1,logs:{},exerciseNames:{},lastBackupAt:null,activeDay:null,activeWeek:null,daysPerWeek:5,workoutDuration:75,weightSteps:{barbell:2.5,dumbbell:2,machine:2.5,cable:1,bodyweight:1,band:0.5},equipment:['barbell','dumbbell','machine','cable','bodyweight','band'],planRevision:0});
-  let state = loadState();
-  let days = buildDays();
-  let activeDay = null;
-  let toastTimer = null;
-  let restTimer = null;
-  let audioContext = null;
-  function loadState(){try{const parsed=JSON.parse(localStorage.getItem(KEY)||'null');return parsed&&parsed.logs?{...fresh(),...parsed}:fresh();}catch(e){return fresh();}}
-  function saveState(){try{localStorage.setItem(KEY,JSON.stringify(state));updateBackupStatus();}catch(e){showToast('Could not save. Export a backup and free up space.');}}
-  function showToast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2500);}
-  function keyFor(dayId,week=state.week){return String(week)+(state.planRevision?'-v'+state.planRevision:'')+'-'+dayId;}
-  function logFor(week,dayId){return state.logs[keyFor(dayId,week)]||null;}
-  function guideFor(exercise){return LIFT_EXERCISE_DATA.patterns[LIFT_EXERCISE_DATA.byId[exercise.id]];}
-  function equipmentFor(name,guide){return guide.options.find(([label])=>label===name)?.[1]||null;}
-  function availableAlternatives(exercise){
-    const guide=guideFor(exercise);
-    return guide.options.filter(([name,equipment])=>name!==exercise.name&&state.equipment.includes(equipment));
-  }
-  function adaptExercise(exercise){
-    const e={...exercise,sets:exercise.sets.map(s=>({...s}))};
-    const guide=guideFor(e);
-    if(!state.equipment.includes(e.equipment)){
-      const replacement=guide.options.find(([,equipment])=>state.equipment.includes(equipment));
-      if(!replacement)return null;
-      e.name=replacement[0];e.equipment=replacement[1];e.note='';e.sets.forEach(s=>s.weight=null);
-    }
-    return e;
-  }
-  function estimateMinutes(exercises){
-    const minutes=8+exercises.reduce((sum,e)=>sum+e.sets.length*.7+(e.sets.length-1)*e.rest/60+1.5,0);
-    return Math.ceil(minutes/5)*5;
-  }
-  function buildDays(){
-    if(state.daysPerWeek==='valentin')return valentinDays.map(d=>({...d,name:d.name.replace(/^Day \d+ · /,''),exercises:d.exercises.map(e=>({...e,sets:e.sets.map(s=>({...s}))})),minutes:estimateMinutes(d.exercises)}));
-    const count=Number(state.daysPerWeek)||5;
-    const all=sourceDays.slice(0,count===6?6:5).map(d=>({...d,exercises:d.exercises.map(adaptExercise).filter(Boolean)}));
-    if(count>=5)return all.map((d,i)=>({...d,id:'d'+(i+1),optional:!!d.optional,minutes:estimateMinutes(d.exercises)})).map(adaptDuration);
-    const omit=count===3?new Set(['pec-deck','rear-delt','machine-lateral']):new Set();
-    const selected=all.flatMap(d=>d.exercises).filter(e=>!omit.has(e.id));
-    const family=e=>{
-      if(['hip-thrust','rdl','leg-extension','seated-curl','calf-raise'].includes(e.id))return 'legs';
-      if(['incline-barbell','machine-press','low-high-fly','incline-db','pec-deck'].includes(e.id))return 'chest';
-      if(['tbar-row','neutral-pulldown','chest-row','straight-pulldown'].includes(e.id))return 'back';
-      if(['cable-lateral','reverse-pec','db-lateral','rear-delt','machine-lateral'].includes(e.id))return 'shoulders';
-      if(['cable-crunch','hanging-raise','ab-crunch'].includes(e.id))return 'abs';
-      return 'arms';
-    };
-    const groups=['legs','chest','back','shoulders','arms','abs'];
-    const plan=Array.from({length:count},(_,i)=>({id:'d'+(i+1),name:count===3?'Full Body '+String.fromCharCode(65+i):'Balanced Training '+(i+1),short:'Strength · Muscle',exercises:[],minutes:0}));
-    for(const group of groups){
-      const entries=selected.filter(e=>family(e)===group);
-      entries.forEach((e,i)=>{
-        const candidates=plan.map((d,j)=>({d,j,same:d.exercises.filter(x=>family(x)===group).length}));
-        candidates.sort((a,b)=>a.same-b.same||a.d.exercises.length-b.d.exercises.length||((a.j-i+count)%count)-((b.j-i+count)%count));
-        candidates[0].d.exercises.push(e);
-      });
-    }
-    plan.forEach(d=>{d.minutes=estimateMinutes(d.exercises);});
-    return plan.map(adaptDuration);
-  }
-  function adaptDuration(day){
-    const copy={...day,exercises:day.exercises.map(e=>({...e,sets:e.sets.map(s=>({...s}))}))};
-    const limit=Math.max(70,Math.min(90,Number(state.workoutDuration)||75));
-    const budget=Math.max(estimateMinutes(copy.exercises),limit-15);let cursor=0,guard=0;
-    while(estimateMinutes(copy.exercises)<budget-2&&guard++<80){
-      const candidates=copy.exercises.filter(e=>e.sets.length<5);
-      if(candidates.length){const e=candidates[cursor++%candidates.length],old=e.sets.length;e.sets.push({...e.sets[old-1]});if(estimateMinutes(copy.exercises)>budget)e.sets.pop();if(e.sets.length===old)break;}
-      else {
-        const regions=[...new Set(copy.exercises.flatMap(e=>e.muscle.toLowerCase().split(/[·,]/).map(x=>x.trim())))],used=new Set(copy.exercises.map(e=>e.id));
-        const accessory=sourceDays.flatMap(d=>d.exercises).find(e=>!used.has(e.id)&&regions.some(r=>r&&e.muscle.toLowerCase().includes(r)));
-        if(!accessory)break;const added={...accessory,sets:accessory.sets.slice(0,2).map(s=>({...s}))};copy.exercises.push(added);if(estimateMinutes(copy.exercises)>budget){copy.exercises.pop();break;}
-      }
-    }
-    copy.minutes=Math.min(limit,estimateMinutes(copy.exercises));return copy;
-  }
-  function latestExerciseLog(exercise){
-    const entries=[];Object.entries(state.logs).forEach(([key,log])=>{if(Number(key.split('-')[0])>state.week||key===keyFor(activeDay?.id||''))return;for(const entry of Object.values(log.exercises||{}))if(entry.name===exercise.name&&entry.sets?.some(s=>s?.done))entries.push({entry,updatedAt:log.updatedAt||''});for(const entry of log.variantHistory||[])if(entry.name===exercise.name&&entry.sets?.some(s=>s?.done))entries.push({entry,updatedAt:entry.updatedAt||log.updatedAt||''});});
-    return entries.sort((a,b)=>String(b.updatedAt).localeCompare(String(a.updatedAt)))[0]?.entry||null;
-  }
-  function comparableLoad(exercise){
-    if(!['barbell','dumbbell'].includes(exercise.equipment))return null;
-    const pattern=LIFT_EXERCISE_DATA.byId[exercise.id];const candidates=[];
-    Object.values(state.logs).forEach(log=>Object.values(log.exercises||{}).forEach(entry=>{
-      if(!entry.name||!entry.sets) return;
-      const priorPattern=Object.entries(LIFT_EXERCISE_DATA.patterns).find(([,p])=>p.options.some(([name])=>name===entry.name))?.[0];
-      const priorEquipment=Object.entries(LIFT_EXERCISE_DATA.patterns).find(([,p])=>p.options.some(([name])=>name===entry.name))?.[1]?.options.find(([name])=>name===entry.name)?.[1];
-      if(priorPattern!==pattern||priorEquipment!==exercise.equipment)return;
-      entry.sets.filter(s=>s?.done&&Number(s.weight)>0).forEach(s=>candidates.push({weight:+s.weight,at:log.updatedAt||''}));
-    }));
-    candidates.sort((a,b)=>String(b.at).localeCompare(String(a.at)));return candidates.length?Math.round(candidates[0].weight*.75*2)/2:null;
-  }
-  function plannedSets(day,exercise){
-    const prior=latestExerciseLog(exercise);
-    const allTop=!!prior&&exercise.sets.every((range,i)=>prior.sets[i]?.done&&Number(prior.sets[i].reps)>=range.max);
-    return exercise.sets.map((s,i)=>{
-      let weight=s.weight==null?(exercise.estimatedWeight??0):s.weight;
-      let target=s.min;
-      if(state.daysPerWeek==='valentin'){
-        const cycle=((state.valentinWeek||1)-1)%4+1;
-        if(prior?.sets?.[i]?.done){const p=prior.sets[i],loggedWeight=p.weight!==''&&p.weight!=null&&Number.isFinite(+p.weight)?Number(p.weight):weight;if(cycle===2||cycle===3)weight=loggedWeight;if(cycle===4)weight=Math.round(loggedWeight*.8*100)/100;if(cycle===3)target=Math.min(s.max,Math.max(s.min,Number(p.reps||s.min)+2));if(cycle===2&&['v-squat','v-deadlift','v-incline-bb'].includes(exercise.id)&&prior.sets.every((ps,j)=>ps?.done&&Number(ps.reps)>=exercise.sets[j].min))weight=Math.round((loggedWeight+2.5)*100)/100;}
-        else if(cycle===4)weight=Math.round(weight*.8*100)/100;
-        return {weight,target};
-      }
-      if(prior?.sets?.[i]?.done){
-        const p=prior.sets[i];
-        if(p.weight!==''&&p.weight!=null&&Number.isFinite(+p.weight)) weight=+p.weight;
-        if(p.reps!==''&&p.reps!=null&&Number.isFinite(+p.reps)) target=allTop?s.min:Math.min(s.max,Math.max(s.min,+p.reps+1));
-        if(allTop&&p.weight!==''&&p.weight!=null&&Number.isFinite(+p.weight))weight=nextWeight(exercise,+p.weight);
-      }
-      return {weight,target};
-    });
-  }
-  function nextWeight(exercise,w){
-    const hardCaps={'hip-thrust':85,'incline-db':28};
-    const cap=hardCaps[exercise.id];
-    if(cap && w>=cap) return w;
-    let step=exercise.equipment==='dumbbell'?2:2.5;
-    let next=Math.round((w+step)*10)/10;
-    if(cap) next=Math.min(cap,next);
-    return next;
-  }
-  function currentLog(day){
-    const k=keyFor(day.id);
-    if(!state.logs[k]) state.logs[k]={completed:false,updatedAt:null,exercises:{},dayName:day.name};
-    if(!state.logs[k].exercises) state.logs[k].exercises={};
-    state.logs[k].dayName=day.name;
-    return state.logs[k];
-  }
-  function renderDays(){
-    $('#day-list').innerHTML=days.map((d,i)=>{
-      const log=logFor(state.week,d.id),done=!!log?.completed;
-      const logged=(log?.exercises?Object.values(log.exercises).flatMap(x=>x.sets||[]).filter(s=>s?.done).length:0);
-      return `<button class="day-card ${d.optional?'optional':''} ${done?'finished':''}" data-day="${d.id}"><span class="day-num">${done?'✓':String(i+1).padStart(2,'0')}</span><span class="day-info"><span class="day-title">${d.optional?'Optional · ':''}${escapeHtml(d.name)}</span><span class="day-meta">${d.exercises.length} exercises · ${d.minutes} min${logged?' · '+logged+' '+(logged===1?'set':'sets')+' logged':''}</span></span><span class="day-arrow">›</span></button>`;
-    }).join('');
-    $$('#day-list [data-day]').forEach(b=>b.addEventListener('click',()=>openWorkout(b.dataset.day)));
-  }
-  function updateHome(){
-    $('#week-pill').textContent='WEEK '+(state.daysPerWeek==='valentin'?state.valentinWeek:state.week);$('#valentin-cardio').classList.toggle('hidden',state.daysPerWeek!=='valentin');
-    $('#plan-count').textContent=state.daysPerWeek==='valentin'?'Valentin · 5 days':days.length+' days';
-    const nonOptional=days.filter(d=>!d.optional);
-    const next=nonOptional.find(d=>!logFor(state.week,d.id)?.completed)||nonOptional[0];
-    $('#next-title').textContent='Day '+(days.indexOf(next)+1)+' · '+next.name;
-    $('#next-subtitle').textContent=next.exercises.length+' exercises · about '+next.minutes+' minutes';
-    $('#start-next').onclick=()=>openWorkout(next.id);
-    const logs=Object.entries(state.logs).filter(([key,log])=>Number(key.split('-')[0])===state.week&&log.updatedAt).map(([,log])=>log);
-    $('#week-sessions').textContent=logs.filter(l=>l.completed).length;
-    $('#week-exercises').textContent=logs.flatMap(l=>Object.values(l.exercises||{}).flatMap(e=>e.sets||[])).filter(s=>s?.done).length;
-    const btn=$('#next-week-button');btn.textContent='Start Week '+(state.week+1);
-    $('#progress-week-label').textContent='Week '+state.week;
-    renderDays();updateBackupStatus();updateOnline();
-  }
-  function setScreen(id){
-    $$('.screen').forEach(s=>s.classList.toggle('active',s.id===id));
-    $$('.tab').forEach(t=>t.classList.toggle('active',t.dataset.screen===id));
-    $('#tabbar').classList.toggle('hidden',id==='workout-screen');
-    $('#session-foot').classList.toggle('hidden',id!=='workout-screen');
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-  function openWorkout(dayId){
-    activeDay=days.find(d=>d.id===dayId);if(!activeDay)return;
-    const names=state.exerciseNames?.[dayId]||{};
-    activeDay.exercises.forEach(e=>{const name=names[e.id],equipment=equipmentFor(name,guideFor(e));if(name&&equipment&&state.equipment.includes(equipment)&&name!==e.name){e.name=name;e.equipment=equipment;e.note='';e.alternativeSelected=true;e.estimatedWeight=comparableLoad(e);e.sets.forEach(s=>s.weight=null);}});
-    currentLog(activeDay);
-    $('#workout-day-label').textContent='DAY '+(days.indexOf(activeDay)+1)+' · WEEK '+(state.daysPerWeek==='valentin'?state.valentinWeek:state.week);
-    $('#workout-title').textContent=activeDay.name;
-    let dayNote=activeDay.warmup||'';if(state.daysPerWeek==='valentin'&&state.valentinWeek===2&&activeDay.id==='v2')dayNote+=' Week 2 note: take one lateral raise set to technical failure.';if(state.daysPerWeek==='valentin'&&state.valentinWeek===2&&activeDay.id==='v5')dayNote+=' Week 2 note: take one biceps curl set to technical failure.';if(state.daysPerWeek==='valentin'&&state.valentinWeek===4)dayNote+=' Week 4 active recovery: use 20% less weight and focus on smooth control.';$('#warmup-text').textContent=dayNote;$('#warmup-text').style.display=dayNote?'block':'none';
-    renderWorkout();setScreen('workout-screen');
-  }
-  function renderWorkout(){
-    stopRestTimer();
-    const log=currentLog(activeDay);
-    $('#exercise-list').innerHTML=activeDay.exercises.map((e,ei)=>{
-      const data=log.exercises[e.id]||{sets:[]};
-      const planned=plannedSets(activeDay,e);
-      const setRows=e.sets.map((s,si)=>{
-        const saved=data.sets?.[si]||{};const weight=saved.weight??planned[si].weight;const reps=saved.reps??planned[si].target;const done=!!saved.done;
-        const weightStep=Number(state.weightSteps?.[e.equipment]||0.5);
-        return `<div class="set-row" data-set-row="${ei}-${si}"><span class="set-index">${String(si+1).padStart(2,'0')}</span><div class="stepper"><button class="step-button" data-step="-" aria-label="Decrease weight">−</button><input class="field weight-input" type="number" inputmode="decimal" min="0" step="${weightStep}" aria-label="Set ${si+1} weight in kilograms" value="${escapeAttr(weight)}" data-e="${ei}" data-s="${si}" data-field="weight"><button class="step-button" data-step="+" aria-label="Increase weight">+</button></div><div class="stepper"><button class="step-button" data-step="-" aria-label="Decrease reps">−</button><input class="field reps-input" type="number" inputmode="numeric" min="0" step="1" aria-label="Set ${si+1} reps" value="${escapeAttr(reps)}" data-e="${ei}" data-s="${si}" data-field="reps"><button class="step-button" data-step="+" aria-label="Increase reps">+</button></div><button class="check ${done?'done':''}" data-check="${ei}-${si}" aria-label="${done?'Mark set incomplete':'Mark set complete'}">✓</button></div>`;
-      }).join('');
-      const variants=guideFor(e).options.filter(([name])=>name!==e.name);
-      const alt=variants.map(([name,equipment])=>`<option value="${escapeAttr(name)}" ${state.equipment.includes(equipment)?'':'disabled'}>${escapeHtml(name)} · ${escapeHtml(LIFT_EXERCISE_DATA.equipmentLabels[equipment])}${state.equipment.includes(equipment)?'':' · unavailable'}</option>`).join('');
-      const estimateNote=e.alternativeSelected?(latestExerciseLog(e)?'Suggested load from your previous '+escapeHtml(e.name)+' workout.':e.estimatedWeight!=null?'Estimated from a similar logged free-weight exercise; start conservatively.':'No comparable load found; starting target is 0 kg.'):(e.estimatedWeight!=null?'Estimated load from your logged workouts; adjust as needed.':'');
-      return `<article class="exercise"><div class="exercise-top"><div class="exercise-title"><h3>${escapeHtml(e.name)}</h3><div class="muscle">${escapeHtml(e.muscle)}</div></div><button class="info-button" data-guide="${ei}" aria-label="How to do ${escapeAttr(e.name)}">i</button><span class="target">${e.sets.length} × ${e.sets[0].min===e.sets[0].max?e.sets[0].min:e.sets[0].min+'–'+e.sets[0].max}</span></div>${estimateNote?`<div class="settings-note">${estimateNote}</div>`:''}${e.note?`<p class="exercise-note">${escapeHtml(e.note)}</p>`:''}<div class="set-head"><span>Set</span><span>Weight · kg</span><span>Reps</span><span></span></div>${setRows}<div class="exercise-actions"><button class="text-button alternatives-button" data-ex="${ei}">Alternatives (${variants.length})</button><div class="rest-controls"><span class="timer" id="timer-${ei}">${formatTime(e.rest)}</span><input class="rest-duration" type="number" inputmode="numeric" min="1" max="5999" step="5" value="${e.rest}" aria-label="Rest duration in seconds"><button class="btn btn-soft btn-small rest-button" data-rest="${ei}">Start rest</button></div></div><select class="hidden alternative-select" data-alt="${ei}" aria-label="Choose an alternative exercise"><option value="">Choose an alternative</option>${alt}</select></article>`;
-    }).join('');
-    $$('#exercise-list .weight-input,#exercise-list .reps-input').forEach(input=>input.addEventListener('input',onSetInput));
-    $$('#exercise-list .check').forEach(b=>b.addEventListener('click',()=>toggleSet(b)));
-    $$('#exercise-list .step-button').forEach(b=>b.addEventListener('click',()=>stepInput(b)));
-    $$('#exercise-list .alternatives-button').forEach(b=>b.addEventListener('click',()=>{$(`[data-alt="${b.dataset.ex}"]`).classList.toggle('hidden');}));
-    $$('#exercise-list .alternative-select').forEach(sel=>sel.addEventListener('change',()=>chooseAlternative(sel)));
-    $$('#exercise-list .rest-button').forEach(b=>b.addEventListener('click',()=>startRest(+b.dataset.rest,b)));
-    $$('#exercise-list .info-button').forEach(b=>b.addEventListener('click',()=>openGuide(+b.dataset.guide)));
-    updateSessionProgress();
-  }
-  function onSetInput(ev){
-    const input=ev.currentTarget,e=activeDay.exercises[+input.dataset.e],si=+input.dataset.s,field=input.dataset.field;
-    const log=currentLog(activeDay);if(!log.exercises[e.id])log.exercises[e.id]={sets:[],name:e.name};if(!log.exercises[e.id].sets[si])log.exercises[e.id].sets[si]={};
-    log.exercises[e.id].name=e.name;
-    const set=log.exercises[e.id].sets[si],val=input.value===''?'':Number(input.value);set[field]=val;
-    const row=input.closest('.set-row');const other=row.querySelector(field==='weight'?'.reps-input':'.weight-input');const otherField=field==='weight'?'reps':'weight';
-    if(other.value!=='')set[otherField]=Number(other.value);
-    log.updatedAt=new Date().toISOString();saveState();updateSessionProgress();
-  }
-  function stepInput(button){
-    const input=button.parentElement.querySelector('input'),field=input.dataset.field,delta=button.dataset.step==='+'?1:-1,step=field==='reps'?1:(Number(input.step)||Number(state.weightStep)||0.5);
-    input.value=String(Math.max(0,Math.round((Number(input.value||0)+delta*step)*100)/100));input.dispatchEvent(new Event('input',{bubbles:true}));
-  }
-  function toggleSet(btn){
-    const [ei,si]=btn.dataset.check.split('-').map(Number),e=activeDay.exercises[ei],log=currentLog(activeDay);
-    if(!log.exercises[e.id])log.exercises[e.id]={sets:[],name:e.name};if(!log.exercises[e.id].sets[si])log.exercises[e.id].sets[si]={};
-    log.exercises[e.id].name=e.name;
-    const row=$(`[data-set-row="${ei}-${si}"]`),w=row.querySelector('.weight-input'),r=row.querySelector('.reps-input');
-    if(!btn.classList.contains('done')&&r.value===''){showToast('Enter the reps you completed first.');r.focus();return;}
-    if(w.value!=='')log.exercises[e.id].sets[si].weight=Number(w.value);
-    if(r.value!=='')log.exercises[e.id].sets[si].reps=Number(r.value);
-    const s=log.exercises[e.id].sets[si];s.done=!s.done;btn.classList.toggle('done',s.done);btn.setAttribute('aria-label',s.done?'Mark set incomplete':'Mark set complete');log.updatedAt=new Date().toISOString();saveState();updateSessionProgress();
-    if(s.done) startRest(ei,$(`[data-rest="${ei}"]`));
-  }
-  function chooseAlternative(sel){
-    if(!sel.value)return;const e=activeDay.exercises[+sel.dataset.alt],from=e.name,to=sel.value,guide=guideFor(e),equipment=equipmentFor(to,guide);
-    openConfirm('Change this exercise?',`Change ${from} to ${to}? Starting weights will be cleared because equipment loads are not comparable.`,()=>{
-      const log=currentLog(activeDay),previous=log.exercises[e.id];
-      if(previous?.sets?.some(s=>s?.done||s?.reps!==undefined)){log.variantHistory ||= [];log.variantHistory.push({id:e.id,name:from,sets:previous.sets,updatedAt:new Date().toISOString()});delete log.exercises[e.id];}
-      e.name=to;e.equipment=equipment;e.note='';e.alternativeSelected=true;e.estimatedWeight=comparableLoad(e);e.sets.forEach(s=>s.weight=null);
-      state.exerciseNames[activeDay.id] ||= {};state.exerciseNames[activeDay.id][e.id]=to;
-      log.updatedAt=new Date().toISOString();saveState();renderWorkout();showToast('Exercise updated.');
-    });
-    sel.value='';sel.classList.add('hidden');
-  }
-  function openGuide(index){
-    const e=activeDay.exercises[index],guide=guideFor(e);
-    const original=[...sourceDays,...valentinDays].flatMap(d=>d.exercises).find(x=>x.id===e.id)?.name;
-    let setup=guide.setup,move=guide.move,avoid=guide.avoid;
-    if(e.name!==original){
-      setup={barbell:'Set a stable stance or bench position and keep the bar close to your body.',dumbbell:'Use a stable stance or bench and start with a weight you can control.',machine:'Adjust the seat and handles to a comfortable position before the first rep.',cable:'Set the pulley and stance so the cable follows a smooth path.',bodyweight:'Start from a stable position and move only through a comfortable range.',band:'Secure the band before you begin and keep steady tension.'}[e.equipment]||setup;
-    }
-    if(/push-up/i.test(e.name)){setup='Place your hands on a stable surface, brace your body and keep your shoulders comfortable.';move='Lower your chest with control, then press back up while keeping your body aligned.';avoid='Do not let your hips sag or flare your elbows widely.';}
-    else if(/squat|step-up|split squat/i.test(e.name)){setup='Stand with feet stable and brace your torso.';move='Bend hips and knees through a comfortable range, then push through your feet to stand.';avoid='Do not let your knees collapse inward or rush the descent.';}
-    else if(/pull-up|chin-up/i.test(e.name)){setup='Hang from a secure bar with shoulders engaged.';move='Pull your elbows down until your upper chest approaches the bar, then lower slowly.';avoid='Do not kick or swing to complete reps.';}
-    $('#guide-title').textContent=e.name;
-    $('#guide-content').innerHTML=`${guideIllustration(e)}<ol><li>${escapeHtml(setup)}</li><li>${escapeHtml(move)}</li></ol><div class="avoid"><strong>Avoid:</strong> ${escapeHtml(avoid)}</div><p class="guide-note">Original animated movement illustration. Use a comfortable range and adjust the equipment to your body.</p>`;
-    $('#guide-modal').classList.remove('hidden');$('#guide-close').focus();
-  }
-  function guideIllustration(e){
-    const family=LIFT_EXERCISE_DATA.byId[e.id]||'hinge',pull=['row','verticalPull','pullover','curl','rearDelt','legRaise'].includes(family),lower=['hipThrust','hinge','squat','kneeExtension','legCurl','calfRaise'].includes(family),arms=['curl','triceps','lateralRaise','rearDelt'].includes(family);
-    const poseA=lower?'M120 82 L132 118 L116 151 M132 118 L156 143 M132 118 L106 145':pull?'M120 82 L144 102 L164 91 M144 102 L160 124 M144 102 L123 126':'M120 82 L136 110 L159 116 M136 110 L116 126 M136 110 L112 96';
-    const poseB=lower?'M120 82 L126 112 L110 146 M126 112 L151 137 M126 112 L103 140':pull?'M120 82 L140 97 L165 112 M140 97 L153 123 M140 97 L120 122':'M120 82 L128 105 L149 92 M128 105 L110 123 M128 105 L110 90';
-    const tool=e.equipment==='dumbbell'?'<path class="equip" d="M93 95h12m-10-5v10m6-10v10m52 22h12m-10-5v10m6-10v10"/>':e.equipment==='barbell'?'<path class="equip" d="M75 62h90m-76-9v18m62-18v18"/>':e.equipment==='machine'?'<path class="equip" d="M45 155V60h14v95m0-80h28m63 80V60h14v95m-31-80h17"/>':'<path class="equip" d="M45 154V58m0 25h30m95 71V58m0 25h-30m-95 0 35 30m90-30-35 30"/>';
-    const muscle=e.muscle.toLowerCase(),high=lower?'M112 99q8-9 16-2l8 17-13 8-15-9z':arms?'M126 86q10-7 17 2l4 14-13 9-12-10z':'M108 87q12-9 24 0l9 18-15 8-19-8z';
-    const limbsA=`M120 82 ${poseA.slice(7)}`,limbsB=`M120 82 ${poseB.slice(7)}`;
-    return `<svg class="guide-svg" viewBox="0 0 240 190" role="img" aria-label="Animated ${escapeAttr(e.name)} movement guide"><title>${escapeHtml(e.name)} movement</title><defs><linearGradient id="guide-bg" x2="0" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="#ffe5e9"/></linearGradient></defs><rect width="240" height="190" rx="16" fill="url(#guide-bg)"/><path class="equip" d="M55 155h120"/>${tool}<path class="move-arrow" d="M187 75c13 13 13 28 2 40"/><path d="M107 81q13-9 26 0l8 27q-20 15-42 0z" fill="#e8b9a8" stroke="#7d2636" stroke-width="2.5"/><path class="muscle-shape" d="${high}"/><path d="M100 105q20 14 40 0l-5 14q-15 12-30 0z" fill="#d99c91" stroke="#7d2636" stroke-width="2"/><circle cx="120" cy="65" r="14" fill="#efc9ba" stroke="#7d2636" stroke-width="2.5"/><path class="outline pose-a" d="${limbsA}"/><path class="body-limb pose-a" d="${limbsA}"/><path class="outline pose-b" d="${limbsB}"/><path class="body-limb pose-b" d="${limbsB}"/><path class="move-muscle pose-a" d="${high}"/><path class="move-muscle pose-b" d="${high}"/><path class="equip" d="M47 160h146"/><text x="120" y="178" text-anchor="middle" font-size="9" fill="#775f64">${escapeHtml(muscle.split(' · ')[0].toUpperCase())} · CONTROLLED RANGE</text></svg>`;
-  }
-  function updateSessionProgress(){
-    if(!activeDay)return;const log=currentLog(activeDay),sets=activeDay.exercises.flatMap(e=>e.sets.map((_,i)=>log.exercises[e.id]?.sets?.[i]));const done=sets.filter(s=>s?.done).length,total=sets.length,pc=total?Math.round(done/total*100):0;
-    $('#session-progress').style.width=pc+'%';$('.session-banner .progress-bar').setAttribute('aria-valuenow',String(pc));
-  }
-  function finishWorkout(){
-    stopRestTimer();const log=currentLog(activeDay);log.completed=true;log.updatedAt=new Date().toISOString();saveState();updateHome();setScreen('home-screen');activeDay=null;showToast('Workout saved. Nice work!');
-  }
-  function closeWorkout(){
-    if(!activeDay)return;const hasLog=!!logFor(state.week,activeDay.id)?.updatedAt;
-    if(hasLog)openConfirm('Close workout?','Your entries have been saved. You can come back and continue later.',()=>{stopRestTimer();setScreen('home-screen');activeDay=null;});else{stopRestTimer();setScreen('home-screen');activeDay=null;}
-  }
-  function openConfirm(title,copy,action){$('#modal-title').textContent=title;$('#modal-copy').textContent=copy;$('#confirm-modal').classList.remove('hidden');$('#modal-cancel').onclick=()=>$('#confirm-modal').classList.add('hidden');$('#modal-confirm').onclick=()=>{const fn=action;$('#confirm-modal').classList.add('hidden');fn();};}
-  function startRest(ei,button){
-    const e=activeDay.exercises[ei],card=button.closest('.exercise'),input=card.querySelector('.rest-duration');
-    if(restTimer?.button===button){clearInterval(restTimer.interval);restTimer=null;$('#timer-'+ei).textContent=formatTime(Number(input.value)||e.rest);button.textContent='Start rest';button.classList.remove('running');return;}
-    stopRestTimer();
-    armRestAudio();
-    const seconds=Math.max(1,Math.min(5999,Number(input.value)||e.rest));input.value=seconds;
-    restTimer={endAt:Date.now()+seconds*1000,ei,button,interval:null};
-    button.textContent='Cancel';button.classList.add('running');
-    const tick=()=>{const remaining=Math.max(0,Math.ceil((restTimer.endAt-Date.now())/1000));$('#timer-'+ei).textContent=formatTime(remaining);if(!remaining){clearInterval(restTimer.interval);restTimer=null;button.textContent='Start rest';button.classList.remove('running');$('#timer-'+ei).textContent='Ready';playRestChime();showToast('Rest finished.');}};
-    tick();if(restTimer)restTimer.interval=setInterval(tick,250);
-  }
-  function stopRestTimer(){if(restTimer){clearInterval(restTimer.interval);restTimer.button.textContent='Start rest';restTimer.button.classList.remove('running');restTimer=null;}}
-  function armRestAudio(){try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;audioContext ||= new Audio();if(audioContext.state==='suspended')audioContext.resume();}catch(e){}}
-  function playRestChime(){try{const Audio=window.AudioContext||window.webkitAudioContext;if(!Audio)return;audioContext ||= new Audio();if(audioContext.state==='suspended')audioContext.resume();const oscillator=audioContext.createOscillator(),gain=audioContext.createGain();oscillator.type='sine';oscillator.frequency.value=880;gain.gain.setValueAtTime(0.0001,audioContext.currentTime);gain.gain.exponentialRampToValueAtTime(0.18,audioContext.currentTime+0.02);gain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+0.32);oscillator.connect(gain);gain.connect(audioContext.destination);oscillator.start();oscillator.stop(audioContext.currentTime+0.34);}catch(e){}}
-  function formatTime(sec){return Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');}
-  function updateProgressScreen(){
-    const vals=Object.entries(state.logs).map(([k,v])=>({k,v}));const completed=vals.filter(x=>x.v.completed).length;const countSets=entry=>(entry?.sets||[]).filter(s=>s?.done).length;const allSets=vals.reduce((n,x)=>n+Object.values(x.v.exercises||{}).reduce((m,e)=>m+countSets(e),0)+(x.v.variantHistory||[]).reduce((m,e)=>m+countSets(e),0),0);
-    $('#all-sessions').textContent=completed;$('#all-sets').textContent=allSets;
-    const current=vals.filter(x=>Number(x.k.split('-')[0])===state.week&&x.v.updatedAt).sort((a,b)=>new Date(b.v.updatedAt)-new Date(a.v.updatedAt));
-    $('#week-history').innerHTML=current.length?current.map(x=>`<div class="history-item"><strong>${escapeHtml(x.v.dayName||x.k)}</strong><span>${x.v.completed?'Completed':'In progress'} · ${new Date(x.v.updatedAt).toLocaleDateString('en-US',{month:'short',day:'numeric'})}</span></div>`).join(''):'<div class="empty">Your completed workouts will show here. Start with Day 1 when you’re ready.</div>';
-    renderCharts(vals);
-    $('#next-week-button').onclick=()=>openConfirm('Start Week '+(state.week+1)+'?','Your current week stays saved. Your next training week will use your logged reps to set targets.',()=>{state.week+=1;if(state.daysPerWeek==='valentin')state.valentinWeek=((state.valentinWeek||1)%4)+1;saveState();updateHome();updateProgressScreen();showToast('Welcome to Week '+(state.daysPerWeek==='valentin'?state.valentinWeek:state.week)+'.');});
-  }
-  function renderCharts(vals){
-    const past=[];for(const {v} of vals)for(const [id,e] of Object.entries(v.exercises||{}))for(const s of e.sets||[])if(s?.done&&Number.isFinite(+s.weight)&&Number.isFinite(+s.reps))past.push({name:e.name||id,date:v.updatedAt||'',weight:+s.weight,reps:+s.reps});for(const {v} of vals)for(const e of v.variantHistory||[])for(const s of e.sets||[])if(s?.done&&Number.isFinite(+s.weight)&&Number.isFinite(+s.reps))past.push({name:e.name||e.id,date:e.updatedAt||v.updatedAt||'',weight:+s.weight,reps:+s.reps});
-    const unique=[...new Set(past.map(x=>x.name))].sort();if(!unique.length){$('#progress-charts').innerHTML='<div class="empty">Complete a few sets to see your charts here.</div>';return;}
-    const chosen=state.progressExercise&&unique.includes(state.progressExercise)?state.progressExercise:unique[0];state.progressExercise=chosen;
-    const rows=past.filter(x=>x.name===chosen).sort((a,b)=>String(a.date).localeCompare(String(b.date))).slice(-8);
-    const weekly=Array.from({length:6},(_,i)=>{const w=state.week-5+i;return {label:'W'+w,value:vals.filter(x=>Number(x.k.split('-')[0])===w&&x.v.completed).length};});
-    const catalog=[...sourceDays,...valentinDays].flatMap(d=>d.exercises),muscles={};for(const {v} of vals)for(const entry of [...Object.values(v.exercises||{}),...(v.variantHistory||[])]){if(!entry.name)continue;const found=catalog.find(e=>e.name===entry.name);const pattern=Object.entries(LIFT_EXERCISE_DATA.patterns).find(([,p])=>p.options.some(([name])=>name===entry.name))?.[0];const muscle=found?.muscle||({inclinePress:'Chest',chestPress:'Chest',fly:'Chest',row:'Back',verticalPull:'Back',pullover:'Back',hipThrust:'Glutes',hinge:'Legs',kneeExtension:'Legs',legCurl:'Legs',calfRaise:'Legs',lateralRaise:'Shoulders',rearDelt:'Shoulders',curl:'Arms',triceps:'Arms',crunch:'Abs',legRaise:'Abs',dip:'Chest'}[pattern]||'Other');muscles[muscle]=(muscles[muscle]||0)+(entry.sets||[]).filter(s=>s?.done).length;}
-    const maxMuscle=Math.max(1,...Object.values(muscles)),muscleBars=Object.entries(muscles).sort((a,b)=>b[1]-a[1]).map(([name,count])=>`<div class="muscle-bar"><span>${escapeHtml(name)}</span><i><b style="width:${Math.max(3,count/maxMuscle*100)}%"></b></i><strong>${count}</strong></div>`).join('');
-    const svgChart=(items,key,label)=>{if(items.length<2)return '<div class="empty">Log this exercise at least twice to see a trend.</div>';const values=items.map(x=>x[key]);const min=Math.min(...values),max=Math.max(...values),span=max-min||1,pts=values.map((v,i)=>`${18+i*264/(values.length-1)},${92-(v-min)*68/span}`).join(' ');return `<svg viewBox="0 0 300 118" role="img" aria-label="${label} chart"><path d="M18 94H282M18 20V94" stroke="#f0d7db"/><polyline class="chart-line" points="${pts}"/>${values.map((v,i)=>`<circle class="chart-dot" cx="${18+i*264/(values.length-1)}" cy="${92-(v-min)*68/span}" r="4"/>`).join('')}<text class="chart-label" x="18" y="110">${min} ${escapeHtml(key==='weight'?'kg':'reps')}</text><text class="chart-label" x="282" y="110" text-anchor="end">${max} ${escapeHtml(key==='weight'?'kg':'reps')}</text></svg>`;};
-    const sessions=weekly.map(x=>x.value),sessionBars=`<svg viewBox="0 0 300 118" role="img" aria-label="Completed workouts per week">${weekly.map((x,i)=>{const h=x.value?Math.max(8,x.value*15):2;return `<rect x="${28+i*45}" y="${94-h}" width="24" height="${h}" rx="5" fill="#e31438"/><text class="chart-label" x="${40+i*45}" y="110" text-anchor="middle">${x.label}</text>`}).join('')}</svg>`;
-    $('#progress-charts').innerHTML=`<div class="chart-card"><h3>Exercise trend</h3><select class="select" id="chart-exercise">${unique.map(n=>`<option ${n===chosen?'selected':''}>${escapeHtml(n)}</option>`).join('')}</select><div class="settings-note">Weight · kg</div>${svgChart(rows,'weight',chosen)}<div class="settings-note">Reps</div>${svgChart(rows,'reps',chosen)}</div><div class="chart-card"><h3>Completed sets by muscle group</h3>${muscleBars||'<div class="empty">Complete sets to see muscle group totals.</div>'}</div><div class="chart-card"><h3>Completed workouts per week</h3>${sessions.some(Boolean)?sessionBars:'<div class="empty">Finish workouts to see weekly activity.</div>'}</div>`;
-    $('#chart-exercise').addEventListener('change',e=>{state.progressExercise=e.target.value;renderCharts(vals);});
-  }
-  function renderSettings(){
-    $('#weekly-days').value=String(state.daysPerWeek);
-    $('#workout-duration').value=String(state.workoutDuration||75);
-    $('#equipment-grid').innerHTML=Object.entries(LIFT_EXERCISE_DATA.equipmentLabels).map(([key,label])=>`<label class="equipment-option"><input type="checkbox" value="${key}" ${state.equipment.includes(key)?'checked':''}><span>${label}</span></label>`).join('');
-    $('#weight-steps').innerHTML=Object.entries(LIFT_EXERCISE_DATA.equipmentLabels).map(([key,label])=>`<label class="equipment-option"><span>${label}</span><select class="select weight-step-select" data-equipment="${key}" aria-label="${label} weight increment"><option value="0.5" ${Number(state.weightSteps?.[key]??0.5)===0.5?'selected':''}>0.5</option><option value="1" ${Number(state.weightSteps?.[key]??0.5)===1?'selected':''}>1</option><option value="2" ${Number(state.weightSteps?.[key]??0.5)===2?'selected':''}>2</option><option value="2.5" ${Number(state.weightSteps?.[key]??0.5)===2.5?'selected':''}>2.5</option></select> kg</label>`).join('');
-    $('#plan-summary').textContent=(state.daysPerWeek==='valentin'?'Valentin · 5 workouts':'Adaptive · '+days.length+' workouts')+' · '+Math.min(...days.map(d=>d.minutes))+'–'+Math.max(...days.map(d=>d.minutes))+' min planned per workout';
-  }
-  function updatePlanSettings(){
-    const selected=$$('#equipment-grid input:checked').map(input=>input.value),count=$('#weekly-days').value,duration=Number($('#workout-duration').value),weightSteps=Object.fromEntries($$('.weight-step-select').map(s=>[s.dataset.equipment,Number(s.value)]));
-    if(!selected.length){showToast('Choose at least one equipment type.');return;}
-    if(count===state.daysPerWeek&&selected.join(',')===state.equipment.join(',')&&duration===state.workoutDuration&&JSON.stringify(weightSteps)===JSON.stringify(state.weightSteps||{})){showToast('Your plan is already up to date.');return;}
-    const apply=()=>{
-      state.daysPerWeek=count;state.equipment=selected;state.workoutDuration=duration;state.weightSteps=weightSteps;state.planRevision=(state.planRevision||0)+1;
-      days=buildDays();saveState();renderSettings();updateHome();updateProgressScreen();
-      showToast('Your plan has been updated. Previous workout logs are still saved.');
-    };
-    const hasCurrentLogs=Object.entries(state.logs).some(([key,log])=>Number(key.split('-')[0])===state.week&&log.updatedAt);
-    if(hasCurrentLogs)openConfirm('Update your plan?','Your current week will use the new schedule. Earlier workout entries remain in Progress and in your backups.',apply);else apply();
-  }
-  function updateBackupStatus(){
-    const text=state.lastBackupAt?'Last backup export: '+new Date(state.lastBackupAt).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}):'Last backup export: Never';
-    const old=!state.lastBackupAt||(Date.now()-new Date(state.lastBackupAt).getTime()>7*86400000);
-    ['#backup-status','#backup-status-settings'].forEach(s=>{const el=$(s);if(el){el.textContent=text+(old?' · Please back up this week':'');el.classList.toggle('backup-alert',old);}});
-  }
-  async function exportBackup(){
-    const backup={app:'Lift Log',version:1,exportedAt:new Date().toISOString(),data:state};
-    const name='lift-log-backup-'+new Date().toISOString().slice(0,10)+'.json';
-    const blob=new Blob([JSON.stringify(backup,null,2)],{type:'application/json'});
-    try{
-      if(navigator.share&&window.File){const file=new File([blob],name,{type:'application/json'});if(!navigator.canShare||navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Lift Log backup'});state.lastBackupAt=new Date().toISOString();saveState();showToast('Backup shared. Save it to your Google Drive folder.');return;}}
-    }catch(err){if(err?.name==='AbortError'){showToast('Backup export cancelled.');return;}}
-    const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
-    state.lastBackupAt=new Date().toISOString();saveState();showToast('Backup file downloaded. Save it in Google Drive.');
-  }
-  function importBackup(file){
-    if(!file)return;const reader=new FileReader();reader.onload=()=>{try{const parsed=JSON.parse(reader.result);const next=parsed.data||parsed;if(!next.logs||typeof next.week!=='number')throw new Error('Invalid backup');openConfirm('Restore this backup?','Your current workout log will be replaced by the selected backup.',()=>{state={...fresh(),...next};days=buildDays();saveState();renderSettings();updateHome();updateProgressScreen();showToast('Backup restored.');});}catch(e){showToast('That backup file could not be opened.');}};reader.readAsText(file);
-  }
-  function updateOnline(){const online=navigator.onLine;$('#online-dot').classList.toggle('offline',!online);$('#online-label').textContent=online?'Ready to save on this iPhone':'Offline · Your workout still saves on this iPhone';}
-  function escapeHtml(str){return String(str??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-  function escapeAttr(str){return escapeHtml(str);}
-  $$('.tab').forEach(tab=>tab.addEventListener('click',()=>{setScreen(tab.dataset.screen);if(tab.dataset.screen==='progress-screen')updateProgressScreen();}));
-  $('#back-home').addEventListener('click',closeWorkout);$('#discard-session').addEventListener('click',closeWorkout);
-  $('#finish-button').addEventListener('click',()=>openConfirm('Finish this workout?','Your entries have been saved on this iPhone.',finishWorkout));
-  $('#finish-session').addEventListener('click',()=>openConfirm('Finish this workout?','Your entries have been saved on this iPhone.',finishWorkout));
-  $('#export-settings').addEventListener('click',exportBackup);
-  $('#import-button').addEventListener('click',()=>$('#import-file').click());$('#import-file').addEventListener('change',e=>{importBackup(e.target.files[0]);e.target.value='';});
-  $('#apply-plan').addEventListener('click',updatePlanSettings);
-  $('#guide-close').addEventListener('click',()=>$('#guide-modal').classList.add('hidden'));
-  $('#guide-modal').addEventListener('click',e=>{if(e.target.id==='guide-modal')$('#guide-modal').classList.add('hidden');});
-  window.addEventListener('keydown',e=>{if(e.key==='Escape')$('#guide-modal').classList.add('hidden');});
-  window.addEventListener('online',updateOnline);window.addEventListener('offline',updateOnline);
-  document.addEventListener('visibilitychange',()=>{if(!document.hidden&&restTimer){const button=restTimer.button;const ei=restTimer.ei;if(Date.now()>=restTimer.endAt){$('#timer-'+ei).textContent='Ready';clearInterval(restTimer.interval);restTimer=null;button.textContent='Start rest';button.classList.remove('running');playRestChime();showToast('Rest finished.');}else $('#timer-'+ei).textContent=formatTime(Math.ceil((restTimer.endAt-Date.now())/1000));}});
-  if('serviceWorker' in navigator && location.protocol.startsWith('http')) window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-  renderSettings();updateHome();updateProgressScreen();
-})();
-</script>
+
+
+  <div class="modal-backdrop catalogue-modal hidden" id="catalogue-modal" role="dialog" aria-modal="true" aria-labelledby="catalogue-title"><div class="modal"><div class="row"><h2 id="catalogue-title">Exercise catalogue</h2><button class="back" id="catalogue-close" aria-label="Close catalogue">×</button></div><input class="field catalogue-search" id="catalogue-search" type="search" placeholder="Search exercises" aria-label="Search exercises"><div class="catalogue-filters"><select class="select" id="catalogue-muscle" aria-label="Filter muscle"></select><select class="select" id="catalogue-equipment" aria-label="Filter equipment"></select><select class="select" id="catalogue-level" aria-label="Filter difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div><p class="catalogue-count" id="catalogue-count"></p><div class="catalogue-list" id="catalogue-list"></div></div></div>
+  <div class="modal-backdrop scope-modal hidden" id="scope-modal" role="dialog" aria-modal="true" aria-labelledby="scope-title"><div class="modal"><h2 id="scope-title"></h2><p id="scope-copy"></p><div class="scope-buttons"><button class="btn btn-primary" id="scope-week">This week only</button><button class="btn btn-soft" id="scope-future">This and future weeks</button><button class="btn btn-outline" id="scope-cancel">Cancel</button></div></div></div>
+  <div class="modal-backdrop scope-modal hidden" id="sets-modal" role="dialog" aria-modal="true" aria-labelledby="sets-title"><div class="modal"><h2 id="sets-title">Work sets</h2><p>Three sets are the default. Extra sets should serve your weekly volume, not fill time.</p><select class="select" id="sets-count" aria-label="Work set count"><option>3</option><option>4</option><option>5</option></select><div class="modal-buttons"><button class="btn btn-outline" id="sets-cancel">Cancel</button><button class="btn btn-primary" id="sets-save">Save</button></div></div></div>
+
+<script src="catalogue.js"></script>
+<script src="planner.js"></script>
+<script src="sketches.js"></script>
+<script src="app.js"></script>
+
 </body>
 </html>
