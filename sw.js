@@ -1,9 +1,10 @@
-const CACHE = 'lift-log-shell-v6';
+const CACHE = 'lift-log-shell-v7';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const FILES = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js', './planner.js', './sketches.js', './app.js', './material.css'
+  './catalogue.js?v=15e222b', './planner.js?v=15e222b',
+  './sketches.js?v=15e222b', './app.js?v=15e222b', './material.css?v=15e222b'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
