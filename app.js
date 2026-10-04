@@ -112,7 +112,7 @@
     $('#day-list').innerHTML=days.map((d,i)=>{
       const log=logFor(state.week,d.id),done=!!log?.completed;
       const logged=(log?.exercises?Object.values(log.exercises).flatMap(x=>x.sets||[]).filter(s=>s?.done).length:0);
-      return `<button class="day-card ${d.optional?'optional':''} ${done?'finished':''}" data-day="${d.id}"><span class="day-num">${done?'✓':String(i+1).padStart(2,'0')}</span><span class="day-info"><span class="day-title">${d.optional?'Optional · ':''}${escapeHtml(d.name)}</span><span class="day-meta">${d.exercises.length} exercises · ${d.minutes} min${logged?' · '+logged+' '+(logged===1?'set':'sets')+' logged':''}</span></span><span class="day-arrow">›</span></button>`;
+      return `<button class="day-card ${d.optional?'optional':''} ${done?'finished':''}" data-day="${d.id}" ${state.experience?'':'disabled'}><span class="day-num">${done?'✓':String(i+1).padStart(2,'0')}</span><span class="day-info"><span class="day-title">${d.optional?'Optional · ':''}${escapeHtml(d.name)}</span><span class="day-meta">${d.exercises.length} exercises · ${d.minutes} min${logged?' · '+logged+' '+(logged===1?'set':'sets')+' logged':''}</span></span><span class="day-arrow">›</span></button>`;
     }).join('');
     $$('#day-list [data-day]').forEach(b=>b.addEventListener('click',()=>openWorkout(b.dataset.day)));
   }
@@ -153,6 +153,7 @@
     window.scrollTo({top:0,behavior:'smooth'});
   }
   function openWorkout(dayId){
+    if(!state.experience){showToast('Choose your experience level in Settings first.');return;}
     activeDay=days.find(d=>d.id===dayId);if(!activeDay)return;
     const names=state.exerciseNames?.[dayId]||{};
     activeDay.exercises.forEach(e=>{const name=names[e.id],equipment=equipmentFor(name,guideFor(e));if(name&&equipment&&state.equipment.includes(equipment)&&name!==e.name){e.name=name;e.equipment=equipment;e.note='';e.alternativeSelected=true;e.estimatedWeight=comparableLoad(e);e.sets.forEach(s=>s.weight=null);}});

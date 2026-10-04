@@ -3,3 +3,4 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 @media(max-width:380px){.app{padding-left:12px;padding-right:12px}.exercise{padding:12px}.step-button{width:24px}.stepper .field{flex-basis:48px;width:48px;max-width:48px}.set-row,.set-head{gap:3px}.rest-controls{gap:6px}.exercise-top{gap:6px}.target{padding:6px;font-size:10px}.exercise-title h3{font-size:15px}.catalogue-filters{grid-template-columns:1fr}.equipment-option{padding:8px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 .anatomy-plate{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%;height:auto;margin:14px 0}.anatomy-pose{display:block;width:100%;height:auto;border-radius:16px;background:#f7f3ed}.guide-modal .modal{max-height:85dvh;overflow:auto}
+.day-card:disabled{opacity:.58;cursor:not-allowed}
