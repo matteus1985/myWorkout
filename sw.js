@@ -1,13 +1,30 @@
-const CACHE = 'lift-log-shell-v7';
+const CACHE = 'lift-log-shell-v8';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const FILES = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=15e222b', './planner.js?v=15e222b',
-  './sketches.js?v=15e222b', './app.js?v=15e222b', './material.css?v=15e222b'
+  './catalogue.js?v=liftlog-20261005-316art', './planner.js?v=liftlog-20261005-316art',
+  './sketches.js?v=liftlog-20261005-316art', './app.js?v=liftlog-20261005-316art', './material.css?v=liftlog-20261005-316art'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
+});
+self.addEventListener('message', event => {
+  if(event.data?.type!=='PREPARE_EXERCISE_ART'||!Array.isArray(event.data.urls))return;
+  const urls=event.data.urls.map(value=>new URL(value,BASE).href);
+  const client=event.source;
+  event.waitUntil((async()=>{
+    const cache=await caches.open(CACHE);let ready=0,failed=0;
+    for(let i=0;i<urls.length;i+=12){
+      const batch=urls.slice(i,i+12);
+      await Promise.all(batch.map(async url=>{
+        try{if(await cache.match(url)){ready++;return;}const response=await fetch(url);if(!response.ok)throw Error('Image unavailable');await cache.put(url,response.clone());ready++;}
+        catch{failed++;}
+      }));
+      client?.postMessage({type:'EXERCISE_ART_PROGRESS',ready,total:urls.length,failed});
+    }
+    client?.postMessage({type:'EXERCISE_ART_READY',ready,total:urls.length,failed});
+  })());
 });
 self.addEventListener('activate', event => {
   event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key.startsWith(CACHE_PREFIX) && key !== CACHE).map(key => caches.delete(key)))).then(() => self.clients.claim()));

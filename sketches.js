@@ -5,10 +5,10 @@ window.LIFT_SKETCHES=(()=>{
   function capsule(a,b,r1,r2,highlight=false){const n=mul([-sub(b,a)[1],sub(b,a)[0]],1/(len(sub(b,a))||1)),a1=add(a,mul(n,r1)),a2=add(a,mul(n,-r1)),b1=add(b,mul(n,r2)),b2=add(b,mul(n,-r2));return `<path class="limb" d="M${xy(a1)}L${xy(b1)}Q${xy(add(b,mul(unit(sub(b,a)),r2)))} ${xy(b2)}L${xy(a2)}Q${xy(add(a,mul(unit(sub(a,b)),r1)))} ${xy(a1)}Z"/>${highlight?`<path class="muscle" d="M${xy(add(a,mul(n,r1*.5)))}Q${xy(add(mid(a,b),mul(n,r1*.8)))} ${xy(add(b,mul(n,r2*.3)))}L${xy(add(b,mul(n,-r2*.3)))}Q${xy(add(mid(a,b),mul(n,-r1*.5)))} ${xy(add(a,mul(n,-r1*.5)))}Z"/>`:''}${line(add(a,mul(n,r1*.35)),add(b,mul(n,r2*.2)),'anatomy')}`;}
   function anatomy(q,item){
     const u=unit(sub(q.h,q.s)),n=[-u[1],u[0]],sh1=add(q.s,mul(n,31)),sh2=add(q.s,mul(n,-31)),hp1=add(q.h,mul(n,23)),hp2=add(q.h,mul(n,-23));
-    const chest=item.primary.includes('Chest'),back=item.primary.includes('Back'),arms=/Biceps|Triceps|delts/.test(item.primary.join(' ')),quad=item.primary.includes('Quadriceps'),ham=item.primary.includes('Hamstrings'),calf=item.primary.includes('Calves'),abs=item.primary.includes('Abs'),hip=item.primary.includes('Glutes');
+    const chest=item.primary.includes('Chest'),back=item.primary.includes('Back'),arms=item.primary.some(m=>m==='Biceps'||m==='Triceps'),forearms=item.primary.includes('Forearms'),delts=item.primary.some(m=>/delts|Shoulders/i.test(m)),traps=item.primary.some(m=>/traps/i.test(m)),quad=item.primary.includes('Quadriceps'),ham=item.primary.includes('Hamstrings'),calf=item.primary.includes('Calves'),abs=item.primary.includes('Abs'),hip=item.primary.includes('Glutes');
     const torso=`M${xy(sh1)}Q${xy(add(mid(sh1,hp1),mul(n,7)))} ${xy(hp1)}Q${xy(add(q.h,mul(u,10)))} ${xy(hp2)}Q${xy(add(mid(sh2,hp2),mul(n,-7)))} ${xy(sh2)}Q${xy(add(q.s,mul(u,-10)))} ${xy(sh1)}Z`;
     const angle=Math.atan2(u[1],u[0])*180/Math.PI-90,head=add(q.s,mul(u,-38));
-    const armsSvg=[0,1].map(i=>capsule(i?sh2:sh1,q.e[i],11,8,arms)+capsule(q.e[i],q.w[i],8,5,false)+`<ellipse class="skin" cx="${q.w[i][0]}" cy="${q.w[i][1]}" rx="6" ry="8"/>`).join('');
+    const armsSvg=[0,1].map(i=>capsule(i?sh2:sh1,q.e[i],11,8,arms)+capsule(q.e[i],q.w[i],8,5,forearms)+`<ellipse class="skin" cx="${q.w[i][0]}" cy="${q.w[i][1]}" rx="6" ry="8"/>`).join('');
     const legsSvg=[0,1].map(i=>capsule(i?hp2:hp1,q.k[i],15,10,quad||ham)+capsule(q.k[i],q.a[i],10,6,calf)+`<path class="shoe" d="M${q.a[i][0]-6} ${q.a[i][1]-5}q8-2 13 7l14 5q3 8-8 8h-21z"/>`).join('');
     return `${legsSvg}<path class="skin" d="${torso}"/><g transform="translate(${q.s[0]} ${q.s[1]}) rotate(${angle})"><path class="${chest||back?'muscle':'anatomy-fill'}" d="M-26 8q12-7 24 3v23q-20 2-26-12zM26 8q-12-7-24 3v23q20 2 26-12z"/><path class="anatomy" d="M0 5v69M-22 35q10 7 20 0M22 35q-10 7-20 0M-18 48h13M5 48h13M-16 61h11M5 61h11"/>${abs?'<path class="muscle" d="M-13 38h26v34h-26z"/>':''}<path class="shorts" d="M-23 75h46l4 23-25 4-2-10-2 10-25-4z"/>${hip?'<path class="muscle" d="M-21 78h42v18h-42z"/>':''}</g>${capsule(add(q.s,mul(u,-9)),add(q.s,mul(u,-24)),8,7)}<g transform="translate(${head[0]} ${head[1]}) rotate(${angle})"><ellipse class="skin" rx="14" ry="19"/><path class="hair" d="M-14-3q-3-24 20-17q10 4 8 15l-5-6-14 2z"/><path class="anatomy" d="M5-3h3m-1 3 3 5-5 1m-5 5h8"/></g>${armsSvg}`;
   }
@@ -102,5 +102,21 @@ window.LIFT_SKETCHES=(()=>{
     const frame=end=>{const a=pose(item,end),suffix=end?'Finish':'Start';return `<svg class="anatomy-pose" viewBox="0 0 460 490" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(item.name)} ${end?'finish':'start'} position"><title>${esc(item.name)} — ${end?'finish':'start'} position</title><defs><pattern id="pencil${suffix}" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 5 5 0" stroke="#534e4a" stroke-width=".3" opacity=".2"/></pattern><linearGradient id="skinShade${suffix}"><stop stop-color="#f0e9e1"/><stop offset=".5" stop-color="#d5cec7"/><stop offset="1" stop-color="#ebe5de"/></linearGradient><marker id="sketchArrow${suffix}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M0 0 10 5 0 10z" fill="#d32642"/></marker></defs><style>.skin,.limb{fill:url(#skinShade${suffix});stroke:#514b47;stroke-width:1.8;stroke-linejoin:round}.limb{fill:url(#skinShade${suffix})}.muscle{fill:#d32642;fill-opacity:.42;stroke:#a62c40;stroke-width:.8}.anatomy{fill:none;stroke:#776f68;stroke-width:1;stroke-linecap:round}.anatomy-fill{fill:url(#pencil${suffix});stroke:#776f68;stroke-width:.9}.shorts{fill:#545356;stroke:#302f33;stroke-width:1.5}.hair{fill:#514d48}.shoe{fill:#c8c4bf;stroke:#514b47;stroke-width:1.5}.metal{fill:none;stroke:#77777a;stroke-width:6;stroke-linecap:round;stroke-linejoin:round}.pad{fill:none;stroke:#535256;stroke-width:12;stroke-linecap:round}.pad-fill{fill:#565459;stroke:#333;stroke-width:1}.handle{fill:none;stroke:#48474b;stroke-width:5;stroke-linecap:round}.plate{fill:#77767a;stroke:#414046;stroke-width:2}.cable{fill:none;stroke:#58575c;stroke-width:2}.band{fill:none;stroke:#9f4555;stroke-width:4}.stack{fill:#aaa5a0;stroke:#555;stroke-width:1}.arrow{fill:none;stroke:#d32642;stroke-width:3;marker-end:url(#sketchArrow${suffix})}.ground{stroke:#bdb6ae;stroke-width:1}.caption{font:700 16px system-ui;fill:#383234}</style><rect width="460" height="490" rx="18" fill="#f7f3ed"/><text class="caption" x="24" y="32">${end?'FINISH':'START'}</text><path class="ground" d="M25 442h410"/>${a.station}${anatomy(a.q,item)}${equipment(item,a.q)}${end?a.arrow:''}<text x="230" y="475" text-anchor="middle" font-family="system-ui" font-size="12" fill="#625c56">${esc(item.name)} · ${esc(item.primary.join(' / '))}</text></svg>`;};
     return `<div class="anatomy-plate">${frame(false)}${frame(true)}</div>`;
   }
-  return {render,pose};
+  function thumbnail(item){
+    let svg=render(item).match(/<svg[\s\S]*?<\/svg>/)?.[0]||'';if(!svg)return '';
+    const primary=item.primary||[],back=primary.includes('Back'),chest=primary.includes('Chest'),delt=primary.some(m=>/delts|Shoulders/i.test(m)),traps=primary.some(m=>/traps/i.test(m));
+    if(back&&!chest){
+      const pec=svg.indexOf('<path class="muscle" d="M-26 8');if(pec>=0)svg=svg.slice(0,pec)+svg.slice(pec).replace('class="muscle"','class="anatomy-fill"');
+      svg=svg.replace('<path class="anatomy" d="M0 5','<path class="muscle" d="M-27 16q13-9 27 0v38q-15 8-27-7zM27 16q-13-9-27 0v38q15 8 27-7z"/><path class="anatomy" d="M0 5');
+    }
+    if(traps)svg=svg.replace('<path class="anatomy" d="M0 5','<path class="muscle" d="M-15-3 0 12 15-3 21 15 0 24-21 15z"/><path class="anatomy" d="M0 5');
+    if(delt){
+      const q=pose(item,false).q,u=unit(sub(q.h,q.s)),n=[-u[1],u[0]],sh1=add(q.s,mul(n,31)),sh2=add(q.s,mul(n,-31));
+      const circle=a=>'<ellipse class="muscle" cx="'+a[0]+'" cy="'+a[1]+'" rx="12" ry="10"/>';
+      const head=add(q.s,mul(u,-38)),headTag='<g transform="translate('+head[0]+' '+head[1]+')';
+      svg=svg.replace(headTag,circle(sh1)+circle(sh2)+headTag);
+    }
+    return svg;
+  }
+  return {render,pose,thumbnail};
 })();

@@ -8,13 +8,13 @@ GET STARTED ON IPHONE
 3. Open Lift Log from the new Home Screen icon.
 4. In Settings, choose your experience, weekly schedule and available equipment.
 
-The app offers adaptive 3–6 day plans and the separate five-day Valentin plan. Workout targets use completed sets in your history. End week reviews missed sessions and prepares the next week's targets. Exercise guides contain original, offline vector sketches and short form instructions.
+The app offers adaptive 3–6 day plans and the separate five-day Valentin plan. Adaptive settings include experience, equipment and up to two priority muscle groups. Workout targets use completed sets in your history, and new exercises show a logged or estimated starting load. End week reviews missed sessions and prepares the next week's targets. Exercise guides contain original vector sketches and short form instructions.
 
 BACK UP YOUR RECORDS
 Workout history is saved on this iPhone. In Settings, tap Export Backup and save the JSON file in Google Drive or Files regularly. To restore, download the backup to the iPhone, tap Import Backup, and choose the file. A backup helps recover records if Safari data is cleared or you switch phones.
 
 ABOUT THE TRAINING TARGETS
-Adaptive plans use three working sets by default, usually 6–12 repetitions for compound lifts and 10–20 for accessories, with longer rests for heavier compound work. The app suggests gradual rep increases and only suggests a load increase when logged performance meets the progression rule. These are general training guidelines; choose loads and exercises you can perform with controlled, comfortable technique.
+Adaptive plans use three working sets by default, usually 6–12 repetitions for compound lifts and 10–20 for accessories, with longer rests for heavier compound work. Optional drop sets may be offered for a suitable cable or machine accessory in a shorter session. The app suggests gradual rep increases and only suggests a load increase when logged performance meets the progression rule. These are general training guidelines; choose loads and exercises you can perform with controlled, comfortable technique.
 
 FILES
-Keep index.html, app.js, catalogue.js, planner.js, sketches.js, material.css, manifest.json, sw.js and icon.svg together when hosting the app. The service worker caches the app files for offline use and updates its cache when the app is updated.
+Keep index.html, app.js, catalogue.js, planner.js, sketches.js, material.css, manifest.json, sw.js, icon.svg and media/exercises together when hosting the app. The folder contains one small SVG sketch per catalogue exercise. The service worker downloads these in small groups after the first online visit and shows progress in Settings. To regenerate them from catalogue data, run node generate-exercise-art.js. Keep these images available at the same paths for offline use.
