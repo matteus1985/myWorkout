@@ -51,6 +51,22 @@ window.LIFT_ENGINE=(()=>{
     return {id,catalogId:item.id,name:item.name,muscle:item.primary.join(' · '),equipment:item.equipment,pattern:item.pattern,level:item.level,unit:item.unit,sets:planned.sets,rest:compound.has(item.pattern)?150:90,note:'',estimated:planned.estimated,estimateSource:planned.estimateSource||null};
   }
   function minutes(exercises){return Math.ceil((8+exercises.reduce((s,e)=>s+e.sets.length*.75+(e.sets.length-1)*e.rest/60+1.5,0))/5)*5;}
+  function removeLegAccessory(days,preferred,order){
+    const groups=new Set(['Quadriceps','Hamstrings','Glutes','Calves']);
+    const dayOrder=[...preferred,...days.map(d=>d.id).filter(id=>!preferred.includes(id))];
+    for(const pattern of order)for(const dayId of dayOrder){const day=days.find(d=>d.id===dayId);if(!day)continue;const index=day.exercises.findIndex(e=>e.pattern===pattern);if(index<0)continue;const exercise=day.exercises[index],item=C.find(exercise.catalogId),primary=(item?.primary||[]).filter(m=>groups.has(m));
+      const keepsFrequency=primary.every(m=>new Set(days.flatMap(d=>d.exercises.filter(e=>e!==exercise&&(C.find(e.catalogId)?.primary||[]).includes(m)).map(()=>d.id))).size>=2);
+      if(keepsFrequency){day.exercises.splice(index,1);return {dayId,pattern,exercise};}}
+    return null;
+  }
+  function movePattern(days,fromId,toId,pattern){const from=days.find(d=>d.id===fromId),to=days.find(d=>d.id===toId);if(!from||!to)return;const index=from.exercises.findIndex(e=>e.pattern===pattern);if(index>=0)to.exercises.push(from.exercises.splice(index,1)[0]);}
+  function rebalance(days,count){
+    if(count===3){removeLegAccessory(days,['d3','d2'],['kneeExtension','legCurl','seatedCalf','calfRaise']);movePattern(days,'d2','d3','triceps');}
+    if(count===4){const removed=removeLegAccessory(days,['d4','d3','d2'],['abduction','kneeExtension','legCurl','seatedCalf','calfRaise']);if(removed?.pattern==='abduction')movePattern(days,'d3','d4','seatedCalf');}
+    if(count===5){const removed=removeLegAccessory(days,['d5','d1','d2'],['abduction','kneeExtension','legCurl','seatedCalf','calfRaise']);if(removed?.pattern==='abduction')movePattern(days,'d1','d5','seatedCalf');movePattern(days,'d1','d3','triceps');movePattern(days,'d1','d4','crunch');}
+    if(count===6){removeLegAccessory(days,['d6','d3'],['abduction','seatedCalf','kneeExtension','legCurl','calfRaise']);}
+    return days;
+  }
   function choose(pattern,state,index){
     const level=state.experience||'beginner',allowed=C.levels.indexOf(level),list=C.exercises.filter(e=>e.pattern===pattern&&state.equipment.includes(e.equipment));
     const eligible=list.filter(e=>C.levels.indexOf(e.level)<=allowed),pool=eligible.length?eligible:list.filter(e=>e.level==='beginner');
@@ -83,9 +99,13 @@ window.LIFT_ENGINE=(()=>{
         let increased=0;for(const {day,e} of slots){if(increased>=2)break;if(e!==addedBaseline){const trial=day.exercises.map(x=>x===e?{...x,sets:[...x.sets,{...x.sets.at(-1)}]}:x);if(e.sets.length<4&&minutes(trial)<=90){e.sets.push({...e.sets.at(-1)});increased++;}}day.priorityMuscles=[...new Set([...(day.priorityMuscles||[]),muscle])];}
         days.forEach(day=>{const index=day.exercises.findIndex(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle));if(index>0){const [e]=day.exercises.splice(index,1);day.exercises.unshift(e);}});
       }
+      rebalance(days,Number(state.daysPerWeek)||5);
+      for(const muscle of priorities)days.forEach(day=>{const index=day.exercises.findIndex(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle));if(index>0){const [e]=day.exercises.splice(index,1);day.exercises.unshift(e);}});
+      days.forEach(day=>{day.priorityMuscles=[];for(const muscle of priorities)if(day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle)))day.priorityMuscles.push(muscle);});
     }
     const edits=state.persistentEdits?.[programId]||{};
-    days.forEach(day=>{const edit=edits[day.id];if(edit){day.exercises=day.exercises.filter(e=>!(edit.remove||[]).includes(e.id));for(const saved of edit.add||[]){const item=C.find(saved.catalogId);if(item)day.exercises.push(descriptor(item,saved.id,state,{sets:saved.sets||3}));}for(const saved of edit.replace||[]){const idx=day.exercises.findIndex(e=>e.id===saved.id),item=C.find(saved.catalogId);if(idx>=0&&item)day.exercises[idx]=descriptor(item,saved.id,state,{sets:saved.sets||3});}for(const saved of edit.setCounts||[]){const e=day.exercises.find(e=>e.id===saved.id);if(e){while(e.sets.length<saved.count)e.sets.push({...e.sets.at(-1)});e.sets=e.sets.slice(0,saved.count);}}}day.minutes=minutes(day.exercises);day.optionalDropSet=programId!=='valentin'&&day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;});
+    const removed=new Set(Object.values(edits).flatMap(edit=>edit.remove||[])),replacements=new Map(Object.values(edits).flatMap(edit=>edit.replace||[]).map(x=>[x.id,x])),setCounts=new Map(Object.values(edits).flatMap(edit=>edit.setCounts||[]).map(x=>[x.id,x.count]));
+    days.forEach(day=>{const edit=edits[day.id]||{};day.exercises=day.exercises.filter(e=>!removed.has(e.id));for(const saved of edit.add||[]){const item=C.find(saved.catalogId);if(item)day.exercises.push(descriptor(item,saved.id,state,{sets:saved.sets||3}));}day.exercises=day.exercises.map(e=>{const replacement=replacements.get(e.id),item=replacement&&C.find(replacement.catalogId);if(item)e=descriptor(item,e.id,state,{sets:replacement.sets||3});const count=setCounts.get(e.id);if(count){while(e.sets.length<count)e.sets.push({...e.sets.at(-1)});e.sets=e.sets.slice(0,count);}return e;});day.minutes=minutes(day.exercises);day.optionalDropSet=programId!=='valentin'&&day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;});
     return {version:3,programId,week:state.week,valentinCycle:programId==='valentin'?((state.valentinWeek||1)-1)%4+1:null,experience:state.experience,days,missingPatterns:[...new Set(missing)]};
   }
   function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
