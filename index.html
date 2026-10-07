@@ -21,14 +21,10 @@
     html,body{width:100%;max-width:100%;overflow-x:hidden}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
-  <link rel="stylesheet" href="material.css?v=liftlog-20261006-distinct-exercise-actions">
+  <link rel="stylesheet" href="material.css?v=liftlog-20261007-sticky-workout-header">
 </head>
 <body>
   <div class="app">
-    <header class="topbar">
-      <div class="week-pill" id="week-pill">WEEK 20</div>
-    </header>
-
     <main>
       <section class="screen active" id="home-screen">
         <div class="home-heading">
@@ -42,7 +38,7 @@
           <button class="btn btn-primary" id="start-next">Start workout <span aria-hidden="true">→</span></button>
         </div>
         <div class="mini-stats">
-          <div class="stat"><strong id="week-sessions">0</strong><span>workouts this week</span></div>
+          <div class="stat"><strong id="week-sessions">0</strong><span>workout days this week</span></div>
           <div class="stat"><strong id="week-exercises">0</strong><span>sets logged this week</span></div>
         </div>
         <div class="section-head"><h2>Your plan</h2><span id="plan-count">5 days</span></div>
@@ -53,12 +49,14 @@
       </section>
 
       <section class="screen" id="workout-screen">
-        <div class="screen-head">
-          <button class="back" id="back-home" aria-label="Back to workouts">‹</button>
-          <div><div class="eyebrow" id="workout-day-label">DAY 1</div><h2 id="workout-title">Upper Strength</h2></div>
-          <button class="btn btn-outline btn-small" id="finish-button">Finish</button>
+        <div class="workout-sticky-head">
+          <div class="screen-head">
+            <button class="back" id="back-home" aria-label="Back to workouts">‹</button>
+            <div><div class="eyebrow" id="workout-day-label">DAY 1</div><h2 id="workout-title">Upper Strength</h2></div>
+            <button class="btn btn-primary btn-small" id="finish-button">Finish</button>
+          </div>
+          <div class="session-banner"><div class="progress-bar" role="progressbar" aria-label="Workout progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="session-progress" style="width:0%"></i></div></div>
         </div>
-        <div class="session-banner"><div class="progress-bar" role="progressbar" aria-label="Workout progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="session-progress" style="width:0%"></i></div><p id="warmup-text"></p></div>
         <div class="exercise-list" id="exercise-list"></div><button class="btn btn-outline end-week" id="add-exercise">＋ Add exercise</button>
       </section>
 
@@ -69,8 +67,6 @@
           <div class="stat"><strong id="all-sessions">0</strong><span>workouts completed</span></div>
           <div class="stat"><strong id="all-sets">0</strong><span>sets logged</span></div>
         </div>
-        <div class="section-head"><h2>This week</h2><span id="progress-week-label">Week 20</span></div>
-        <div id="week-history" class="history-list"></div>
         <div class="section-head"><h2>Training charts</h2></div>
         <div id="progress-charts" class="chart-list"></div>
 
@@ -128,7 +124,6 @@
     <button class="tab" data-screen="progress-screen"><span class="tab-icon">▥</span><span>Progress</span></button>
     <button class="tab" data-screen="settings-screen"><span class="tab-icon">⚙</span><span>Settings</span></button>
   </nav>
-  <div class="session-foot hidden" id="session-foot"><div><button class="btn btn-outline" id="discard-session">Close</button><button class="btn btn-primary" id="finish-session">Finish workout</button></div></div>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
   <div class="modal-backdrop hidden" id="confirm-modal"><div class="modal"><h2 id="modal-title">Finish this workout?</h2><p id="modal-copy">Your entries have been saved on this iPhone.</p><div class="modal-buttons"><button class="btn btn-outline" id="modal-cancel">Keep going</button><button class="btn btn-primary" id="modal-confirm">Finish</button></div></div></div>
   <div class="modal-backdrop guide-modal hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-title"><div class="modal"><div class="row"><h2 id="guide-title">Exercise guide</h2><button class="back" id="guide-close" aria-label="Close exercise guide">×</button></div><div class="exercise-guide" id="guide-content"></div></div></div>
@@ -138,10 +133,10 @@
 
   <div class="modal-backdrop catalogue-modal hidden" id="catalogue-modal" role="dialog" aria-modal="true" aria-labelledby="catalogue-title"><div class="modal"><div class="row"><h2 id="catalogue-title">Exercise catalogue</h2><button class="back" id="catalogue-close" aria-label="Close catalogue">×</button></div><input class="field catalogue-search" id="catalogue-search" type="search" placeholder="Search exercises" aria-label="Search exercises"><div class="catalogue-filters"><select class="select" id="catalogue-muscle" aria-label="Filter muscle"></select><select class="select" id="catalogue-equipment" aria-label="Filter equipment"></select><select class="select" id="catalogue-level" aria-label="Filter difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div><p class="catalogue-count" id="catalogue-count"></p><div class="catalogue-list" id="catalogue-list"></div></div></div>
   <div class="modal-backdrop scope-modal hidden" id="scope-modal" role="dialog" aria-modal="true" aria-labelledby="scope-title"><div class="modal"><h2 id="scope-title"></h2><p id="scope-copy"></p><div class="scope-buttons"><button class="btn btn-primary" id="scope-week">This week only</button><button class="btn btn-soft" id="scope-future">This and future weeks</button><button class="btn btn-outline" id="scope-cancel">Cancel</button></div></div></div>
-<script src="catalogue.js?v=liftlog-20261006-distinct-exercise-actions"></script>
-<script src="planner.js?v=liftlog-20261006-distinct-exercise-actions"></script>
-<script src="sketches.js?v=liftlog-20261006-distinct-exercise-actions"></script>
-<script src="app.js?v=liftlog-20261006-distinct-exercise-actions"></script>
+<script src="catalogue.js?v=liftlog-20261007-sticky-workout-header"></script>
+<script src="planner.js?v=liftlog-20261007-sticky-workout-header"></script>
+<script src="sketches.js?v=liftlog-20261007-sticky-workout-header"></script>
+<script src="app.js?v=liftlog-20261007-sticky-workout-header"></script>
 
 </body>
 </html>

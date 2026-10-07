@@ -40,3 +40,8 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .alternatives-button:hover{background:#39343a;border-color:#8c7b85;color:#fff}
 .rest-controls{padding-left:7px;border-left:1px solid #49434a}
 @media(max-width:380px){.icon-action{width:34px;height:34px;min-height:34px}.remove-icon-button svg{width:16px;height:16px}.alternatives-button svg{width:17px;height:17px}.rest-controls{padding-left:5px}}
+.workout-sticky-head{position:sticky;top:0;z-index:8;margin:0 0 12px;padding:10px 0 8px;background:var(--bg)}
+.workout-sticky-head .screen-head{position:static;margin:0;padding:0 0 8px;background:transparent}
+.screen-head .btn-primary{background:#ee2d4d;color:#fff}
+.workout-sticky-head .session-banner{padding:0;margin:0;border:0;background:transparent}
+.session-banner .progress-bar{height:4px;border-radius:99px}
