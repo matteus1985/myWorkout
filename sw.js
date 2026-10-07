@@ -1,10 +1,10 @@
-const CACHE = 'lift-log-shell-v14';
+const CACHE = 'lift-log-shell-v15';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const FILES = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261007-sticky-workout-header', './planner.js?v=liftlog-20261007-sticky-workout-header',
-  './sketches.js?v=liftlog-20261007-sticky-workout-header', './app.js?v=liftlog-20261007-sticky-workout-header', './material.css?v=liftlog-20261007-sticky-workout-header'
+  './catalogue.js?v=liftlog-20261007-fixed-workout-header', './planner.js?v=liftlog-20261007-fixed-workout-header',
+  './sketches.js?v=liftlog-20261007-fixed-workout-header', './app.js?v=liftlog-20261007-fixed-workout-header', './material.css?v=liftlog-20261007-fixed-workout-header'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(FILES)).then(() => self.skipWaiting()));
