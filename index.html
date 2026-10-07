@@ -21,7 +21,7 @@
     html,body{width:100%;max-width:100%;overflow-x:hidden}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
-  <link rel="stylesheet" href="material.css?v=liftlog-20261007-fixed-workout-header">
+  <link rel="stylesheet" href="material.css?v=liftlog-20261007-image-filter">
 </head>
 <body>
   <div class="app">
@@ -42,7 +42,6 @@
           <div class="stat"><strong id="week-exercises">0</strong><span>sets logged this week</span></div>
         </div>
         <div class="section-head"><h2>Your plan</h2><span id="plan-count">5 days</span></div>
-        <div class="panel hidden" id="valentin-cardio"><strong>Weekly cardio plan</strong><p class="small-print">Monday, Wednesday, Friday: incline walk 15 min at 3.2 mph / 6%. Tuesday and Saturday: 10,000 steps. Thursday and Sunday: relaxed 45 min walk.</p></div>
         <div class="panel setup-panel hidden" id="setup-level"><strong>Choose your experience level</strong><p>Your level helps us choose appropriate exercises. Your logged weights do not determine it.</p><button class="btn btn-primary btn-small" id="choose-level">Choose level</button></div>
         <div class="days" id="day-list"></div><p class="volume-note hidden" id="volume-warning"></p><details class="panel"><summary>Weekly training volume</summary><div class="volume-grid" id="week-volume"></div><p class="small-print">Direct work sets are shown. Compound exercises also train supporting muscles.</p></details><button class="btn btn-primary end-week" id="end-week">End week</button>
         <div class="status-line"><i class="dot" id="online-dot"></i><span id="online-label">Ready to save on this iPhone</span></div>
@@ -58,6 +57,14 @@
           <div class="session-banner"><div class="progress-bar" role="progressbar" aria-label="Workout progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="session-progress" style="width:0%"></i></div></div>
         </div>
         <div class="exercise-list" id="exercise-list"></div><button class="btn btn-outline end-week" id="add-exercise">＋ Add exercise</button>
+        <div class="rest-dock hidden" id="rest-dock" role="region" aria-label="Rest timer">
+          <div class="rest-dock-status"><span id="rest-label">Rest ready</span><strong id="rest-next-exercise"></strong></div>
+          <div class="rest-dock-controls"><output class="timer" id="rest-display" role="timer" aria-label="Rest time">02:30</output>
+            <button type="button" class="timer-icon-button rest-step" data-rest-step="-1" aria-label="Decrease rest duration by 10 seconds" title="Decrease rest duration"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg></button>
+            <button type="button" class="timer-icon-button rest-step" data-rest-step="1" aria-label="Increase rest duration by 10 seconds" title="Increase rest duration"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></button>
+            <button type="button" class="timer-icon-button rest-button" id="rest-toggle" aria-label="Start rest timer" title="Start rest"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7z"/></svg></button>
+          </div>
+        </div>
       </section>
 
       <section class="screen" id="progress-screen">
@@ -80,16 +87,17 @@
             <strong>Your training plan</strong>
             <p>Choose your weekly schedule and the equipment you can use. Workouts are kept under 90 minutes.</p>
             <label class="settings-label" for="weekly-days">Workouts per week</label>
-            <select class="select" id="weekly-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option><option value="valentin">Valentin</option></select>
+            <select class="select" id="weekly-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option></select>
             <label class="settings-label" for="experience-level">Experience level</label><select class="select" id="experience-level"><option value="">Choose your level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select><p class="settings-note">Beginner: learning stable movement and technique. Intermediate: confident with compound lifts and consistent training. Advanced: extensive practice and control of demanding variations.</p>
-            <div class="settings-label">Prioritize up to 2 muscle groups</div><p class="settings-note">Priority muscles are trained earlier and receive a small volume increase in adaptive plans. Valentin stays unchanged.</p><div class="equipment-grid" id="priority-muscles"></div>
+            <div class="settings-label">Prioritize up to 2 muscle groups</div><p class="settings-note">Priority muscles are trained earlier and receive a small volume increase.</p><div class="equipment-grid" id="priority-muscles"></div>
             <div class="settings-label">Weight button steps</div><div id="weight-steps" class="equipment-grid"></div>
-            <div class="settings-label">Available equipment</div><div class="settings-note">The Valentin plan keeps the equipment listed in its spreadsheet; this filter applies to adaptive plans.</div>
+            <div class="settings-label">Available equipment</div>
             <div class="equipment-grid" id="equipment-grid"></div>
             <div class="settings-note">Bodyweight pulling exercises require a secure bar. Session length follows the planned work and rest, with no time to fill.</div>
             <button class="btn btn-primary btn-small" id="apply-plan">Update plan</button>
             <div class="settings-note" id="plan-summary"></div>
-            <div class="settings-note" id="art-cache-status">Exercise sketches prepare for offline use after the first online visit.</div>
+            <div class="settings-note" id="art-cache-status">Exercise images prepare for offline use after the first online visit.</div>
+            <div class="settings-note image-credit"><a href="https://repdb.co" target="_blank" rel="noopener noreferrer">Exercise data by RepDB (repdb.co)</a></div>
           </div>
           <div class="tool-card">
             <strong>Backup your workout history</strong>
@@ -133,10 +141,11 @@
 
   <div class="modal-backdrop catalogue-modal hidden" id="catalogue-modal" role="dialog" aria-modal="true" aria-labelledby="catalogue-title"><div class="modal"><div class="row"><h2 id="catalogue-title">Exercise catalogue</h2><button class="back" id="catalogue-close" aria-label="Close catalogue">×</button></div><input class="field catalogue-search" id="catalogue-search" type="search" placeholder="Search exercises" aria-label="Search exercises"><div class="catalogue-filters"><select class="select" id="catalogue-muscle" aria-label="Filter muscle"></select><select class="select" id="catalogue-equipment" aria-label="Filter equipment"></select><select class="select" id="catalogue-level" aria-label="Filter difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div><p class="catalogue-count" id="catalogue-count"></p><div class="catalogue-list" id="catalogue-list"></div></div></div>
   <div class="modal-backdrop scope-modal hidden" id="scope-modal" role="dialog" aria-modal="true" aria-labelledby="scope-title"><div class="modal"><h2 id="scope-title"></h2><p id="scope-copy"></p><div class="scope-buttons"><button class="btn btn-primary" id="scope-week">This week only</button><button class="btn btn-soft" id="scope-future">This and future weeks</button><button class="btn btn-outline" id="scope-cancel">Cancel</button></div></div></div>
-<script src="catalogue.js?v=liftlog-20261007-fixed-workout-header"></script>
-<script src="planner.js?v=liftlog-20261007-fixed-workout-header"></script>
-<script src="sketches.js?v=liftlog-20261007-fixed-workout-header"></script>
-<script src="app.js?v=liftlog-20261007-fixed-workout-header"></script>
+<script src="catalogue.js?v=liftlog-20261007-image-filter"></script>
+<script src="planner.js?v=liftlog-20261007-image-filter"></script>
+<script src="sketches.js?v=liftlog-20261007-image-filter"></script>
+<script src="exercise-art.js?v=liftlog-20261007-image-filter"></script>
+<script src="app.js?v=liftlog-20261007-image-filter"></script>
 
 </body>
 </html>
