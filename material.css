@@ -104,3 +104,56 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .endweek-modal .modal{max-height:88dvh;overflow:auto}
 #finish-button:disabled{background:#382a30;color:#ff9bad;opacity:1}
 @media(max-width:380px){.progress-summary{gap:5px}.progress-summary .stat{padding:10px 8px}.progress-summary .stat strong{font-size:18px}.muscle-volume-title{font-size:11px}.consistency-grid{gap:3px}}
+
+/* Progress: focused muscle map and two coordinated charts. */
+.progress-period{margin:0 0 14px;background:#242328;border-color:#35343b}
+.progress-period button[aria-pressed="true"]{background:#7657d8;color:#fff}
+.progress-card{min-width:0;margin:12px 0;padding:15px;background:#222225;border:1px solid #39383f;border-radius:20px}
+.progress-card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.progress-card-head h2{font-size:16px;letter-spacing:-.2px}
+.progress-card-head p{margin:4px 0 0;color:#aaa7b2;font-size:11px;line-height:1.4}
+.progress-context{color:#aaa7b2;font-size:10px;text-align:right;white-space:nowrap}
+.muscle-map-chart{padding:5px 4px 0;background:radial-gradient(ellipse at 50% 45%,#2c2933 0%,#222225 68%);border-radius:16px}
+.muscle-map-pair{display:grid;grid-template-columns:1fr 1fr;gap:3px;max-width:430px;margin:auto}
+.muscle-map-view{min-width:0;text-align:center}
+.muscle-map-view-label{margin:2px 0 0;color:#aaa7b2;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.muscle-map-svg{display:block;width:min(100%,190px);height:auto;margin:auto;overflow:visible}
+.map-body{fill:#3e3e46;stroke:#696872;stroke-width:1.1;stroke-linejoin:round}
+.map-region{cursor:pointer;outline:none}
+.map-region path{fill:#44434b;stroke:#252429;stroke-width:1.4;stroke-linejoin:round;transition:fill .18s,filter .18s,stroke .18s}
+.map-region.volume-1 path{fill:#795eb1}
+.map-region.volume-2 path{fill:#ed536f}
+.map-region.is-selected path{stroke:#c8b8ff;stroke-width:2.3;filter:drop-shadow(0 0 5px #a78bfa99)}
+.map-region:focus-visible path{stroke:#fff;stroke-width:2.5}
+.muscle-map-legend{display:flex;justify-content:center;align-items:center;gap:7px;margin:7px 0 1px;color:#aaa7b2;font-size:10px}
+.muscle-map-legend i{width:12px;height:8px;border-radius:8px;display:inline-block}
+.muscle-map-legend .legend-low{background:#44434b}.muscle-map-legend .legend-mid{background:#795eb1}.muscle-map-legend .legend-high{background:#ed536f}
+.muscle-detail{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 2px 1px}
+.muscle-detail-name{font-size:15px;font-weight:800}.muscle-detail-priority{color:#bba8ff;font-size:10px;margin-left:6px}
+.progress-muscle-select{max-width:138px;padding:4px 18px 4px 0;border:0;background:transparent;color:#f6f3fa;font-size:15px;font-weight:800;appearance:auto}
+.muscle-detail-note{color:#aaa7b2;font-size:10px;margin-top:3px}
+.muscle-detail-values{display:flex;gap:14px;text-align:right}
+.muscle-detail-value{display:block;color:#f6f3fa;font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.muscle-detail-label{display:block;color:#aaa7b2;font-size:9px;margin-top:2px}
+.progress-graph{min-width:0}
+.progress-graph svg{display:block;width:100%;height:auto;overflow:visible}
+.progress-chart-grid{stroke:#3e3d44;stroke-width:1}
+.progress-chart-axis{fill:#aaa7b2;font-size:10px;font-family:inherit}
+.progress-chart-line{fill:none;stroke:#ff617b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.progress-chart-area{fill:url(#muscle-trend-fill);opacity:.28}
+.progress-chart-point{fill:#ff617b;stroke:#222225;stroke-width:2}
+.progress-chart-planned{fill:#8064ce}
+.progress-chart-completed{fill:#ff617b}
+.progress-chart-legend{display:flex;justify-content:center;gap:17px;color:#aaa7b2;font-size:10px;margin:2px 0 0}
+.progress-chart-legend span{display:flex;align-items:center;gap:6px}
+.progress-chart-legend i{width:8px;height:8px;border-radius:3px;background:#8064ce}
+.progress-chart-legend .completed-key{background:#ff617b}
+.consistency-single{padding:8px 2px 2px}
+.consistency-track-row{display:grid;grid-template-columns:76px minmax(0,1fr) 28px;align-items:center;gap:9px;margin:12px 0;color:#c5c1ca;font-size:11px}
+.consistency-track-row strong{text-align:right;color:#f6f3fa;font-size:12px;font-variant-numeric:tabular-nums}
+.consistency-track{height:12px;background:#34333a;border-radius:99px;overflow:hidden}
+.consistency-track i{display:block;height:100%;border-radius:inherit}
+.consistency-ratio{text-align:right;color:#bba8ff;font-size:11px;font-weight:750;margin-top:14px}
+.progress-empty{padding:28px 12px;border:1px dashed #48464f;border-radius:14px;text-align:center;color:#aaa7b2;font-size:12px;line-height:1.5}
+.progress-caveat{margin:13px 3px 4px;color:#a9a6b0}
+@media(max-width:380px){.progress-card{padding:12px}.muscle-detail-values{gap:9px}.progress-context{font-size:9px}.progress-chart-axis{font-size:9px}.consistency-track-row{grid-template-columns:64px minmax(0,1fr) 24px;gap:7px}}
