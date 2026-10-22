@@ -52,6 +52,17 @@ function cleanFoods(value) {
   });
 }
 
+function safeModelError(error) {
+  const raw = typeof error === 'string' ? error : error?.message || 'Cloudflare AI returned an unknown error.';
+  return String(raw)
+    .replace(/Bearer\s+\S+/gi, 'Bearer [redacted]')
+    .replace(/data:image\/[^\s]+/gi, '[photo omitted]')
+    .replace(/[A-Za-z0-9+/]{200,}={0,2}/g, '[payload omitted]')
+    .replace(/[\r\n\t]+/g, ' ')
+    .trim()
+    .slice(0, 240) || 'Cloudflare AI returned an unknown error.';
+}
+
 export default {
   async fetch(request, env) {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS });
@@ -93,12 +104,17 @@ export default {
         max_tokens: 400,
         temperature: 0.1
       });
+      if (Array.isArray(result?.errors) && result.errors.length) {
+        const first = result.errors[0];
+        throw new Error([first.code, first.message].filter(Boolean).join(': ') || 'Cloudflare AI returned an error.');
+      }
       const raw = result?.response ?? result?.choices?.[0]?.message?.content;
+      if (typeof raw !== 'string' || !raw.trim()) throw new Error('Cloudflare AI returned an empty response.');
       const parsed = parseModelJson(raw);
       return json({ foods: cleanFoods(parsed.foods) });
-    } catch {
-      // Do not log prompts, photos, model responses, or secrets.
-      return json({ error: 'Photo analysis is temporarily unavailable. You can search foods manually.' }, 503);
+    } catch (error) {
+      // Return only a short, sanitized model error; never log or return photos, prompts, or secrets.
+      return json({ error: `Cloudflare AI: ${safeModelError(error)}` }, 503);
     }
   }
 };
