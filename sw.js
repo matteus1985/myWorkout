@@ -1,14 +1,16 @@
-const CACHE = 'lift-log-shell-v23';
+const CACHE = 'lift-log-shell-v30';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261022-progress-map-v1',
-  './planner.js?v=liftlog-20261022-progress-map-v1',
-  './sketches.js?v=liftlog-20261022-progress-map-v1',
-  './exercise-art.js?v=liftlog-20261022-progress-map-v1',
-  './app.js?v=liftlog-20261022-progress-map-v1',
-  './material.css?v=liftlog-20261022-progress-map-v1'
+  './catalogue.js?v=liftlog-20261022-nutrition-v7',
+  './planner.js?v=liftlog-20261022-nutrition-v7',
+  './sketches.js?v=liftlog-20261022-nutrition-v7',
+  './exercise-art.js?v=liftlog-20261022-nutrition-v7',
+  './nutrition-data.js?v=liftlog-20261022-nutrition-v7',
+  './nutrition.js?v=liftlog-20261022-nutrition-v7',
+  './app.js?v=liftlog-20261022-nutrition-v7',
+  './material.css?v=liftlog-20261022-nutrition-v7'
 ];
 
 async function cacheShellFile(cache, path) {
