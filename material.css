@@ -2,6 +2,10 @@
 body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.topbar{padding:20px 2px}.week-pill{background:#30252a;color:#ff879a}.eyebrow{color:#ff879a}.hero{background:#b91934;box-shadow:none;border-radius:24px}.hero:after{display:none}.hero h2{font-size:25px}.hero .btn-primary{background:#ff3655}.btn{border-radius:12px}.btn-primary{color:#fff;background:#ee2d4d}.btn-outline{border-color:#52454a;color:#e5d4db}.btn-soft{background:#382a30;color:#ff9bad}.btn-light{background:#fff;color:#7e1024}.btn-danger{background:#42242c;color:#ff9bad}.btn:disabled{opacity:.45;cursor:default}.panel,.tool-card,.stat,.exercise,.day-card,.chart-card,.history-item,.modal{background:var(--card);color:var(--ink);border-color:var(--line);box-shadow:none}.day-card.optional{background:var(--card)}.day-num{background:#38272e;color:#ff8b9d}.day-card.finished .day-num{background:#b91934;color:#fff}.day-arrow{color:#aaa}.day-meta,.sub,.small-print,.exercise-note,.muscle,.guide-note,.history-item span{color:var(--muted)}.stat strong{font-size:26px}.session-banner{background:#242424;border:1px solid var(--line)}.session-banner p{display:block;color:var(--muted)}.progress-bar{height:4px;background:#42333a}.progress-bar i{background:#ff3655}.exercise{border-radius:20px;padding:16px}.exercise-title h3{line-height:1.35;font-size:16px}.target{background:#382a30;color:#ffc0cd;border-radius:8px}.info-button{border-color:#65505a;background:#30252b;color:#ffc0cd}.field,.rest-duration,.select{background:#303033;color:var(--ink);border-color:#50494f;font-size:16px}.field{height:42px;border-radius:8px}.field::placeholder{color:#aaa}.field::-webkit-inner-spin-button,.field::-webkit-outer-spin-button,.rest-duration::-webkit-inner-spin-button{appearance:none;margin:0}.field{appearance:textfield}.stepper .field{flex:0 1 58px;width:58px;min-width:34px;max-width:58px}.set-head,.set-row{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 36px;gap:5px}.set-head>span:nth-child(2),.set-head>span:nth-child(3){text-align:center}.set-head{color:#aaa5ab}.step-button{width:28px;height:42px;border-radius:8px;background:#333034;border-color:#50494f;color:#e8d8df;font-weight:500}.stepper{gap:4px}.check{background:#303034;border-color:#50494f;border-radius:50%;color:transparent}.check.done{background:#ee2d4d;border-color:#ee2d4d;color:white}.exercise-actions{border-color:#3b373c;gap:8px;flex-wrap:wrap}.text-button{color:#ff9bad;font-size:12px}.rest-duration{width:58px}.session-foot{background:#1c1b1eef;border-color:var(--line)}.tabbar{background:#202023;border-color:var(--line)}.tab{color:#aca6ad}.tab.active{color:#ff738c}.hint{background:#30252b;color:#c6b6bd}.empty{border-color:#50494f;color:#aca5ac}.setting-row{border-color:var(--line)}.equipment-option{background:#2c292d;border-color:var(--line);min-width:0}.equipment-option .select{max-width:88px}.equipment-option input{accent-color:#ee2d4d}.toast{background:#f1dce3;color:#3a1422}.modal-backdrop{background:#0009}.modal{max-height:85dvh;overflow:auto}.modal p{color:#c0b7bd}.back{background:#302a2f;color:#f2e8ed;border-color:#50494f}.avoid{color:#c0b7bd!important}.guide-note{font-size:11px}.chart-label{fill:#aaa5ab}.chart-line{stroke:#ff3655}.chart-dot{fill:#ff3655}.muscle-bar>i{background:#42242e}.muscle-bar>i>b{background:#ee2d4d}.history-item{gap:12px}.history-item strong{flex:1}.select{max-width:100%}.settings-note{line-height:1.5}.chart-card>select{width:100%}.equipment-grid{gap:8px}.guide-modal .modal{width:min(860px,100%)}.anatomy-plate{display:block;width:100%;height:auto;border-radius:16px;margin:14px 0}.sketch-wrap{overflow:auto;border-radius:16px}.sketch-wrap.enlarged .anatomy-plate{width:920px;max-width:none}.effort-row{display:flex;gap:12px;align-items:center;margin-top:14px;font-size:12px;color:#bbb2ba}.effort-row label{flex:1}.effort-row select{font-size:16px}.exercise-menu{border:0;background:none;color:#bbb;font-size:20px;width:24px;min-height:32px;padding:0}.edit-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.volume-note{margin:12px 0;font-size:12px;color:#baaeb5;line-height:1.5}.end-week{margin-top:20px;width:100%}.setup-panel{border-color:#8a3549}.setup-panel p{font-size:13px;line-height:1.5;color:#c3b4bc}.catalogue-modal{z-index:22}.guide-modal{z-index:30}.scope-modal{z-index:40}.catalogue-modal .modal{width:min(620px,100%);max-height:90dvh}.catalogue-search{width:100%;margin-top:14px;font-size:16px;height:46px}.catalogue-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.catalogue-list{display:grid;gap:8px;max-height:52dvh;overflow:auto;overscroll-behavior:contain}.catalogue-entry{border:1px solid var(--line);border-radius:14px;padding:12px;background:#2b292d;display:flex;gap:8px;align-items:center}.catalogue-entry>div{flex:1;min-width:0}.catalogue-entry strong{font-size:14px;display:block}.catalogue-entry small{font-size:11px;color:#bdb3ba;display:block;margin-top:4px;line-height:1.5}.catalogue-entry .btn{padding:8px 10px}.scope-buttons{display:grid;gap:9px;margin-top:16px}.level-badge{display:inline-block;font-size:10px;color:#bbb;margin-top:4px}.chart-list{margin-bottom:22px}.week-summary{font-size:13px;line-height:1.6}.muted{color:var(--muted)}.catalogue-count{font-size:12px;color:#bdb3ba;margin:10px 0}.section-head h2{font-size:20px}.view-history-button{margin-top:10px}.volume-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:10px 0}.volume-grid div{background:#30292e;border-radius:8px;padding:8px;font-size:11px}.scope-modal .modal h2{font-size:20px}.modal-backdrop:focus{outline:none}.session-banner p:empty{display:none}.catalogue-entry .info-button{flex:none}input:focus-visible,button:focus-visible,select:focus-visible{outline:2px solid #ff8ca0;outline-offset:3px}
 @media(max-width:380px){.app{padding-left:12px;padding-right:12px}.exercise{padding:12px}.step-button{width:24px}.stepper .field{flex-basis:48px;width:48px;max-width:48px}.set-row,.set-head{gap:3px}.rest-controls{gap:6px}.exercise-top{gap:6px}.target{padding:6px;font-size:10px}.exercise-title h3{font-size:15px}.catalogue-filters{grid-template-columns:1fr}.equipment-option{padding:8px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+.hero{background:linear-gradient(118deg,#a81732 0%,#cf2543 58%,#873b78 100%);box-shadow:0 12px 30px #7d183022}.day-card{background:linear-gradient(125deg,#282528,#242326 62%,#30242b);border-color:#40383d}.day-card.finished{background:linear-gradient(120deg,#37232b,#29242a 72%)}.exercise{background:linear-gradient(145deg,#29272b 0%,#242326 60%,#2e242a 100%);border-color:#40393e}.session-banner{background:linear-gradient(100deg,#29262b,#242326 65%,#30242a);border-color:#42383d}
+.muscle-map-chart{padding:8px;background:radial-gradient(ellipse at 50% 28%,#302b36,#222225 72%)}.muscle-map-pair{max-width:350px;gap:8px}.muscle-map-svg{width:min(100%,165px)}.muscle-map-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px auto 2px;max-width:440px}.muscle-map-item{display:grid;grid-template-columns:minmax(0,1fr) 44px auto;align-items:center;gap:7px;min-width:0;padding:7px 8px;border:1px solid #39353c;border-radius:10px;background:linear-gradient(110deg,#29272c,#242326);color:#e8e4eb;text-align:left;font-size:10px}.muscle-map-item.is-selected{border-color:#ad748d;background:linear-gradient(110deg,#382832,#29252d);color:#fff}.muscle-map-item>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.muscle-map-item>i{height:4px;border-radius:9px;background:#413943;overflow:hidden}.muscle-map-item>i>b{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9b65ca,#f05c7a)}.muscle-map-item>strong{min-width:25px;text-align:right;font-size:9px;color:#c9beca;font-variant-numeric:tabular-nums}.muscle-map-item:focus-visible{outline:2px solid #ff879a;outline-offset:2px}
+.ai-draft-duplicate{display:none!important}.ai-food-suggestion{gap:5px;padding:7px 9px;border-radius:10px}.ai-food-suggestion>div{gap:2px}.ai-food-suggestion>div>strong{font-size:12px}.ai-food-suggestion>div>small{font-size:10px;line-height:1.2}.ai-food-suggestion>.btn{min-height:28px;padding:4px 9px;font-size:10px}.ai-portion-controls{gap:4px;padding-top:0}.ai-portion-controls .btn{min-height:27px;padding:3px 7px;font-size:10px;border-radius:8px}.ai-portion-controls strong{min-width:38px;font-size:10px}.ai-portion-controls .ai-remove{margin-left:auto}
+@media(max-width:380px){.muscle-map-list{gap:4px}.muscle-map-item{grid-template-columns:minmax(0,1fr) 32px auto;gap:4px;padding:7px 6px;font-size:9px}.muscle-map-item>strong{font-size:8px}.muscle-map-svg{width:min(100%,145px)}}
 .anatomy-plate{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%;height:auto;margin:14px 0}.anatomy-pose{display:block;width:100%;height:auto;border-radius:16px;background:#f7f3ed}.guide-modal .modal{max-height:85dvh;overflow:auto}
 .day-card:disabled{opacity:.58;cursor:not-allowed}
 .topbar{justify-content:flex-end}
@@ -119,6 +123,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-view-label{margin:2px 0 0;color:#aaa7b2;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
 .muscle-map-svg{display:block;width:min(100%,190px);height:auto;margin:auto;overflow:visible}
 .map-body{fill:#3e3e46;stroke:#696872;stroke-width:1.1;stroke-linejoin:round}
+.map-body{fill:var(--map-base,#3e3e46);stroke:#777681;stroke-width:1.05;stroke-linejoin:round;filter:drop-shadow(0 3px 4px #0004)}.map-body-detail{fill:none;stroke:#aaa6b1;stroke-width:1.05;stroke-linecap:round;stroke-linejoin:round;opacity:.58;pointer-events:none}.map-body-highlight{fill:none;stroke:#d7d1dc;stroke-width:.8;stroke-linecap:round;opacity:.23;pointer-events:none}
 .map-region{cursor:pointer;outline:none}
 .map-region path{fill:#44434b;stroke:#252429;stroke-width:1.4;stroke-linejoin:round;transition:fill .18s,filter .18s,stroke .18s}
 .map-region.volume-1 path{fill:#795eb1}
@@ -185,3 +190,178 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .ai-portion-controls{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding-top:2px}.ai-portion-controls[hidden],[data-ai-add][hidden]{display:none!important}.ai-portion-controls strong{font-size:11px;color:#ffb3c0;min-width:42px;text-align:center}.ai-portion-controls .ai-remove{margin-left:auto;color:#ff9bad;border-color:#65434d}
 .food-portion-controls{display:flex;align-items:center;gap:5px}.food-portion-controls .field{min-width:0;width:62px;padding:6px 7px}.food-portion-controls .btn{padding:6px 7px;font-size:10px}.draft-food .draft-quick-controls{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.draft-food .draft-quick-controls button{position:static;border:1px solid var(--line);background:#302d32;color:var(--ink);border-radius:8px;padding:6px 8px;font-size:11px}.draft-food .draft-quick-controls strong{min-width:45px;text-align:center;font-size:11px}.draft-food .draft-quick-controls button:last-child{margin-left:auto;color:#ff9bad;border-color:#65434d}
 .draft-food>button[data-remove-draft]{position:static;justify-self:end;border:1px solid #65434d;background:#30272c;border-radius:8px;padding:6px 9px;font-size:11px;color:#ff9bad}
+
+/* Subtle berry gradients and compact feedback cards. */
+.hero,.nutrition-daily{background:linear-gradient(128deg,#a91434 0%,#741d38 58%,#43263c 100%)}
+.progress-card,.nutrition-card{background:linear-gradient(145deg,#29262b 0%,#242126 68%,#2b2229 100%)}
+.progress-ai-card,.workout-ai-card{background:linear-gradient(135deg,#30252c 0%,#26242a 58%,#272532 100%);border-color:#4a3642}
+
+/* Make saved favorites and the daily workout surfaces feel intentional without reducing contrast. */
+.btn-favorite-saved{background:linear-gradient(115deg,#75364a,#49344b);border:1px solid #b65373;color:#ffe2ea}
+.nutrition-meal-actions .btn-favorite-saved{box-shadow:inset 0 1px #ffffff16}
+.draft-food{gap:2px;padding:7px 34px 7px 9px;background:linear-gradient(120deg,#302a30,#29272c 70%,#34262e)}
+.draft-food .draft-food-main{font-size:12px;font-weight:700}
+.draft-food .draft-quick-controls{gap:4px;margin-top:2px}
+.draft-food .draft-quick-controls button{padding:4px 7px;font-size:10px}
+.draft-food .draft-quick-controls strong{min-width:38px;font-size:10px}
+.draft-food>details{margin-top:1px;font-size:10px}
+.draft-food>details summary{color:#c7bbc3;cursor:pointer}
+.session-banner{background:linear-gradient(115deg,#32242b 0%,#28252b 55%,#352430 100%);border-color:#55404b}
+.exercise{background:linear-gradient(135deg,#30292f 0%,#27262c 48%,#35252e 100%);border-color:#55404b;box-shadow:inset 0 1px #ffffff08}
+.exercise.completed{background:linear-gradient(120deg,#39232c 0%,#2b252c 58%,#352630 100%);border-color:#754052}
+.exercise.expanded{background:linear-gradient(135deg,#352a31,#28262c 55%,#39252e);border-color:#8b485d}
+.session-foot{background:linear-gradient(110deg,#291f26f2,#242329f2 60%,#302129f2)}
+.nutrition-meal{padding:9px 11px;background:linear-gradient(125deg,#2d292e 0%,#26252a 62%,#30242b 100%)}
+.nutrition-meal .row>div{gap:2px}
+.nutrition-meal .nutrition-food-list{gap:1px;margin-top:5px;line-height:1.3}
+.nutrition-meal-actions{margin-top:5px}
+.meal-section-title,.meal-draft-section h3{margin:8px 0;font-size:13px;color:#f5edf1}
+.meal-draft-section{border-top:1px solid #51434b;margin-top:13px;padding-top:7px}
+.meal-draft-section .nutrition-draft-list{margin-top:6px;gap:5px}
+.draft-food{grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:1px 7px;padding:7px 8px;background:linear-gradient(120deg,#302a30,#29272c 70%,#34262e)}
+.draft-food-main,.draft-food small{grid-column:1;min-width:0}
+.draft-food .draft-remove{grid-column:2;grid-row:1/4;align-self:center;justify-self:end;position:static;border:1px solid #65434d;background:#30272c;border-radius:8px;padding:4px 8px;font-size:14px;line-height:1;color:#ff9bad}
+.draft-food details{grid-column:1;font-size:10px}
+.favorite-edit{min-width:34px;padding-inline:8px;font-size:15px!important}
+.nutrition-macro{gap:2px;align-content:start}
+.nutrition-macro-value{display:flex;align-items:baseline;gap:4px;white-space:nowrap}
+.nutrition-macro-value strong{font-size:15px}
+.nutrition-macro-value small{font-size:9px;color:#c0b3bd}
+.nutrition-macro-track{height:5px;margin-top:4px;overflow:hidden;border-radius:99px;background:#50434d}
+.nutrition-macro-track i{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#ff496d,#c869ff);transition:width .25s ease}
+.nutrition-macro:nth-child(2) .nutrition-macro-track i{background:linear-gradient(90deg,#ff6a83,#f2a15e)}
+.nutrition-macro:nth-child(3) .nutrition-macro-track i{background:linear-gradient(90deg,#ae74ff,#f06dba)}
+.nutrition-macro-hint{grid-column:1/-1;margin:0;color:#c0b3bd;font-size:9px;line-height:1.3}
+.nutrition-meal{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:0 10px}
+.nutrition-meal>.row{grid-column:1/-1}
+.nutrition-meal .nutrition-food-list{grid-column:1;grid-row:2;margin-top:5px;min-width:0}
+.nutrition-meal .nutrition-meal-actions{grid-column:2;grid-row:2;display:flex;flex-direction:column;align-items:flex-end;justify-content:flex-start;gap:5px;margin-top:5px;white-space:nowrap}
+.nutrition-meal-actions .btn,.nutrition-meal-actions .photo-open{margin:0;padding:6px 8px;font-size:10px}
+@media(max-width:390px){.nutrition-meal{gap:0 6px}.nutrition-meal .nutrition-meal-actions{max-width:100px}.nutrition-meal-actions .btn,.nutrition-meal-actions .photo-open{font-size:9px;padding:5px 6px}}
+.progress-ai-card .progress-card-head p,.workout-ai-card .progress-card-head p{margin:4px 0 0}
+.ai-sparkle{color:#ff8ba0;font-size:20px;text-shadow:0 0 16px #ff557055}
+.workout-ai-result:empty{display:none}
+.workout-ai-result>p{font-size:13px;line-height:1.5;margin:7px 0 9px;color:#f5eaf0}
+.ai-review-point{display:grid;gap:3px;padding:8px 10px;margin-top:6px;border-left:2px solid #d76b8b;border-radius:0 9px 9px 0;background:#ffffff08;font-size:12px;line-height:1.45}
+.ai-review-point.positive{border-left-color:#83c5a0}.ai-review-point.suggestion{border-left-color:#ad88d5}
+.ai-review-point small{color:#cdbbc7;font-size:11px}
+.endweek-ai-review{margin:14px 0;padding:12px;border:1px solid #493943;border-radius:14px;background:linear-gradient(135deg,#30262d,#27242b)}
+.endweek-ai-review>strong{font-size:13px}.endweek-ai-review .small-print{margin:6px 0}
+.nutrition-meal-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.nutrition-favorites{display:grid;gap:7px;margin:8px 0 14px}
+.nutrition-favorite{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border:1px solid #55424b;border-radius:11px;background:#2d282e}
+.nutrition-favorite>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.nutrition-favorite-list{display:grid;gap:6px;margin-bottom:12px}
+@media(max-width:370px){.ai-review-point{padding:7px 8px}.nutrition-favorite{padding:8px}}
+/* Current workout: subtle color depth without reducing text contrast. */
+.hero{background:linear-gradient(118deg,#a81732 0%,#cf2543 58%,#873b78 100%);box-shadow:0 12px 30px #7d183022}
+.day-card{background:linear-gradient(125deg,#282528,#242326 62%,#30242b);border-color:#40383d}
+.day-card.finished{background:linear-gradient(120deg,#37232b,#29242a 72%)}
+.exercise{background:linear-gradient(145deg,#29272b 0%,#242326 60%,#2e242a 100%);border-color:#40393e}
+.session-banner{background:linear-gradient(100deg,#29262b,#242326 65%,#30242a);border-color:#42383d}
+/* Proposal B: compact data list paired with the existing front/back illustration. */
+.muscle-map-chart{padding:8px;background:radial-gradient(ellipse at 50% 28%,#302b36,#222225 72%)}
+.muscle-map-pair{max-width:350px;gap:8px}
+.muscle-map-svg{width:min(100%,165px)}
+.muscle-map-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px auto 2px;max-width:440px}
+.muscle-map-item{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0;padding:8px 10px;border:1px solid #39353c;border-radius:10px;background:linear-gradient(110deg,#29272c,#242326);color:#e8e4eb;text-align:left;font-size:11px}
+.muscle-map-item.is-selected{border-color:#ad748d;background:linear-gradient(110deg,#382832,#29252d);color:#fff}
+.muscle-map-item>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.muscle-map-item>strong{min-width:25px;text-align:right;font-size:9px;color:#c9beca;font-variant-numeric:tabular-nums}
+.muscle-map-item:focus-visible{outline:2px solid #ff879a;outline-offset:2px}
+/* Keep AI suggestions as the single editable representation of recognized foods. */
+.ai-draft-duplicate{display:none!important}
+.ai-food-suggestion{gap:5px;padding:7px 9px;border-radius:10px}
+.ai-food-suggestion>div{gap:2px}
+.ai-food-suggestion>div>strong{font-size:12px}
+.ai-food-suggestion>div>small{font-size:10px;line-height:1.2}
+.ai-food-suggestion>.btn{min-height:28px;padding:4px 9px;font-size:10px}
+.ai-portion-controls{gap:4px;padding-top:0;flex-wrap:nowrap}
+.ai-portion-controls .btn{min-height:27px;padding:3px 7px;font-size:10px;border-radius:8px}
+.ai-portion-controls strong{min-width:38px;font-size:10px}
+.ai-portion-controls .ai-remove{margin-left:auto}
+@media(max-width:380px){.muscle-map-list{gap:4px}.muscle-map-item{grid-template-columns:minmax(0,1fr) 32px auto;gap:4px;padding:7px 6px;font-size:9px}.muscle-map-item>strong{font-size:8px}.muscle-map-svg{width:min(100%,145px)}.ai-portion-controls .btn{padding:3px 5px}}
+.muscle-map-anatomy{position:relative;max-width:520px;margin:0 auto 6px;overflow:hidden;border-radius:16px;background:radial-gradient(ellipse at 50% 45%,#342b3a,#222126 76%);aspect-ratio:3/2}
+.muscle-map-anatomy img{display:block;width:100%;height:100%;object-fit:contain;filter:grayscale(1) contrast(1.05)}
+.muscle-map-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.muscle-volume-overlay{fill:#ff5577;stroke:#ff8299;stroke-width:5;stroke-linejoin:round;mix-blend-mode:screen;transition:opacity .25s ease,stroke-width .2s ease}
+.muscle-volume-overlay.is-selected{stroke:#fff1f4;stroke-width:8}
+.muscle-map-legend{display:flex;align-items:center;gap:7px;margin:0 auto 6px;max-width:440px;color:#aaa7b2;font-size:9px}
+.muscle-map-legend i{width:30px;height:6px;border-radius:8px;background:linear-gradient(90deg,#3a343b,#ff5577)}
+.muscle-detail{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 2px 0;color:#aaa7b2;font-size:10px}
+.muscle-detail strong{color:#f6f3fa}
+.progress-volume-legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin-top:4px;color:#c8c2cc;font-size:10px}
+.progress-volume-legend span{display:flex;align-items:center;gap:6px}
+.progress-volume-legend i{width:8px;height:8px;border-radius:50%}
+.muscle-map-anatomy>span{position:absolute;top:10px;padding:4px 8px;border:1px solid #64566c;border-radius:999px;background:#211f26cc;color:#eee7f2;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;pointer-events:none}
+.muscle-map-anatomy>span:nth-of-type(1){left:27%}.muscle-map-anatomy>span:nth-of-type(2){left:66%}
+@media(max-width:380px){.muscle-map-list{grid-template-columns:1fr 1fr}.muscle-map-anatomy{border-radius:12px}.muscle-map-anatomy>span{top:7px;padding:3px 6px;font-size:8px}.muscle-detail{gap:5px;font-size:9px}.progress-volume-legend{gap:12px;font-size:9px}}
+.tab{gap:4px}.tab-icon{display:grid;place-items:center;width:24px;height:24px}.tab-icon svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:transform .18s ease}.tab.active .tab-icon svg{transform:translateY(-1px);stroke-width:2}
+.ai-title-icon{display:inline-grid;place-items:center;width:19px;height:19px;margin-right:5px;border-radius:7px;background:linear-gradient(145deg,#593949,#393044);color:#ff91a6;font-size:15px;vertical-align:-2px;text-shadow:0 0 10px #ff557055}
+/* Nutrition popup hierarchy and compact meal actions */
+.nutrition-editor{font-family:inherit}
+.nutrition-editor-top{justify-content:flex-end;min-height:28px;margin:0 0 4px}
+.nutrition-editor-top .back{flex:0 0 40px}
+.nutrition-editor .meal-section-title,.nutrition-editor .settings-label,.nutrition-editor .nutrition-favorites>strong{font-family:inherit;font-size:13px;font-weight:700;letter-spacing:0;color:#f5edf1}
+.nutrition-editor .meal-section-title{margin:5px 0 9px}
+.nutrition-editor .settings-label{display:block;margin:12px 0 5px}
+.meal-draft-section{border:1px solid #5b4651;border-radius:12px;background:linear-gradient(135deg,#2c282d,#29262b 65%,#31252d);margin-top:13px;padding:11px}
+.meal-draft-section h3{margin:0 0 8px;font-size:15px;font-weight:750;letter-spacing:0;color:#fff}
+.meal-draft-section .nutrition-draft-list{margin-top:0}
+.meal-empty-state{min-height:42px;display:flex;align-items:center;margin:0;padding:9px 11px;border:1px dashed #66545e;border-radius:9px;color:#c7bbc4;font-size:12px;line-height:1.4}
+.nutrition-meal-top-actions{display:flex;align-items:center;gap:6px}
+.nutrition-meal-top-actions .icon-button{margin:0}
+.meal-photo-icon svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nutrition-meal .nutrition-meal-actions{flex-direction:row;align-items:center;justify-content:flex-end}
+.favorite-name-edit{min-width:0;flex:1;padding:7px 9px;font-size:12px}
+.nutrition-favorite:has(.favorite-name-edit){flex-wrap:wrap}
+
+/* Shared restrained surface and control system. */
+:root{--bg:#18171b;--card:#26252b;--ink:#f5f3f7;--muted:#b6afbc;--line:#423d48;--grad-accent:linear-gradient(115deg,#ef3457,#ca397c 65%,#9256c2)}
+body{background:var(--bg)}.topbar{background:transparent}
+.panel,.tool-card,.stat,.chart-card,.history-item,.progress-card,.nutrition-card,.nutrition-meal,.day-card,.exercise,.session-banner,.setup-panel{background:var(--card);border-color:var(--line);border-radius:20px;box-shadow:none}
+.progress-ai-card,.workout-ai-card{background:#292630;border-color:#514259}
+.hero{background:var(--grad-accent);box-shadow:none;border-radius:20px}.nutrition-daily{background:linear-gradient(135deg,#302630,#28252d 75%);box-shadow:none}
+.day-card.finished,.exercise.completed{background:#30262e;border-color:#765063}.exercise.expanded{background:#2c2831;border-color:#79637e}
+.btn-primary,.hero .btn-primary{background:var(--grad-accent);border-color:transparent;color:#fff;box-shadow:none}
+.btn,.back,.field,.select,.step-button,.rest-duration{border-radius:12px}
+.btn,.back,.icon-button,.photo-action,.food-result,.tab,.select{min-height:44px}
+.btn-soft,.btn-outline,.btn-danger,.back,.icon-button,.step-button{background:#322c36;border-color:#544754;box-shadow:none}.btn-soft,.btn-outline{color:#ffd0dc}.btn-danger{color:#ff9caf}.btn-favorite-saved{background:#543146;border-color:#a15b7b;color:#ffe2ed}
+.field,.select,.rest-duration{background:#302d35;border-color:#514956;box-shadow:none;min-height:44px}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid #e9a5d0;outline-offset:3px}button:disabled{opacity:.45;cursor:default}
+.progress-bar,.nutrition-macro-track{background:#453b49}.progress-bar i,.nutrition-macro-track i{background:var(--grad-accent)}
+.modal-backdrop{background:#09080dcc}.modal{background:#28252d;border:1px solid #504552;border-radius:20px;box-shadow:0 24px 64px #0006;max-height:90dvh;overscroll-behavior:contain}
+.modal p,.small-print{line-height:1.5}.section-head h2{font-size:20px;line-height:1.3}.progress-card h3,.nutrition-card h3{line-height:1.35}.settings-label,.meal-section-title{font-size:13px;font-weight:650;line-height:1.4}
+.progress-card,.nutrition-card,.tool-card{padding:16px}
+.nutrition-macro,.volume-grid div,.weight-chart,.catalogue-entry,.nutrition-favorite,.draft-food,.photo-action{background:#302b34;border-color:#49404d;box-shadow:none}
+.meal-draft-section{padding:12px;background:#242229;border-color:#554552;border-radius:12px}.nutrition-draft-total{margin:12px 0 0;padding-top:12px;border-top:1px solid var(--line);line-height:1.5}.nutrition-draft-total:empty{display:none}
+.nutrition-favorite{gap:8px;padding:8px 12px}.nutrition-favorite>span{white-space:normal;overflow-wrap:anywhere;line-height:1.4}.nutrition-favorite>div{display:flex;gap:4px;flex:none}.nutrition-favorite .btn{min-width:44px;padding:8px}.favorite-name-edit{flex:1 1 120px}
+.nutrition-meal .row>.nutrition-meal-top-actions{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;gap:4px;flex:none}.nutrition-meal-top-actions .icon-button{display:grid;place-items:center;min-width:44px;width:44px;height:44px;padding:0;margin:0;border-radius:12px}.nutrition-meal .nutrition-meal-actions{display:flex;flex-direction:row;align-items:center;justify-content:flex-end;max-width:none}.nutrition-meal .nutrition-food-list{overflow-wrap:anywhere;line-height:1.45}
+.tabbar,.session-foot{background:#222027f5;border-color:#423b48;box-shadow:none}.tab.active{color:#ffa3bf;text-shadow:none;font-weight:750}.tab.active .tab-icon{background:#503047;border-radius:8px}.ai-title-icon{background:#463044;color:#ffb2cb;text-shadow:none}
+.stepper{gap:4px}.step-button{height:44px;min-width:28px}.set-row .check{width:44px;height:44px}.set-row,.set-head{grid-template-columns:22px minmax(0,1fr) minmax(0,1fr) 44px;gap:4px}.info-button{position:relative}.info-button:before{content:'';position:absolute;inset:-8px}
+@media(max-width:390px){.app{padding-left:12px;padding-right:12px}.progress-card,.nutrition-card,.tool-card,.exercise{padding:12px}.stepper .field{width:42px;max-width:42px;flex-basis:42px;min-width:28px}.step-button{min-width:24px;width:24px}.nutrition-favorite{padding:8px}.nutrition-favorite .btn{font-size:11px}.nutrition-meal{gap:0 8px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}/* High-contrast primary action on the colored workout hero. */
+.hero #start-next{background:#fff7fb;color:#491d39;border:1px solid #ffffffd9;min-height:48px;padding:12px 20px;font-size:15px;font-weight:750;border-radius:12px;box-shadow:0 4px 12px #41132b24}
+.hero #start-next:hover:not(:disabled){background:#fff;color:#35152b;box-shadow:0 5px 16px #41132b38}
+.hero #start-next:active:not(:disabled){background:#f5e5ef;transform:translateY(1px)}
+.hero #start-next:focus-visible{outline:2px solid #fff;outline-offset:4px}/* Compact diary cards: content determines height; actions share a narrow rail. */
+.nutrition-meal{position:relative;display:block;padding:12px 108px 12px 12px;min-height:82px;border-radius:16px}
+.nutrition-meal>.row{display:block;min-height:0;margin:0}
+.nutrition-meal>.row>div:first-child{display:block}
+.nutrition-meal>.row strong{font-size:14px;line-height:1.3;display:block;overflow-wrap:anywhere}
+.nutrition-meal>.row small{display:block;margin-top:3px;font-size:10px;line-height:1.4}
+.nutrition-meal .nutrition-food-list{margin-top:6px;gap:1px;font-size:10px;line-height:1.4}
+.nutrition-meal .row>.nutrition-meal-top-actions{position:absolute;top:8px;right:8px;gap:2px}
+.nutrition-meal-top-actions .icon-button{width:36px;min-width:36px;height:36px;min-height:36px;border-radius:10px;font-size:17px;background:transparent;border-color:transparent}
+.nutrition-meal-top-actions .icon-button svg{width:16px;height:16px}
+.nutrition-meal .nutrition-meal-actions{position:absolute;top:46px;right:10px;margin:0;max-width:88px}
+.nutrition-meal-actions .btn{min-height:28px;padding:5px 7px;border-radius:8px;font-size:9px;line-height:1.2;box-shadow:none}
+.nutrition-meal-actions .btn-outline{background:transparent;border-color:#50414f}
+.nutrition-meal-actions .btn-favorite-saved{background:#483040;border-color:#87516d}
+@media(max-width:390px){.nutrition-meal{padding:10px 100px 10px 10px;min-height:80px}.nutrition-meal .nutrition-meal-actions{right:8px}}.nutrition-meal-actions .btn{display:grid;place-items:center;width:32px;height:32px;min-height:32px;padding:0;font-size:20px;line-height:1;border-radius:9px}
+.nutrition-meal-actions .btn-favorite-saved{color:#ffb0ce;background:#483040;border-color:#87516d}.nutrition-meal .meal-title-line{display:flex;align-items:center;justify-content:flex-start;gap:5px;min-width:0}
+.nutrition-meal .meal-title-line strong{min-width:0}
+.nutrition-meal .meal-title-line .btn{position:relative;flex:none;display:grid;place-items:center;width:24px;min-width:24px;height:24px;min-height:24px;margin:-3px 0;padding:0;font-size:15px;line-height:1;background:transparent;border:0;box-shadow:none;color:#bcaeba;border-radius:6px}
+.nutrition-meal .meal-title-line .btn:before{content:'';position:absolute;inset:-7px}
+.nutrition-meal .meal-title-line .btn-favorite-saved{color:#ff9cbe;background:transparent}
+.nutrition-meal{min-height:0}

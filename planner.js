@@ -4,7 +4,7 @@ window.LIFT_ENGINE=(()=>{
   const templates={
     3:[['Full Body A','inclinePress','row','squat','hinge','hipThrust','overheadPress','lateralRaise','rearDelt','triceps','calfRaise'],['Full Body B','chestPress','verticalPull','lunge','hipThrust','legCurl','overheadPress','curl','triceps','calfRaise','crunch'],['Full Body C','chestPress','row','kneeExtension','hinge','rearDelt','legCurl','seatedCalf','crunch','curl','lateralRaise']],
     4:[['Upper A','inclinePress','chestPress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps'],['Lower A','squat','lunge','hinge','hipThrust','legCurl','calfRaise','crunch'],['Upper B','chestPress','row','verticalPull','overheadPress','rearDelt','lateralRaise','curl','triceps','seatedCalf'],['Lower B','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
-    5:[['Upper','inclinePress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps','seatedCalf','crunch'],['Lower','squat','lunge','hinge','hipThrust','legCurl','calfRaise'],['Push','chestPress','fly','overheadPress','lateralRaise','triceps'],['Pull','row','verticalPull','rearDelt','curl','triceps'],['Legs + Core','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
+    5:[['Upper','inclinePress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps','seatedCalf','crunch'],['Lower','squat','lunge','hinge','hipThrust','legCurl','calfRaise'],['Push','chestPress','fly','overheadPress','lateralRaise','triceps'],['Pull','row','verticalPull','rearDelt','curl'],['Legs + Core','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
     6:[['Push A','inclinePress','chestPress','overheadPress','lateralRaise','triceps'],['Pull A','row','verticalPull','rearDelt','curl','crunch'],['Legs A','squat','lunge','hinge','hipThrust','legCurl','calfRaise'],['Push B','chestPress','overheadPress','lateralRaise','tricepsOverhead'],['Pull B','row','verticalPull','rearDelt','hammerCurl','crunch'],['Legs B','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','seatedCalf']]
   };
   const preferred={
@@ -60,6 +60,8 @@ window.LIFT_ENGINE=(()=>{
     return null;
   }
   function movePattern(days,fromId,toId,pattern){const from=days.find(d=>d.id===fromId),to=days.find(d=>d.id===toId);if(!from||!to)return;const index=from.exercises.findIndex(e=>e.pattern===pattern);if(index>=0)to.exercises.push(from.exercises.splice(index,1)[0]);}
+  function removeAdjacentDuplicates(days){let previous=new Set();for(const day of days){const used=new Set(previous),kept=[];for(const exercise of day.exercises){const key=exercise.catalogId||exercise.name.trim().toLowerCase();if(used.has(key))continue;used.add(key);kept.push(exercise);}day.exercises=kept;previous=new Set(kept.map(e=>e.catalogId||e.name.trim().toLowerCase()));day.minutes=minutes(day.exercises);}return days;}
+  function reduceLegVolumePlan(plan){if(!plan?.days||plan.legVolumeAdjusted)return plan;const groups=['Quadriceps','Hamstrings','Glutes','Calves'],accessories=new Set(['kneeExtension','legCurl','abduction','calfRaise','seatedCalf']),compoundPatterns=new Set(['inclinePress','chestPress','row','verticalPull','squat','lunge','hinge','deadlift','hipThrust','overheadPress','dip']);for(const group of groups){const entries=()=>plan.days.flatMap(day=>day.exercises.map(exercise=>({exercise,item:C.find(exercise.catalogId)||C.find(exercise.name)})).filter(row=>row.item?.primary.includes(group)));let rows=entries(),total=rows.reduce((sum,row)=>sum+row.exercise.sets.length,0),remove=Math.max(0,total-Math.round(total*.85));const ordered=[...rows.filter(row=>accessories.has(row.exercise.pattern)),...rows.filter(row=>!accessories.has(row.exercise.pattern))];for(const row of ordered){if(!remove)break;const compound=compoundPatterns.has(row.exercise.pattern),minimum=compound?2:1,available=Math.max(0,row.exercise.sets.length-minimum),cut=Math.min(remove,available);if(cut){row.exercise.sets.splice(row.exercise.sets.length-cut,cut);remove-=cut;}}}plan.days.forEach(day=>{day.minutes=minutes(day.exercises);day.optionalDropSet=day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compoundPatterns.has(e.pattern)&&e.unit!=='seconds'):-1;});plan.legVolumeAdjusted=true;return plan;}
   function rebalance(days,count){
     if(count===3){removeLegAccessory(days,['d3','d2'],['kneeExtension','legCurl','seatedCalf','calfRaise']);movePattern(days,'d2','d3','triceps');}
     if(count===4){const removed=removeLegAccessory(days,['d4','d3','d2'],['abduction','kneeExtension','legCurl','seatedCalf','calfRaise']);if(removed?.pattern==='abduction')movePattern(days,'d3','d4','seatedCalf');}
@@ -78,16 +80,16 @@ window.LIFT_ENGINE=(()=>{
   function choose(pattern,state,index,usedIds=[]){
     const level=state.experience||'beginner',allowed=C.levels.indexOf(level),list=C.exercises.filter(e=>e.pattern===pattern&&state.equipment.includes(e.equipment)&&hasArt(e));
     const eligible=list.filter(e=>C.levels.indexOf(e.level)<=allowed),pool=eligible.length?eligible:list.filter(e=>e.level==='beginner');
-    const names=preferred[level]?.[pattern]||defaults[pattern]||[],ordered=names.map(C.find).filter(e=>e&&pool.some(x=>x.id===e.id));
-    const selected=ordered.length?ordered[Math.min(index,ordered.length-1)]:pool.find(e=>!usedIds.includes(e.id))||pool[0];
+    const available=pool.filter(e=>!usedIds.includes(e.id)),names=preferred[level]?.[pattern]||defaults[pattern]||[],ordered=names.map(C.find).filter(e=>e&&available.some(x=>x.id===e.id));
+    const selected=ordered[index]||ordered[0]||available[0];
     return selected||illustratedReplacement(C.exercises.find(e=>e.pattern===pattern),state,{usedIds});
   }
   function generate(state,source){
     const programId='adaptive-'+(Number(state.daysPerWeek)||5);let missing=[];
     let days;
-      const seen={};days=templates[Number(state.daysPerWeek)||5].map((row,di)=>{const used=[];return {id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then 1–3 progressively heavier warm-up sets for your first compound exercises.',exercises:row.slice(1).map((p,ei)=>{
+      const seen={};let previousDayIds=[];days=templates[Number(state.daysPerWeek)||5].map((row,di)=>{const used=[...previousDayIds];const day={id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then 1–3 progressively heavier warm-up sets for your first compound exercises.',exercises:row.slice(1).map((p,ei)=>{
         const item=choose(p,state,seen[p]||0,used);seen[p]=(seen[p]||0)+1;if(!item){missing.push(p);return null;}used.push(item.id);return descriptor(item,'d'+(di+1)+'-slot'+ei,state);
-      }).filter(Boolean)};});
+      }).filter(Boolean)};previousDayIds=day.exercises.map(e=>e.catalogId);return day;});
       const priorities=[...new Set((state.priorityMuscles||[]).filter(m=>C.exercises.some(e=>e.primary.includes(m))))].slice(0,2);
       for(const muscle of priorities){
         let slots=days.map(day=>({day,e:day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle))})).filter(x=>x.e).sort((a,b)=>minutes(a.day.exercises)-minutes(b.day.exercises));
@@ -101,9 +103,10 @@ window.LIFT_ENGINE=(()=>{
     const edits=state.persistentEdits?.[programId]||{};
     const removed=new Set(Object.values(edits).flatMap(edit=>edit.remove||[])),replacements=new Map(Object.values(edits).flatMap(edit=>edit.replace||[]).map(x=>[x.id,x])),setCounts=new Map(Object.values(edits).flatMap(edit=>edit.setCounts||[]).map(x=>[x.id,x.count]));
     days.forEach(day=>{const edit=edits[day.id]||{};day.exercises=day.exercises.filter(e=>!removed.has(e.id));for(const saved of edit.add||[]){const item=C.find(saved.catalogId);if(item&&hasArt(item))day.exercises.push(descriptor(item,saved.id,state,{sets:saved.sets||3}));}day.exercises=day.exercises.map(e=>{const replacement=replacements.get(e.id),item=replacement&&C.find(replacement.catalogId);if(item&&hasArt(item))e=descriptor(item,e.id,state,{sets:replacement.sets||3});const count=setCounts.get(e.id);if(count){while(e.sets.length<count)e.sets.push({...e.sets.at(-1)});e.sets=e.sets.slice(0,count);}return e;});day.minutes=minutes(day.exercises);day.optionalDropSet=day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;});
+    removeAdjacentDuplicates(days);
     return {version:4,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)]};
   }
   function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement};
+  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan};
 })();

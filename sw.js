@@ -1,16 +1,17 @@
-const CACHE = 'lift-log-shell-v31';
+const CACHE = 'lift-log-shell-v49';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261022-nutrition-v8',
-  './planner.js?v=liftlog-20261022-nutrition-v8',
-  './sketches.js?v=liftlog-20261022-nutrition-v8',
-  './exercise-art.js?v=liftlog-20261022-nutrition-v8',
-  './nutrition-data.js?v=liftlog-20261022-nutrition-v8',
-  './nutrition.js?v=liftlog-20261022-nutrition-v8',
-  './app.js?v=liftlog-20261022-nutrition-v8',
-  './material.css?v=liftlog-20261022-nutrition-v8'
+  './catalogue.js?v=liftlog-20261023-photo-response-v19',
+  './planner.js?v=liftlog-20261023-photo-response-v19',
+  './sketches.js?v=liftlog-20261023-photo-response-v19',
+  './exercise-art.js?v=liftlog-20261023-photo-response-v19',
+  './nutrition-data.js?v=liftlog-20261023-photo-response-v19',
+  './nutrition.js?v=liftlog-20261023-photo-response-v19',
+  './app.js?v=liftlog-20261023-photo-response-v19',
+  './material.css?v=liftlog-20261023-photo-response-v19',
+  './media/muscle-map-anatomy.png?v=liftlog-20261023-photo-response-v19'
 ];
 
 async function cacheShellFile(cache, path) {

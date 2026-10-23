@@ -9,19 +9,22 @@ GET STARTED ON IPHONE
 4. In Settings, choose your experience, weekly schedule and available equipment.
 
 NUTRITION
-The Nutrition tab includes an offline food list, editable serving sizes, custom foods, calorie/macronutrient totals, a gradual body-weight goal estimate, and weekly average-weight check-ins. If you configure the optional Cloudflare Worker, Llama 4 Scout can suggest visible foods, portions, calories and macros from a photo. These are approximate AI estimates, not verified label data or medical advice; review and correct every item before saving. Manual food search continues to work offline.
+The Nutrition tab includes an offline food list, editable serving sizes, custom foods, reusable favorite meals, calorie/macronutrient totals, a gradual body-weight goal estimate, and weekly average-weight check-ins. The food list includes chia seeds and whole-wheat pasta. If you configure the optional Cloudflare Worker, Llama 4 Scout can suggest visible foods, portions, calories and macros from a photo. These are approximate AI estimates, not verified label data or medical advice; review and correct every item before saving. Manual food search continues to work offline.
 
 OPTIONAL AI FOOD PHOTO SETUP
 1. Open Settings > AI food photo setup. Use Show setup steps for the guided Cloudflare configuration.
-2. Deploy the included worker/src/index.mjs Worker with the Workers AI binding named AI.
+2. Deploy the included worker/src/index.mjs Worker with the Workers AI binding named AI. It provides /identify for food photos and /review for workout feedback.
 3. Generate a private code in Lift Log, set it as the Worker secret APP_TOKEN in Cloudflare, then enter the Worker HTTPS address and save/test the connection in Lift Log.
 4. The private code is stored separately on this device and is not included in app backups. Never publish it or paste it into app source files.
-5. Taking or selecting a photo starts analysis and sends it to your Worker. The Worker does not intentionally log or store photos, prompts or results; Cloudflare describes its standard inference as zero-retention. Photos saved with a meal remain on this device and are excluded from backups.
+5. Taking or selecting a photo starts analysis and sends it to your Worker. The Worker does not intentionally log or store photos, prompts or results. Photos saved with a meal remain on this device and are excluded from backups.
 6. Cloudflare Workers AI has a daily free allowance that may change. Lift Log does not enable automatic paid usage; photo analysis can stop when a limit or service issue is reached. Check Cloudflare's current terms and quota before use.
 
 Food diary entries, profile information, custom foods and weight check-ins are part of Export Backup. Meal photo files stay in local browser storage and are deliberately excluded from backups; they cannot be recovered from a backup after clearing this iPhone's website data or moving to another device.
 
-The app offers adaptive 3–6 day plans. Settings include experience, equipment and up to two priority muscle groups. Workout targets use completed sets in your history, and new exercises show a logged or estimated starting load. End week reviews missed sessions and prepares the next week's targets. Exercise guides contain short form instructions and RepDB illustrations, available offline.
+The app offers adaptive 3–6 day plans. Settings include experience, equipment and up to two priority muscle groups. Workout targets use completed sets in your history, and new exercises show a logged or estimated starting load. Repeated identical exercises are removed from adjacent days. Starting the week after this release, generated plans reduce weekly direct sets for quadriceps, hamstrings, glutes and calves by about 15%; existing saved weeks and training history are preserved. End week reviews missed sessions and prepares the next week's targets.
+
+OPTIONAL AI TRAINING COMMENTS
+With the Worker configured, Review on the workout plan sends the plan structure for brief observations and possible manual alternatives. Opening End week automatically requests a comment on the current week's completed sessions, sets, reps, loads and effort notes. Progress requests a summary for its selected 7-day, 4-week or 12-week period when online; the result is cached on this device and refreshed when the underlying logs change. These requests contain training data only, never meal or profile data. AI comments do not edit plans and are not medical or professional coaching advice. Without a Worker or network, the app continues to work and week closure is not blocked.
 
 IMAGE CREDIT
 Exercise data by RepDB (https://repdb.co). The bundled free-tier illustrations are used inside this app under the RepDB in-app license: https://github.com/RepDB/exercise-dataset/blob/main/LICENSE-DATA.md
