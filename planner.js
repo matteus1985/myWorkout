@@ -19,7 +19,7 @@ window.LIFT_ENGINE=(()=>{
       if(Number(key.split('-')[0])>state.week)continue;
       for(const entry of [...Object.values(log.exercises||{}),...(log.variantHistory||[])]){
         const found=C.find(entry.catalogId)||C.find(entry.name);if(found?.id!==item.id)continue;
-        const sets=(entry.sets||[]).map((s,index)=>s?.done&&Number.isFinite(Number(s.weight))&&s.weight!==''&&s.weight!=null&&Number(s.reps)>0?{...s,index}:null);
+        const sets=(entry.sets||[]).map((s,index)=>{const weight=Number(s?.weight),hasValidLoad=Number.isFinite(weight)&&(item.equipment==='bodyweight'?weight>=0:weight>0);return s?.done&&hasValidLoad&&s.weight!==''&&s.weight!=null&&Number(s.reps)>0?{...s,index}:null;});
         if(sets.some(Boolean))records.push({sets,completed:sets.filter(Boolean).length,effort:entry.effort,at:entry.updatedAt||log.updatedAt||'',key});
       }
     }
@@ -27,6 +27,16 @@ window.LIFT_ENGINE=(()=>{
   }
   const compound=new Set(['inclinePress','chestPress','row','verticalPull','squat','lunge','hinge','deadlift','hipThrust','overheadPress','dip']);
   function range(item){if(item.unit==='seconds')return [20,40];return compound.has(item.pattern)?[6,12]:[10,20];}
+  function profileLoadGuess(state,item,step){
+    if(item.unit==='seconds'||item.equipment==='bodyweight')return null;
+    const ratios={inclinePress:.18,chestPress:.18,fly:.06,row:.22,verticalPull:.2,pullover:.1,squat:.28,lunge:.1,hinge:.26,deadlift:.28,hipThrust:.32,kneeExtension:.12,legCurl:.12,calfRaise:.12,seatedCalf:.12,lateralRaise:.04,rearDelt:.05,facePull:.05,overheadPress:.1,uprightRow:.05,curl:.05,hammerCurl:.05,triceps:.05,tricepsOverhead:.05,crunch:.07,antiRotation:.04,shrug:.1};
+    const levels={beginner:.72,intermediate:1,advanced:1.25},profile=state.nutrition?.profile||{},bodyWeight=Math.max(40,Math.min(160,Number(profile.currentWeightKg)||70)),age=Number(profile.age)||0;
+    let ageFactor=age>0&&age<18?.75:age>40?Math.max(.7,1-(age-40)*.006):1;
+    const equipmentFactor={barbell:1,dumbbell:/single-arm|one-arm|single-leg/i.test(item.name)?.7:.5,smith:.85,machine:.75,cable:.65,band:.45};
+    const ratio=ratios[item.pattern]||.08,raw=bodyWeight*ratio*(levels[state.experience]||levels.beginner)*ageFactor*(equipmentFactor[item.equipment]||.65);
+    const rounded=Math.floor(raw/step)*step;
+    return Math.max(step,Math.round(rounded*100)/100);
+  }
   function targets(state,item,sets,base=false){
     const history=histories(state,item),prior=history[0],n=sets.length,step=Number(state.weightSteps?.[item.equipment]||1);
     const full=prior&&prior.sets.slice(0,n).every(Boolean);
@@ -39,6 +49,7 @@ window.LIFT_ENGINE=(()=>{
       candidates.sort((a,b)=>String(b.history.at).localeCompare(String(a.history.at)));
       const candidate=candidates.find(x=>x.history.sets.find(Boolean));
       if(candidate){const sourceSet=candidate.history.sets.find(Boolean),scale=['barbell','dumbbell','smith','bodyweight'].includes(item.equipment)?.8:.7;estimate=Math.max(0,Math.floor(Number(sourceSet.weight)*scale/step)*step);estimateSource=candidate.exercise.name;}
+      if(estimate==null){estimate=profileLoadGuess(state,item,step);if(estimate!=null)estimateSource='your profile';}
     }
     return {estimated:!prior&&estimate!=null,estimateSource:estimateSource||null,sets:sets.map((s,i)=>{
       const p=prior?.sets[i],lastLogged=prior?.sets.filter(Boolean).at(-1);let weight=p?Number(p.weight):s.weight==null?(estimate??lastLogged?.weight??0):s.weight,reps=p?Math.max(s.min,Math.min(s.max,Number(p.reps))):s.min;

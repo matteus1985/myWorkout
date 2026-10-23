@@ -53,7 +53,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .session-banner .progress-bar{height:4px;border-radius:99px}
 
 /* Workout flow: completed cards collapse; one persistent rest timer lives at the viewport bottom. */
-.exercise.collapsed .exercise-body{display:none}.exercise.completed{border-color:#69303a}.exercise-collapse{width:30px;height:30px;min-height:30px;flex:none;padding:0;border:1px solid #55474d;border-radius:50%;background:#30272c;color:#f2dce3;font-size:17px;line-height:1}.exercise.completed .exercise-collapse{color:#ff7188;border-color:#743442}.rest-dock{position:fixed;z-index:12;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(16px,calc((100vw - 588px)/2)) calc(10px + env(safe-area-inset-bottom));background:#211d21ee;border-top:1px solid #493b41;backdrop-filter:blur(16px);color:#f8eef2}.rest-dock-status{display:grid;gap:3px;min-width:0}.rest-dock-status span{font-size:11px;font-weight:800;letter-spacing:.3px}.rest-dock-status strong{font-size:12px;font-weight:550;color:#c9b9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rest-dock-controls{display:flex;align-items:center;gap:6px;flex:none}.rest-dock .timer{font-size:17px;min-width:54px}.rest-dock .timer-icon-button{width:36px;height:36px;min-height:36px}.rest-dock .rest-button{background:#382a30;color:#ff9bad}.rest-dock .rest-button.running{background:#572432;color:#ff7890;border-color:#a83b51}.rest-dock.rest-complete{background:#471c28f2;border-top:2px solid #ff3655}.rest-dock.rest-complete .rest-dock-status span{color:#ff738c;font-size:13px}.rest-dock.rest-complete .timer{color:#ff9bad}#workout-screen{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.toast{z-index:20;bottom:calc(78px + env(safe-area-inset-bottom))}@media(max-width:380px){.rest-dock{gap:6px;padding-left:12px;padding-right:12px}.rest-dock-status strong{max-width:130px}.rest-dock-controls{gap:3px}.rest-dock .timer{min-width:48px;font-size:15px}.rest-dock .timer-icon-button{width:32px;height:32px;min-height:32px}}
+.exercise.collapsed .exercise-body{display:none}.exercise.completed{border-color:#69303a}.exercise-collapse{display:grid;place-items:center;width:30px;height:30px;min-height:30px;flex:none;padding:0;border:1px solid #55474d;border-radius:50%;background:#30272c}.exercise.completed .exercise-collapse{border-color:#743442}.rest-dock{position:fixed;z-index:12;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px max(16px,calc((100vw - 588px)/2)) calc(10px + env(safe-area-inset-bottom));background:#211d21ee;border-top:1px solid #493b41;backdrop-filter:blur(16px);color:#f8eef2}.rest-dock-status{display:grid;gap:3px;min-width:0}.rest-dock-status span{font-size:11px;font-weight:800;letter-spacing:.3px}.rest-dock-status strong{font-size:12px;font-weight:550;color:#c9b9c0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rest-dock-controls{display:flex;align-items:center;gap:6px;flex:none}.rest-dock .timer{font-size:17px;min-width:54px}.rest-dock .timer-icon-button{width:36px;height:36px;min-height:36px}.rest-dock .rest-button{background:#382a30;color:#ff9bad}.rest-dock .rest-button.running{background:#572432;color:#ff7890;border-color:#a83b51}.rest-dock.rest-complete{background:#471c28f2;border-top:2px solid #ff3655}.rest-dock.rest-complete .rest-dock-status span{color:#ff738c;font-size:13px}.rest-dock.rest-complete .timer{color:#ff9bad}#workout-screen{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.toast{z-index:20;bottom:calc(78px + env(safe-area-inset-bottom))}@media(max-width:380px){.rest-dock{gap:6px;padding-left:12px;padding-right:12px}.rest-dock-status strong{max-width:130px}.rest-dock-controls{gap:3px}.rest-dock .timer{min-width:48px;font-size:15px}.rest-dock .timer-icon-button{width:32px;height:32px;min-height:32px}}
 
 .exercise-done-label{align-self:center;padding:6px 8px;border-radius:999px;background:#49222b;color:#ff8297;font-size:10px;font-weight:800}.exercise.completed .exercise-top{align-items:center}
 
@@ -170,7 +170,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .nutrition-kicker{font-size:10px;letter-spacing:1.2px;color:#ff879a;font-weight:800}
 .nutrition-daily h2{font-size:34px;letter-spacing:-1px;margin:5px 0 1px;font-variant-numeric:tabular-nums}
 .nutrition-target-label,.nutrition-copy{font-size:13px;line-height:1.5;color:#c1b9c0;margin:6px 0}
-.nutrition-date-wrap{display:grid;gap:6px;justify-items:end;min-width:0}.nutrition-date-wrap .select{max-width:155px;padding:8px;font-size:14px}
+.nutrition-date-wrap{display:grid;gap:0;justify-items:end;min-width:0}.nutrition-date-wrap .select{max-width:155px;padding:8px;font-size:14px}
 .nutrition-progress{height:8px;border-radius:99px;background:#413940;overflow:hidden;margin:15px 0}.nutrition-progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ff3655,#bd6cff);border-radius:inherit;transition:width .25s}
 .nutrition-macros{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.nutrition-macro{padding:10px;border-radius:12px;background:#ffffff08;display:grid;gap:3px}.nutrition-macro strong{font-size:16px}.nutrition-macro span{font-size:11px;color:#b8aeb7}
 .nutrition-meals{display:grid;gap:9px}.nutrition-meal{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px}.nutrition-meal .row>div{display:grid;gap:5px}.nutrition-meal small,.nutrition-food-list{font-size:11px;color:#bdb3ba;line-height:1.5}.nutrition-food-list{display:grid;margin-top:10px}.icon-button{border:1px solid #65434d;background:#33252b;color:#ff9bad;border-radius:50%;width:34px;height:34px;font-size:20px}.nutrition-card-heading{display:flex;align-items:center;justify-content:space-between}.nutrition-card-heading h2{font-size:18px;margin-top:5px}.nutrition-orb{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#382a30;color:#ff879a}
@@ -186,7 +186,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 @media(max-width:370px){.nutrition-ai-settings .ai-token-row{grid-template-columns:minmax(0,1fr) auto}.nutrition-ai-settings .ai-token-row #food-ai-copy{grid-column:2}.ai-setup-actions>*{flex:1}.ai-food-suggestion{grid-template-columns:minmax(0,1fr) auto;gap:5px}.ai-food-suggestion .btn{padding:8px}}
 .photo-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0 12px}.photo-action{min-height:70px;border:1px solid #57454e;background:linear-gradient(145deg,#302a2e,#262428);color:var(--ink);border-radius:14px;display:grid;place-items:center;align-content:center;gap:5px;font:inherit;font-size:12px;font-weight:700}.photo-action svg{width:23px;height:23px;fill:none;stroke:#ff6e84;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.visually-hidden-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;pointer-events:none!important}.ai-action-wrap{display:flex;justify-content:center;margin:10px 0}.ai-results-actions{display:flex;justify-content:flex-end}.food-add-row[hidden],.food-results:empty{display:none!important}.food-add-row{grid-template-columns:minmax(0,1fr) auto auto}.food-add-row #food-selection-name{margin:0 0 5px;font-size:12px;font-weight:700;align-self:end}.food-add-row label{min-width:78px}.nutrition-editor.reviewing>.nutrition-privacy{display:block!important}
 @media(max-width:370px){.photo-actions{gap:7px}.photo-action{min-height:64px}.food-add-row{grid-template-columns:minmax(0,1fr) auto auto;gap:6px}.food-add-row label{min-width:68px}.food-add-row .btn{padding:8px;font-size:11px}}
-.nutrition-ai-settings>summary{cursor:pointer;font-weight:750;font-size:15px}.nutrition-ai-settings>summary::marker{color:#ff6e84}.nutrition-ai-settings[open]>summary{margin-bottom:4px}.ai-settings-content{padding-top:6px}.nutrition-goal-link{border:0;cursor:pointer;font-size:17px}.weight-chart{margin:10px 0 14px;padding:8px 8px 2px;border-radius:14px;background:#ffffff06}.weight-chart svg{display:block;width:100%;height:auto;overflow:visible}.weight-axis{stroke:#574c55;stroke-width:1}.weight-line{fill:none;stroke:#bd6cff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.weight-point{fill:#ff5570;stroke:#27232a;stroke-width:2}.weight-label,.weight-value-label{fill:#bdb3ba;font-size:10px}.weight-value-label{font-size:9px}.weight-chart .small-print{padding:10px;margin:0}
+.nutrition-ai-settings>summary{font-size:14px}.nutrition-ai-settings>summary strong{font-size:14px}.nutrition-ai-settings[open]>summary{margin-bottom:0}.ai-settings-content{padding-top:6px}.nutrition-goal-link{border:0;cursor:pointer;font-size:17px}.weight-chart{margin:10px 0 14px;padding:8px 8px 2px;border-radius:14px;background:#ffffff06}.weight-chart svg{display:block;width:100%;height:auto;overflow:visible}.weight-axis{stroke:#574c55;stroke-width:1}.weight-line{fill:none;stroke:#bd6cff;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.weight-point{fill:#ff5570;stroke:#27232a;stroke-width:2}.weight-label,.weight-value-label{fill:#bdb3ba;font-size:10px}.weight-value-label{font-size:9px}.weight-chart .small-print{padding:10px;margin:0}
 .ai-portion-controls{grid-column:1/-1;display:flex;align-items:center;flex-wrap:wrap;gap:6px;padding-top:2px}.ai-portion-controls[hidden],[data-ai-add][hidden]{display:none!important}.ai-portion-controls strong{font-size:11px;color:#ffb3c0;min-width:42px;text-align:center}.ai-portion-controls .ai-remove{margin-left:auto;color:#ff9bad;border-color:#65434d}
 .food-portion-controls{display:flex;align-items:center;gap:5px}.food-portion-controls .field{min-width:0;width:62px;padding:6px 7px}.food-portion-controls .btn{padding:6px 7px;font-size:10px}.draft-food .draft-quick-controls{display:flex;align-items:center;flex-wrap:wrap;gap:6px}.draft-food .draft-quick-controls button{position:static;border:1px solid var(--line);background:#302d32;color:var(--ink);border-radius:8px;padding:6px 8px;font-size:11px}.draft-food .draft-quick-controls strong{min-width:45px;text-align:center;font-size:11px}.draft-food .draft-quick-controls button:last-child{margin-left:auto;color:#ff9bad;border-color:#65434d}
 .draft-food>button[data-remove-draft]{position:static;justify-self:end;border:1px solid #65434d;background:#30272c;border-radius:8px;padding:6px 9px;font-size:11px;color:#ff9bad}
@@ -373,25 +373,40 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .photo-action svg{width:21px;height:21px}
 .photo-action-label{grid-column:auto}
 .photo-action:focus-visible,.workout-ai-refresh:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
-.workout-ai-head{align-items:center;gap:10px}
-.workout-ai-toggle{display:flex;align-items:center;gap:9px;min-width:0;min-height:44px;padding:4px 0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:14px;font-weight:800;text-align:left}
-.workout-ai-toggle>span:nth-child(2){white-space:nowrap}
-.workout-ai-chevron{margin-left:1px;color:#b8aab6;font-size:17px;transition:transform .18s ease}
-.workout-ai-toggle[aria-expanded="true"] .workout-ai-chevron{transform:rotate(180deg)}
-.workout-ai-refresh{display:grid;place-items:center;flex:none;width:44px;height:44px;min-height:44px;padding:0;border:1px solid #554650;border-radius:13px;background:#302a31;color:#ffafc2}
+.workout-ai-card{padding:8px 12px;border-radius:16px}
+.workout-ai-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0;min-height:40px}
+.workout-ai-toggle{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:40px;padding:0;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.workout-ai-label{font-size:14px;font-weight:800;letter-spacing:-.15px}
+.workout-ai-toggle .ai-title-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:9px;background:#e85d8d20;color:#ff9fbc;font-size:15px}
+.workout-ai-chevron{width:0;height:0;flex:none;margin:0 1px 0 2px;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #ff6e84;transform:rotate(0);transition:transform .18s ease}
+.workout-ai-toggle[aria-expanded="true"] .workout-ai-chevron,.exercise-collapse[aria-expanded="true"] .workout-ai-chevron{transform:rotate(90deg)}
+.workout-ai-refresh{display:grid;place-items:center;flex:none;width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:12px;background:transparent;color:#ffafc2;cursor:pointer}
+.workout-ai-refresh:hover{background:#ffffff08;color:#ffd2dc}
 .workout-ai-refresh svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .workout-ai-card #workout-ai-content[hidden]{display:none}
 .workout-ai-card #workout-ai-content:not([hidden]){padding-top:8px}
 .ai-review-suggestions-title{margin:12px 0 6px;font-size:12px}
 .ai-alternative-reason{display:block;margin-top:4px;color:#ffb0c4}
-@media(max-width:370px){.photo-actions{gap:5px}.photo-action{min-height:64px;padding:6px 3px;font-size:10px}.photo-action svg{width:19px;height:19px}.workout-ai-toggle{gap:6px;font-size:13px}}
+.ai-review-suggestion{display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:8px}
+.ai-review-suggestion>div{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
+.ai-review-suggestion small{display:block;color:#c3b5bd;font-size:11px;line-height:1.4}
+.ai-apply-change{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #61424c;border-radius:11px;background:#39262e;color:#ff9bad;cursor:pointer}
+.ai-apply-change:hover{background:#4a2934;color:#ffd0d8}
+.ai-apply-change svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:370px){.photo-actions{gap:5px}.photo-action{min-height:64px;padding:6px 3px;font-size:10px}.photo-action svg{width:19px;height:19px}.workout-ai-toggle{gap:8px}.workout-ai-label{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.workout-ai-chevron{transition:none}}
 #settings-screen .tool-grid{gap:9px}
+.exercise-catalogue-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.exercise-catalogue-head>strong{font-size:14px}
+.exercise-catalogue-head #browse-catalogue{flex:none;min-height:40px;padding:8px 12px}
+.exercise-catalogue-card>p{margin:6px 0 0}
 .settings-accordion{padding:0;overflow:hidden;border-radius:15px}
 .settings-accordion>summary{position:relative;display:flex;align-items:center;min-height:64px;padding:12px 46px 12px 14px;cursor:pointer;list-style:none}
-.settings-accordion>summary::-webkit-details-marker{display:none}
-.settings-accordion>summary:after{content:'⌄';position:absolute;right:15px;top:50%;transform:translateY(-50%);color:#bdaeba;font-size:18px;transition:transform .18s ease}
-.settings-accordion[open]>summary:after{transform:translateY(-50%) rotate(180deg)}
+details>summary{position:relative;padding-right:30px;cursor:pointer;list-style:none}
+details>summary::-webkit-details-marker{display:none}
+details>summary:after{content:'';position:absolute;right:5px;top:50%;width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #ff6e84;transform:translateY(-50%);transition:transform .18s ease}
+details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
+.settings-accordion>summary:after{right:15px}
 .settings-accordion>summary>span{display:grid;gap:4px;min-width:0}
 .settings-accordion>summary strong{font-size:14px}
 .settings-accordion>summary small{font-size:11px;color:#b9aeb7;line-height:1.35}
@@ -407,12 +422,8 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 #settings-screen .tool-card:not(.settings-accordion){padding:14px;border-radius:15px}
 #settings-screen #browse-catalogue{min-height:44px}
 #settings-screen .nutrition-settings-grid{gap:8px}
-@media(prefers-reduced-motion:reduce){.settings-accordion>summary:after{transition:none}}
-.food-search-online{display:flex;align-items:center;gap:8px;margin:8px 0 5px}
-.food-search-online .btn{flex:none;min-height:40px}
-.food-search-online .small-print{margin:0;font-size:10px;line-height:1.35}
+@media(prefers-reduced-motion:reduce){details>summary:after{transition:none}}
 .food-result small{display:block}
-@media(max-width:390px){.food-search-online{align-items:flex-start;flex-direction:column}.food-search-online .btn{width:100%}}
 .workout-ai-refresh{border:0;background:transparent;box-shadow:none}
 .workout-ai-refresh:hover{background:transparent;color:#ffd2dc}
 .progress-ai-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -443,4 +454,26 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .nutrition-editor .manual-food-card #food-search{width:100%;min-width:0}
 .nutrition-editor .manual-food-card .food-results{max-height:180px}
 .nutrition-editor .manual-food-card .food-add-row{margin:10px 0 0}
+.nutrition-editor .food-search-field{position:relative;margin:0}
+.nutrition-editor .food-search-field #food-search{height:48px;padding-right:52px}
+.nutrition-editor .food-search-submit{position:absolute;top:2px;right:3px;display:grid;place-items:center;width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:11px;background:transparent;color:#ff9bad;cursor:pointer}
+.nutrition-editor .food-search-submit:hover{background:#ffffff0a;color:#ffd0da}
+.nutrition-editor .food-search-submit:focus-visible{outline:2px solid #ff9bad;outline-offset:1px}
+.nutrition-editor .food-search-submit:disabled{opacity:.5;cursor:wait}
+.nutrition-editor .food-search-submit svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.nutrition-editor .nutrition-favorite-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.nutrition-editor .nutrition-favorite{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:8px;min-width:0;padding:9px}
+.nutrition-editor .nutrition-favorite>span{display:block;width:100%;min-height:2.6em;overflow:visible;text-overflow:clip;white-space:normal;overflow-wrap:anywhere;line-height:1.35}
+.nutrition-editor .nutrition-favorite>div{display:grid;grid-template-columns:minmax(0,1fr) 36px 36px;gap:4px;width:100%;min-width:0}
+.nutrition-editor .nutrition-favorite>div>.btn{min-width:0;min-height:36px;padding:5px 4px;font-size:11px}
+.nutrition-editor .nutrition-favorite>div>.favorite-edit,.nutrition-editor .nutrition-favorite>div>[data-delete-favorite]{width:36px}
+.nutrition-editor .nutrition-favorite:has(.favorite-name-edit){display:grid;grid-template-columns:minmax(0,1fr) 1fr 1fr;gap:6px}
+.nutrition-editor .nutrition-favorite .favorite-name-edit{grid-column:1/-1;width:100%;min-width:0}
+.nutrition-editor .nutrition-favorite:has(.favorite-name-edit)>.btn{width:100%}
+.nutrition-meals{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+.nutrition-meal{min-width:0;padding:11px 36px 11px 11px}
+.nutrition-meal>.row>div:first-child{min-width:0;padding-right:23px}
+.nutrition-meal>.row strong,.nutrition-meal>.row small,.nutrition-meal .nutrition-food-list{overflow-wrap:anywhere;word-break:normal}
+.nutrition-meal .row>.nutrition-meal-top-actions{top:5px;right:5px}
+.nutrition-meal-top-actions .icon-button{width:32px;min-width:32px;height:32px;min-height:32px}
 @media(max-width:360px){.nutrition-editor .ai-food-suggestion{padding:8px}.nutrition-editor .manual-food-card{padding:10px}}
