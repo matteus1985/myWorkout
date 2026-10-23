@@ -21,7 +21,7 @@
     html,body{width:100%;max-width:100%;overflow-x:hidden}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
-  <link rel="stylesheet" href="material.css?v=liftlog-20261023-photo-response-v19">
+  <link rel="stylesheet" href="material.css?v=liftlog-20261023-ui-tidy-v23">
   <style>
     html:not(.app-ready) body{background:#151416;color:#f8edf1;overflow:hidden}
     html:not(.app-ready) .app,html:not(.app-ready) .tabbar{visibility:hidden}
@@ -51,9 +51,10 @@
           <div class="stat"><strong id="week-sessions">0</strong><span>workout days this week</span></div>
           <div class="stat"><strong id="week-exercises">0</strong><span>sets logged this week</span></div>
         </div>
+        <section class="progress-card workout-ai-card"><div class="progress-card-head workout-ai-head"><button type="button" class="workout-ai-toggle" id="workout-ai-toggle" aria-expanded="false" aria-controls="workout-ai-content"><span class="ai-title-icon" aria-hidden="true">✦</span><span>Plan insights</span><span class="workout-ai-chevron" aria-hidden="true">⌄</span></button><button type="button" class="workout-ai-refresh" id="workout-ai-review" aria-label="Refresh plan insights" title="Refresh plan insights"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 4v4h4M4 13a8 8 0 0 0 14.9 3M20 20v-4h-4"/></svg></button></div><div id="workout-ai-content" hidden><p id="workout-ai-status" class="small-print" aria-live="polite"></p><div id="workout-ai-result" class="workout-ai-result"></div></div></section>
         <div class="section-head"><h2>Your plan</h2><span id="plan-count">5 days</span></div>
         <div class="panel setup-panel hidden" id="setup-level"><strong>Choose your experience level</strong><p>Your level helps us choose appropriate exercises. Your logged weights do not determine it.</p><button class="btn btn-primary btn-small" id="choose-level">Choose level</button></div>
-        <div class="days" id="day-list"></div><p class="volume-note hidden" id="volume-warning"></p><details class="panel"><summary>Weekly training volume</summary><div class="volume-grid" id="week-volume"></div><p class="small-print">Direct work sets are shown. Compound exercises also train supporting muscles.</p></details><section class="progress-card workout-ai-card"><div class="progress-card-head"><div><h2><span class="ai-title-icon" aria-hidden="true">✦</span> AI plan comments</h2><p>Optional observations and alternatives</p></div><button type="button" class="btn btn-soft btn-small" id="workout-ai-review">Review</button></div><p id="workout-ai-status" class="small-print" aria-live="polite"></p><div id="workout-ai-result" class="workout-ai-result"></div></section><button class="btn btn-primary end-week" id="end-week">End week</button>
+        <div class="days" id="day-list"></div><p class="volume-note hidden" id="volume-warning"></p><details class="panel"><summary>Weekly training volume</summary><div class="volume-grid" id="week-volume"></div><p class="small-print">Direct work sets are shown. Compound exercises also train supporting muscles.</p></details><button class="btn btn-primary end-week" id="end-week">End week</button>
         <div class="status-line"><i class="dot" id="online-dot"></i><span id="online-label">Ready to save on this iPhone</span></div>
       </section>
 
@@ -85,7 +86,7 @@
           <button type="button" data-progress-range="4w" aria-pressed="true">4W</button>
           <button type="button" data-progress-range="12w" aria-pressed="false">12W</button>
         </div>
-        <section class="progress-card progress-ai-card" aria-labelledby="progress-ai-heading"><div class="progress-card-head"><div><h2 id="progress-ai-heading"><span class="ai-title-icon" aria-hidden="true">✦</span> AI progress comments</h2><p id="progress-ai-period">For the selected period</p></div></div><p id="progress-ai-status" class="small-print" aria-live="polite">When online, a summary of your training logs is sent to your configured Cloudflare Worker for this period.</p><div id="progress-ai-result" class="workout-ai-result"></div><p class="small-print">Training data only. The comment does not estimate muscle growth or change your plan.</p></section>
+        <section class="progress-card progress-ai-card" aria-labelledby="progress-ai-heading"><div class="progress-ai-head"><button type="button" id="progress-ai-toggle" class="progress-ai-toggle" aria-expanded="false" aria-controls="progress-ai-content"><span class="ai-title-icon" aria-hidden="true">✦</span><span><strong id="progress-ai-heading">Progress insights</strong><small id="progress-ai-period">Overall training · last 4 weeks</small></span><span class="workout-ai-chevron" aria-hidden="true">⌄</span></button><button type="button" id="progress-ai-refresh" class="btn btn-outline btn-small">Refresh</button></div><div id="progress-ai-content" hidden><p id="progress-ai-status" class="small-print" aria-live="polite">When online, a summary of your training logs is sent to your configured Cloudflare Worker for this period.</p><div id="progress-ai-result" class="workout-ai-result"></div><p class="small-print">Training data only. The comment does not estimate muscle growth or change your plan.</p></div></section>
         <section class="progress-card muscle-map-card" aria-labelledby="muscle-map-heading">
           <div class="progress-card-head"><div><h2 id="muscle-map-heading">Muscle map</h2><p>Training load by muscle group</p></div><span id="map-period-label" class="progress-context">Last 4 weeks</span></div>
           <div id="muscle-map-chart" class="muscle-map-chart"></div>
@@ -118,11 +119,12 @@
       </section>
 
       <section class="screen" id="settings-screen">
-        <div class="eyebrow">Your app, your pace</div><h1>Settings & backup</h1>
-        <p class="sub">Everything is saved on this iPhone. Keep a backup in Google Drive for extra peace of mind.</p>
+        <div class="eyebrow">Your app, your pace</div><h1>Settings</h1>
+        <p class="sub">Personalize your training, nutrition and data.</p>
         <div class="tool-grid">
-          <div class="tool-card nutrition-settings-card">
-            <strong>Nutrition profile</strong><p>Used for a rough daily energy estimate and a gradual weight-gain target. It is not medical advice.</p>
+          <details class="tool-card settings-accordion nutrition-settings-card">
+            <summary><span><strong>Nutrition profile</strong><small>Daily targets and weight goals</small></span></summary><div class="settings-accordion-body">
+            <p>Used for a rough daily energy estimate and a gradual weight-gain target.</p>
             <div class="nutrition-settings-grid">
               <label>Age<input class="field" id="nutrition-age" type="number" min="15" max="100" placeholder="Years" inputmode="numeric"></label>
               <label>Height<input class="field" id="nutrition-height" type="number" min="100" max="250" placeholder="cm" inputmode="decimal"></label>
@@ -136,9 +138,10 @@
             <p id="nutrition-estimate" class="settings-note"></p><p id="nutrition-macro-estimate" class="settings-note"></p>
             <label class="settings-label" for="nutrition-target-edit">Daily calorie target (optional adjustment)</label><input class="field" id="nutrition-target-edit" type="number" min="1000" max="7000" step="50" placeholder="Auto estimate" inputmode="numeric"><button class="btn btn-outline btn-small" id="nutrition-target-save">Save calorie target</button>
             <p class="settings-note">Initial target uses an estimated maintenance level plus about 10%. The formula coefficient is optional; choose Neutral if you prefer not to specify.</p>
-          </div>
-          <div class="tool-card">
-            <strong>Your training plan</strong>
+            </div>
+          </details>
+          <details class="tool-card settings-accordion">
+            <summary><span><strong>Your training plan</strong><small>Schedule, experience and equipment</small></span></summary><div class="settings-accordion-body">
             <p>Choose your weekly schedule and the equipment you can use. Workouts are kept under 90 minutes.</p>
             <div class="training-choice-grid"><label for="weekly-days">Workouts per week<select class="select" id="weekly-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option></select></label>
             <label for="experience-level">Experience level<select class="select" id="experience-level"><option value="">Choose your level</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label><p class="settings-note training-level-note">Beginner: learning stable movement and technique. Intermediate: confident with compound lifts and consistent training. Advanced: extensive practice and control of demanding variations.</p></div>
@@ -151,31 +154,28 @@
             <div class="settings-note" id="plan-summary"></div>
             <div class="settings-note" id="art-cache-status">Exercise images prepare for offline use after the first online visit.</div>
             <div class="settings-note image-credit"><a href="https://repdb.co" target="_blank" rel="noopener noreferrer">Exercise data by RepDB (repdb.co)</a></div>
-          </div>
+            </div>
+          </details>
           <div class="tool-card"><strong>Exercise catalogue</strong><p id="catalogue-size"></p><button class="btn btn-soft" id="browse-catalogue">Browse exercises</button></div>
-          <div class="tool-card">
-            <strong>Backup your workout history</strong>
+          <details class="tool-card settings-accordion">
+            <summary><span><strong>Backup & restore</strong><small id="backup-status-settings">Last backup: Never</small></span></summary><div class="settings-accordion-body">
             <p>Export a backup file and save it in Google Drive. We recommend doing this every week.</p>
             <button class="btn btn-primary btn-small" id="export-settings">Export Backup</button>
             <button class="btn btn-outline btn-small" id="import-button">Import Backup</button>
             <input class="hidden" id="import-file" type="file" accept="application/json,.json">
-            <div class="backup-state" id="backup-status-settings">Last backup: Never</div>
-          </div>
-          <div class="tool-card">
-            <strong>Restore from Google Drive</strong>
-            <p>Download your backup from Drive to your iPhone first. Then tap Import Backup and choose that file.</p>
             <div class="hint"><b>To save a backup:</b> tap Export Backup → Share → Save to Files → choose your Google Drive folder → Save.</div>
-          </div>
-          <div class="tool-card">
+            </div>
+          </details>
+          <details class="tool-card settings-accordion">
+            <summary><span><strong>Training guidance</strong><small>Progression and offline use</small></span></summary><div class="settings-accordion-body">
             <strong>Weekly progression</strong>
             <p>First, aim for one more rep while staying within the target range. Once every set reaches the top of its range with at least two reps left, the app suggests a small weight increase. Without effort logging, two successful exposures are required.</p>
             <div class="hint">Aim to finish most work sets with 2–3 reps left. Log your effort optionally. End week prepares the next targets from completed sets; skipped work never triggers an increase.</div>
-          </div>
-          <div class="tool-card">
-            <strong>Using the app offline</strong>
+            <strong class="settings-guidance-title">Using the app offline</strong>
             <p>After opening the app online once, it can load without a connection. Logging and progress are saved on this iPhone.</p>
             <div class="small-print">If you get a new iPhone, clear Safari website data, or remove the saved app, restore from a backup first.</div>
-          </div>
+            </div>
+          </details>
           <details class="tool-card nutrition-ai-settings"><summary>AI food photo setup</summary><div class="ai-settings-content">
             <p>Connect your personal Cloudflare Worker to estimate foods, portions, calories and macros from a photo. Review and correct every estimate before saving. The private code stays on this iPhone and is not included in backups.</p>
             <label class="settings-label" for="food-ai-url">Worker address</label>
@@ -219,15 +219,14 @@
 
   <div class="modal-backdrop catalogue-modal hidden" id="catalogue-modal" role="dialog" aria-modal="true" aria-labelledby="catalogue-title"><div class="modal"><div class="row"><h2 id="catalogue-title">Exercise catalogue</h2><button class="back" id="catalogue-close" aria-label="Close catalogue">×</button></div><input class="field catalogue-search" id="catalogue-search" type="search" placeholder="Search exercises" aria-label="Search exercises"><div class="catalogue-filters"><select class="select" id="catalogue-muscle" aria-label="Filter muscle"></select><select class="select" id="catalogue-equipment" aria-label="Filter equipment"></select><select class="select" id="catalogue-level" aria-label="Filter difficulty"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div><p class="catalogue-count" id="catalogue-count"></p><div class="catalogue-list" id="catalogue-list"></div></div></div>
   <div class="modal-backdrop scope-modal hidden" id="scope-modal" role="dialog" aria-modal="true" aria-labelledby="scope-title"><div class="modal"><h2 id="scope-title"></h2><p id="scope-copy"></p><div class="scope-buttons"><button class="btn btn-primary" id="scope-week">This week only</button><button class="btn btn-soft" id="scope-future">This and future weeks</button><button class="btn btn-outline" id="scope-cancel">Cancel</button></div></div></div>
-  <div class="modal-backdrop nutrition-modal hidden" id="meal-editor" role="dialog" aria-modal="true" aria-label="Add food"><div class="modal nutrition-editor"><div class="row nutrition-editor-top"><button type="button" class="back" id="meal-cancel" aria-label="Close">×</button></div><h3 class="meal-section-title">Add foods</h3><div class="photo-actions"><button type="button" class="photo-action" id="meal-camera-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Take a photo</span></button><button type="button" class="photo-action" id="meal-upload-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 14v5h14v-5"/></svg><span>Upload a photo</span></button></div><input id="meal-photo-camera" class="visually-hidden-input" type="file" accept="image/*" capture="environment" aria-label="Take a meal photo"><input id="meal-photo" class="visually-hidden-input" type="file" accept="image/*" aria-label="Upload a meal photo"><img id="meal-photo-preview" class="meal-photo-preview" alt="Meal photo preview" hidden><p id="ai-recognition-status" class="small-print" aria-live="polite"></p><div id="ai-recognition-results" class="ai-recognition-results"></div><div id="nutrition-favorites" class="nutrition-favorites" hidden></div><label class="settings-label" for="food-search">Add more foods</label><input id="food-search" class="field" type="search" placeholder="e.g. chicken, rice, yogurt"><div class="food-results" id="food-results"></div><div class="food-add-row" id="food-add-row" hidden><p id="food-selection-name"></p><label for="food-grams">Portion (g)<span class="food-portion-controls"><button type="button" id="food-portion-dec" class="btn btn-outline btn-small" aria-label="Reduce portion by 10 grams">−10</button><input id="food-grams" class="field" type="number" min="1" step="1" value="100" inputmode="numeric"><button type="button" id="food-portion-inc" class="btn btn-outline btn-small" aria-label="Increase portion by 10 grams">+10</button></span></label><button id="food-add-selected" class="btn btn-soft btn-small">Add food</button></div><details class="custom-food-details"><summary>Add custom food per 100 g</summary><div class="custom-food-grid"><input id="custom-food-name" class="field" placeholder="Food name"><input id="custom-food-kcal" class="field" type="number" placeholder="kcal" aria-label="Calories per 100 grams"><input id="custom-food-protein" class="field" type="number" step="0.1" placeholder="Protein g" aria-label="Protein grams per 100 grams"><input id="custom-food-carbs" class="field" type="number" step="0.1" placeholder="Carbs g" aria-label="Carbohydrate grams per 100 grams"><input id="custom-food-fat" class="field" type="number" step="0.1" placeholder="Fat g" aria-label="Fat grams per 100 grams"><button id="add-custom-food" class="btn btn-outline btn-small">Add custom food</button></div><p class="small-print">Use the nutrition label. Values are stored for future entries and in your backup.</p></details><section class="meal-draft-section"><h3>In this meal</h3><div class="nutrition-draft-list" id="meal-draft-list"></div><div class="nutrition-draft-total" id="meal-draft-total"></div></section><div class="modal-buttons"><button id="meal-save" class="btn btn-primary">Save</button></div></div></div>
-  <div class="modal-backdrop nutrition-photo-modal hidden" id="nutrition-photo-modal" role="dialog" aria-modal="true" aria-label="Meal photo"><div class="nutrition-photo-panel"><button type="button" class="back" id="nutrition-photo-close" aria-label="Close photo">×</button><img id="nutrition-photo-image" alt="Saved meal photo"></div></div>
-<script src="catalogue.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="planner.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="sketches.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="exercise-art.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="nutrition-data.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="nutrition.js?v=liftlog-20261023-photo-response-v19"></script>
-<script src="app.js?v=liftlog-20261023-photo-response-v19"></script>
+  <div class="modal-backdrop nutrition-modal hidden" id="meal-editor" role="dialog" aria-modal="true" aria-label="Add food"><div class="modal nutrition-editor"><div class="row nutrition-editor-top"><button type="button" class="back" id="meal-cancel" aria-label="Close">×</button></div><h3 class="meal-section-title">Add foods</h3><div class="photo-actions"><button type="button" class="photo-action" id="meal-camera-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg><span>Take a photo</span></button><button type="button" class="photo-action" id="meal-upload-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 16V4m-4 4 4-4 4 4M5 14v5h14v-5"/></svg><span>Upload a photo</span></button><button type="button" class="photo-action photo-action-label" id="meal-label-open"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.5h14v17H5zM8 7h8M8 11h8M8 15h3"/><path d="m14.5 16.5 1.5 1.5 3-3"/></svg><span>Scan product label</span></button></div><input id="meal-photo-camera" class="visually-hidden-input" type="file" accept="image/*" capture="environment" aria-label="Take a meal photo"><input id="meal-photo" class="visually-hidden-input" type="file" accept="image/*" aria-label="Upload a meal photo"><img id="meal-photo-preview" class="meal-photo-preview" alt="Meal photo preview" hidden><p id="ai-recognition-status" class="small-print" aria-live="polite"></p><div id="ai-recognition-results" class="ai-recognition-results"></div><div id="nutrition-favorites" class="nutrition-favorites" hidden></div><label class="settings-label" for="food-search">Manual food search</label><input id="food-search" class="field" type="search" placeholder="e.g. chicken, rice, yogurt"><div class="food-search-online"><button type="button" id="food-search-online" class="btn btn-outline btn-small">Search USDA + packaged foods</button><span id="food-search-status" class="small-print" aria-live="polite">Offline foods are ready. Online search checks USDA and Open Food Facts.</span></div><div class="food-results" id="food-results"></div><div class="food-add-row" id="food-add-row" hidden><p id="food-selection-name"></p><label for="food-grams">Portion (g)<span class="food-portion-controls"><button type="button" id="food-portion-dec" class="btn btn-outline btn-small" aria-label="Reduce portion by 10 grams">−10</button><input id="food-grams" class="field" type="number" min="1" step="1" value="100" inputmode="numeric"><button type="button" id="food-portion-inc" class="btn btn-outline btn-small" aria-label="Increase portion by 10 grams">+10</button></span></label><button id="food-add-selected" class="btn btn-soft btn-small">Add food</button></div><section class="meal-draft-section"><h3>In this meal</h3><div class="nutrition-draft-list" id="meal-draft-list"></div><div class="nutrition-draft-total" id="meal-draft-total"></div></section><div class="modal-buttons"><button id="meal-save" class="btn btn-primary">Save</button></div></div></div>
+<script src="catalogue.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="planner.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="sketches.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="exercise-art.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="nutrition-data.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="nutrition.js?v=liftlog-20261023-ui-tidy-v23"></script>
+<script src="app.js?v=liftlog-20261023-ui-tidy-v23"></script>
 
 </body>
 </html>

@@ -4,7 +4,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 .hero{background:linear-gradient(118deg,#a81732 0%,#cf2543 58%,#873b78 100%);box-shadow:0 12px 30px #7d183022}.day-card{background:linear-gradient(125deg,#282528,#242326 62%,#30242b);border-color:#40383d}.day-card.finished{background:linear-gradient(120deg,#37232b,#29242a 72%)}.exercise{background:linear-gradient(145deg,#29272b 0%,#242326 60%,#2e242a 100%);border-color:#40393e}.session-banner{background:linear-gradient(100deg,#29262b,#242326 65%,#30242a);border-color:#42383d}
 .muscle-map-chart{padding:8px;background:radial-gradient(ellipse at 50% 28%,#302b36,#222225 72%)}.muscle-map-pair{max-width:350px;gap:8px}.muscle-map-svg{width:min(100%,165px)}.muscle-map-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px auto 2px;max-width:440px}.muscle-map-item{display:grid;grid-template-columns:minmax(0,1fr) 44px auto;align-items:center;gap:7px;min-width:0;padding:7px 8px;border:1px solid #39353c;border-radius:10px;background:linear-gradient(110deg,#29272c,#242326);color:#e8e4eb;text-align:left;font-size:10px}.muscle-map-item.is-selected{border-color:#ad748d;background:linear-gradient(110deg,#382832,#29252d);color:#fff}.muscle-map-item>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.muscle-map-item>i{height:4px;border-radius:9px;background:#413943;overflow:hidden}.muscle-map-item>i>b{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,#9b65ca,#f05c7a)}.muscle-map-item>strong{min-width:25px;text-align:right;font-size:9px;color:#c9beca;font-variant-numeric:tabular-nums}.muscle-map-item:focus-visible{outline:2px solid #ff879a;outline-offset:2px}
-.ai-draft-duplicate{display:none!important}.ai-food-suggestion{gap:5px;padding:7px 9px;border-radius:10px}.ai-food-suggestion>div{gap:2px}.ai-food-suggestion>div>strong{font-size:12px}.ai-food-suggestion>div>small{font-size:10px;line-height:1.2}.ai-food-suggestion>.btn{min-height:28px;padding:4px 9px;font-size:10px}.ai-portion-controls{gap:4px;padding-top:0}.ai-portion-controls .btn{min-height:27px;padding:3px 7px;font-size:10px;border-radius:8px}.ai-portion-controls strong{min-width:38px;font-size:10px}.ai-portion-controls .ai-remove{margin-left:auto}
+.ai-draft-duplicate{display:grid}.ai-food-suggestion{gap:5px;padding:7px 9px;border-radius:10px}.ai-food-suggestion>div{gap:2px}.ai-food-suggestion>div>strong{font-size:12px}.ai-food-suggestion>div>small{font-size:10px;line-height:1.2}.ai-food-suggestion>.btn{min-height:28px;padding:4px 9px;font-size:10px}.ai-portion-controls{gap:4px;padding-top:0}.ai-portion-controls .btn{min-height:27px;padding:3px 7px;font-size:10px;border-radius:8px}.ai-portion-controls strong{min-width:38px;font-size:10px}.ai-portion-controls .ai-remove{margin-left:auto}
 @media(max-width:380px){.muscle-map-list{gap:4px}.muscle-map-item{grid-template-columns:minmax(0,1fr) 32px auto;gap:4px;padding:7px 6px;font-size:9px}.muscle-map-item>strong{font-size:8px}.muscle-map-svg{width:min(100%,145px)}}
 .anatomy-plate{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%;height:auto;margin:14px 0}.anatomy-pose{display:block;width:100%;height:auto;border-radius:16px;background:#f7f3ed}.guide-modal .modal{max-height:85dvh;overflow:auto}
 .day-card:disabled{opacity:.58;cursor:not-allowed}
@@ -270,7 +270,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-item>strong{min-width:25px;text-align:right;font-size:9px;color:#c9beca;font-variant-numeric:tabular-nums}
 .muscle-map-item:focus-visible{outline:2px solid #ff879a;outline-offset:2px}
 /* Keep AI suggestions as the single editable representation of recognized foods. */
-.ai-draft-duplicate{display:none!important}
+.ai-draft-duplicate{display:grid}
 .ai-food-suggestion{gap:5px;padding:7px 9px;border-radius:10px}
 .ai-food-suggestion>div{gap:2px}
 .ai-food-suggestion>div>strong{font-size:12px}
@@ -365,3 +365,62 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .nutrition-meal .meal-title-line .btn:before{content:'';position:absolute;inset:-7px}
 .nutrition-meal .meal-title-line .btn-favorite-saved{color:#ff9cbe;background:transparent}
 .nutrition-meal{min-height:0}
+.nutrition-meal .meal-title-line .meal-favorite-name-edit{flex:1 1 120px;width:120px;min-width:72px;height:36px;padding:6px 8px;font-size:12px}
+.nutrition-meal .meal-title-line .meal-favorite-edit-action{display:inline-flex;align-items:center;justify-content:center;width:auto;min-width:44px;height:36px;min-height:36px;margin:0;padding:6px 8px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-size:11px;line-height:1;box-shadow:none}
+.ai-draft-duplicate{display:grid}
+.photo-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.photo-action{min-width:0;min-height:68px;padding:7px 5px;font-size:11px;line-height:1.2;text-align:center}
+.photo-action svg{width:21px;height:21px}
+.photo-action-label{grid-column:auto}
+.photo-action:focus-visible,.workout-ai-refresh:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
+.workout-ai-head{align-items:center;gap:10px}
+.workout-ai-toggle{display:flex;align-items:center;gap:9px;min-width:0;min-height:44px;padding:4px 0;border:0;background:transparent;color:var(--ink);font:inherit;font-size:14px;font-weight:800;text-align:left}
+.workout-ai-toggle>span:nth-child(2){white-space:nowrap}
+.workout-ai-chevron{margin-left:1px;color:#b8aab6;font-size:17px;transition:transform .18s ease}
+.workout-ai-toggle[aria-expanded="true"] .workout-ai-chevron{transform:rotate(180deg)}
+.workout-ai-refresh{display:grid;place-items:center;flex:none;width:44px;height:44px;min-height:44px;padding:0;border:1px solid #554650;border-radius:13px;background:#302a31;color:#ffafc2}
+.workout-ai-refresh svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.workout-ai-card #workout-ai-content[hidden]{display:none}
+.workout-ai-card #workout-ai-content:not([hidden]){padding-top:8px}
+.ai-review-suggestions-title{margin:12px 0 6px;font-size:12px}
+.ai-alternative-reason{display:block;margin-top:4px;color:#ffb0c4}
+@media(max-width:370px){.photo-actions{gap:5px}.photo-action{min-height:64px;padding:6px 3px;font-size:10px}.photo-action svg{width:19px;height:19px}.workout-ai-toggle{gap:6px;font-size:13px}}
+@media(prefers-reduced-motion:reduce){.workout-ai-chevron{transition:none}}
+#settings-screen .tool-grid{gap:9px}
+.settings-accordion{padding:0;overflow:hidden;border-radius:15px}
+.settings-accordion>summary{position:relative;display:flex;align-items:center;min-height:64px;padding:12px 46px 12px 14px;cursor:pointer;list-style:none}
+.settings-accordion>summary::-webkit-details-marker{display:none}
+.settings-accordion>summary:after{content:'⌄';position:absolute;right:15px;top:50%;transform:translateY(-50%);color:#bdaeba;font-size:18px;transition:transform .18s ease}
+.settings-accordion[open]>summary:after{transform:translateY(-50%) rotate(180deg)}
+.settings-accordion>summary>span{display:grid;gap:4px;min-width:0}
+.settings-accordion>summary strong{font-size:14px}
+.settings-accordion>summary small{font-size:11px;color:#b9aeb7;line-height:1.35}
+.settings-accordion[open]>summary{border-bottom:1px solid #413b43}
+.settings-accordion-body{padding:13px 14px 15px}
+.settings-accordion-body>p:first-child{margin-top:0}
+.settings-accordion-body .settings-note{line-height:1.45}
+.settings-accordion-body .equipment-grid{gap:7px}
+.settings-accordion-body .equipment-option{min-height:44px;padding:8px 9px}
+.settings-accordion-body .training-choice-grid{gap:9px}
+.settings-accordion-body .btn{margin:4px 5px 2px 0}
+.settings-guidance-title{display:block;margin-top:18px}
+#settings-screen .tool-card:not(.settings-accordion){padding:14px;border-radius:15px}
+#settings-screen #browse-catalogue{min-height:44px}
+#settings-screen .nutrition-settings-grid{gap:8px}
+@media(prefers-reduced-motion:reduce){.settings-accordion>summary:after{transition:none}}
+.food-search-online{display:flex;align-items:center;gap:8px;margin:8px 0 5px}
+.food-search-online .btn{flex:none;min-height:40px}
+.food-search-online .small-print{margin:0;font-size:10px;line-height:1.35}
+.food-result small{display:block}
+@media(max-width:390px){.food-search-online{align-items:flex-start;flex-direction:column}.food-search-online .btn{width:100%}}
+.workout-ai-refresh{border:0;background:transparent;box-shadow:none}
+.workout-ai-refresh:hover{background:transparent;color:#ffd2dc}
+.progress-ai-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.progress-ai-toggle{display:flex;align-items:center;gap:10px;min-width:0;min-height:44px;padding:3px 0;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.progress-ai-toggle>span:nth-child(2){display:grid;gap:4px;min-width:0}
+.progress-ai-toggle strong{font-size:14px;font-weight:800}
+.progress-ai-toggle small{color:#b9aeb7;font-size:11px;line-height:1.35}
+.progress-ai-toggle:focus-visible{outline:2px solid #ff9bad;outline-offset:3px;border-radius:5px}
+.progress-ai-card #progress-ai-content[hidden]{display:none}
+.progress-ai-card #progress-ai-content:not([hidden]){padding-top:8px}
+.progress-ai-head .btn{min-width:70px;min-height:42px}

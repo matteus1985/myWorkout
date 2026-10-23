@@ -9,14 +9,14 @@ GET STARTED ON IPHONE
 4. In Settings, choose your experience, weekly schedule and available equipment.
 
 NUTRITION
-The Nutrition tab includes an offline food list, editable serving sizes, custom foods, reusable favorite meals, calorie/macronutrient totals, a gradual body-weight goal estimate, and weekly average-weight check-ins. The food list includes chia seeds and whole-wheat pasta. If you configure the optional Cloudflare Worker, Llama 4 Scout can suggest visible foods, portions, calories and macros from a photo. These are approximate AI estimates, not verified label data or medical advice; review and correct every item before saving. Manual food search continues to work offline.
+The Nutrition tab includes an offline generic food list, editable serving sizes, reusable favorite meals, calorie/macronutrient totals, a gradual body-weight goal estimate, and weekly average-weight check-ins. Manual food search also checks USDA FoodData Central and Open Food Facts when the Worker is configured. If you scan a packaged product label, Llama 4 Scout reads its name and nutrition panel; printed values are used when readable, while estimated values are marked for review. Meal-photo recognition uses approximate AI estimates. Review and correct scanned or recognized nutrition before saving.
 
 OPTIONAL AI FOOD PHOTO SETUP
 1. Open Settings > AI food photo setup. Use Show setup steps for the guided Cloudflare configuration.
-2. Deploy the included worker/src/index.mjs Worker with the Workers AI binding named AI. It provides /identify for food photos and /review for workout feedback.
+2. Deploy the included worker/src/index.mjs Worker with the Workers AI binding named AI. It provides /identify for meal photos and packaged labels, /foods-search for USDA and Open Food Facts, and /review for workout feedback. Food search uses USDA's demo key unless you set a USDA_API_KEY Worker secret for regular use.
 3. Generate a private code in Lift Log, set it as the Worker secret APP_TOKEN in Cloudflare, then enter the Worker HTTPS address and save/test the connection in Lift Log.
 4. The private code is stored separately on this device and is not included in app backups. Never publish it or paste it into app source files.
-5. Taking or selecting a photo starts analysis and sends it to your Worker. The Worker does not intentionally log or store photos, prompts or results. Photos saved with a meal remain on this device and are excluded from backups.
+5. Taking or selecting a photo starts analysis and sends it to your Worker. The Worker does not intentionally log or store photos, prompts or results. Meal photos are not kept in the meal log or backups.
 6. Cloudflare Workers AI has a daily free allowance that may change. Lift Log does not enable automatic paid usage; photo analysis can stop when a limit or service issue is reached. Check Cloudflare's current terms and quota before use.
 
 Food diary entries, profile information, custom foods and weight check-ins are part of Export Backup. Meal photo files stay in local browser storage and are deliberately excluded from backups; they cannot be recovered from a backup after clearing this iPhone's website data or moving to another device.
