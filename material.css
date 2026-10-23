@@ -284,8 +284,8 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-anatomy{position:relative;max-width:520px;margin:0 auto 6px;overflow:hidden;border-radius:16px;background:radial-gradient(ellipse at 50% 45%,#342b3a,#222126 76%);aspect-ratio:3/2}
 .muscle-map-anatomy img{display:block;width:100%;height:100%;object-fit:contain;filter:grayscale(1) contrast(1.05)}
 .muscle-map-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
-.muscle-volume-overlay{fill:#ff5577;stroke:#ff8299;stroke-width:5;stroke-linejoin:round;mix-blend-mode:screen;transition:opacity .25s ease,stroke-width .2s ease}
-.muscle-volume-overlay.is-selected{stroke:#fff1f4;stroke-width:8}
+.muscle-volume-overlay{fill:#f15479;stroke:transparent;stroke-width:2;stroke-linejoin:round;mix-blend-mode:color;transition:opacity .25s ease,stroke .2s ease}
+.muscle-volume-overlay.is-selected{fill:#ff7899;stroke:#ffe1e9;stroke-width:2.5;mix-blend-mode:screen}
 .muscle-map-legend{display:flex;align-items:center;gap:7px;margin:0 auto 6px;max-width:440px;color:#aaa7b2;font-size:9px}
 .muscle-map-legend i{width:30px;height:6px;border-radius:8px;background:linear-gradient(90deg,#3a343b,#ff5577)}
 .muscle-detail{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 2px 0;color:#aaa7b2;font-size:10px}
