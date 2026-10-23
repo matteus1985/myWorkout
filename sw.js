@@ -1,17 +1,17 @@
-const CACHE = 'lift-log-shell-v53';
+const CACHE = 'lift-log-shell-v54';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261023-ui-tidy-v23',
-  './planner.js?v=liftlog-20261023-ui-tidy-v23',
-  './sketches.js?v=liftlog-20261023-ui-tidy-v23',
-  './exercise-art.js?v=liftlog-20261023-ui-tidy-v23',
-  './nutrition-data.js?v=liftlog-20261023-ui-tidy-v23',
-  './nutrition.js?v=liftlog-20261023-ui-tidy-v23',
-  './app.js?v=liftlog-20261023-ui-tidy-v23',
-  './material.css?v=liftlog-20261023-ui-tidy-v23',
-  './media/muscle-map-anatomy.png?v=liftlog-20261023-ui-tidy-v23'
+  './catalogue.js?v=liftlog-20261023-food-dedup-v24',
+  './planner.js?v=liftlog-20261023-food-dedup-v24',
+  './sketches.js?v=liftlog-20261023-food-dedup-v24',
+  './exercise-art.js?v=liftlog-20261023-food-dedup-v24',
+  './nutrition-data.js?v=liftlog-20261023-food-dedup-v24',
+  './nutrition.js?v=liftlog-20261023-food-dedup-v24',
+  './app.js?v=liftlog-20261023-food-dedup-v24',
+  './material.css?v=liftlog-20261023-food-dedup-v24',
+  './media/muscle-map-anatomy.png?v=liftlog-20261023-food-dedup-v24'
 ];
 
 async function cacheShellFile(cache, path) {
