@@ -1,17 +1,17 @@
-const CACHE = 'lift-log-shell-v54';
+const CACHE = 'lift-log-shell-v55';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261023-food-dedup-v24',
-  './planner.js?v=liftlog-20261023-food-dedup-v24',
-  './sketches.js?v=liftlog-20261023-food-dedup-v24',
-  './exercise-art.js?v=liftlog-20261023-food-dedup-v24',
-  './nutrition-data.js?v=liftlog-20261023-food-dedup-v24',
-  './nutrition.js?v=liftlog-20261023-food-dedup-v24',
-  './app.js?v=liftlog-20261023-food-dedup-v24',
-  './material.css?v=liftlog-20261023-food-dedup-v24',
-  './media/muscle-map-anatomy.png?v=liftlog-20261023-food-dedup-v24'
+  './catalogue.js?v=liftlog-20261023-ai-food-cards-v25',
+  './planner.js?v=liftlog-20261023-ai-food-cards-v25',
+  './sketches.js?v=liftlog-20261023-ai-food-cards-v25',
+  './exercise-art.js?v=liftlog-20261023-ai-food-cards-v25',
+  './nutrition-data.js?v=liftlog-20261023-ai-food-cards-v25',
+  './nutrition.js?v=liftlog-20261023-ai-food-cards-v25',
+  './app.js?v=liftlog-20261023-ai-food-cards-v25',
+  './material.css?v=liftlog-20261023-ai-food-cards-v25',
+  './media/muscle-map-anatomy.png?v=liftlog-20261023-ai-food-cards-v25'
 ];
 
 async function cacheShellFile(cache, path) {
