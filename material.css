@@ -440,7 +440,8 @@ details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
 .ai-panel{padding:16px;margin:12px 0;border:1px solid #504553;border-radius:18px;background:#29262f;box-shadow:none;min-width:0}
 .ai-panel-head,.ai-panel-summary{display:flex;align-items:center;gap:10px;min-height:42px;margin:0;min-width:0}
 .ai-panel-summary{cursor:pointer;list-style:none;color:var(--ink)}
-.ai-panel-summary::-webkit-details-marker{display:none}.ai-panel-summary::marker{content:''}
+.ai-panel-summary::-webkit-details-marker{display:none}.ai-panel-summary::marker{content:''}.ai-panel-summary:after{display:none}.ai-panel-summary{padding-right:0}
+.ai-recognition-results:empty,#ai-recognition-status:empty{display:none}.meal-photo-preview[hidden]{display:none}
 .ai-panel .ai-title-icon,.nutrition-ai-settings .ai-title-icon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;margin:0;border-radius:10px;background:#ed71921a;color:#ffa6bf;text-shadow:none}
 .ai-title-icon svg,.ai-action svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
 .ai-heading-copy{display:grid;gap:4px;flex:1;min-width:0;text-align:left}

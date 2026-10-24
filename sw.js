@@ -1,18 +1,18 @@
-const CACHE = 'lift-log-shell-v65';
+const CACHE = 'lift-log-shell-v66';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261023-workout-ui-v36',
-  './planner.js?v=liftlog-20261023-workout-ui-v36',
-  './sketches.js?v=liftlog-20261023-workout-ui-v36',
-  './exercise-art.js?v=liftlog-20261023-workout-ui-v36',
-  './nutrition-data.js?v=liftlog-20261023-workout-ui-v36',
-  './nutrition.js?v=liftlog-20261023-workout-ui-v36',
-  './app.js?v=liftlog-20261023-workout-ui-v36',
-  './coach.js?v=liftlog-20261023-workout-ui-v36',
-  './material.css?v=liftlog-20261023-workout-ui-v36',
-  './media/muscle-map-anatomy.png?v=liftlog-20261023-workout-ui-v36'
+  './catalogue.js?v=liftlog-20261023-workout-ui-v37',
+  './planner.js?v=liftlog-20261023-workout-ui-v37',
+  './sketches.js?v=liftlog-20261023-workout-ui-v37',
+  './exercise-art.js?v=liftlog-20261023-workout-ui-v37',
+  './nutrition-data.js?v=liftlog-20261023-workout-ui-v37',
+  './nutrition.js?v=liftlog-20261023-workout-ui-v37',
+  './app.js?v=liftlog-20261023-workout-ui-v37',
+  './coach.js?v=liftlog-20261023-workout-ui-v37',
+  './material.css?v=liftlog-20261023-workout-ui-v37',
+  './media/muscle-map-anatomy.png?v=liftlog-20261023-workout-ui-v37'
 ];
 
 async function cacheShellFile(cache, path) {
