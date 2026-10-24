@@ -284,6 +284,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-anatomy{position:relative;max-width:520px;margin:0 auto 6px;overflow:hidden;border-radius:16px;background:radial-gradient(ellipse at 50% 45%,#342b3a,#222126 76%);aspect-ratio:3/2}
 .muscle-map-anatomy img{display:block;width:100%;height:100%;object-fit:contain;filter:grayscale(1) contrast(1.05)}
 .muscle-map-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.coach-card{margin:12px 0;padding:14px;min-width:0}.coach-card summary,.voice-meal-card summary{cursor:pointer;font-size:14px;font-weight:750;color:var(--ink)}.coach-card summary::marker,.voice-meal-card summary::marker{color:#ff879a}.coach-card .row{flex-wrap:wrap}.coach-card .small-print:empty,.voice-meal-card .small-print:empty{display:none}.coach-results{display:grid;gap:8px;margin-top:10px}.coach-choice{display:flex;align-items:flex-start;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff05;font-size:12px}.coach-choice input{margin-top:3px;accent-color:#ee2d4d;flex:none}.coach-choice>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}.coach-choice small{color:var(--muted);line-height:1.5}.coach-actions{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.coach-description{font-family:inherit;display:block;height:auto;min-height:86px;resize:vertical;padding:10px;margin:6px 0 10px;line-height:1.5;font-weight:400}.voice-meal-card{margin:12px 0}.voice-meal-card>label{display:block}.voice-meal-card .small-print{line-height:1.5}.coach-actions [hidden]{display:none!important}#voice-stop{background:#b91934;color:#fff}
 .muscle-volume-overlay{fill:#f15479;stroke:transparent;stroke-width:2;stroke-linejoin:round;mix-blend-mode:color;transition:opacity .25s ease,stroke .2s ease}
 .muscle-volume-overlay.is-selected{fill:#ff7899;stroke:#ffe1e9;stroke-width:2.5;mix-blend-mode:screen}
 .muscle-map-legend{display:flex;align-items:center;gap:7px;margin:0 auto 6px;max-width:440px;color:#aaa7b2;font-size:9px}
@@ -435,6 +436,32 @@ details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
 .progress-ai-card #progress-ai-content[hidden]{display:none}
 .progress-ai-card #progress-ai-content:not([hidden]){padding-top:8px}
 .progress-ai-head .btn{min-width:70px;min-height:42px}
+/* Shared AI cards, disclosure headers and actions across every screen. */
+.ai-panel{padding:16px;margin:12px 0;border:1px solid #504553;border-radius:18px;background:#29262f;box-shadow:none;min-width:0}
+.ai-panel-head,.ai-panel-summary{display:flex;align-items:center;gap:10px;min-height:42px;margin:0;min-width:0}
+.ai-panel-summary{cursor:pointer;list-style:none;color:var(--ink)}
+.ai-panel-summary::-webkit-details-marker{display:none}.ai-panel-summary::marker{content:''}
+.ai-panel .ai-title-icon,.nutrition-ai-settings .ai-title-icon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;margin:0;border-radius:10px;background:#ed71921a;color:#ffa6bf;text-shadow:none}
+.ai-title-icon svg,.ai-action svg{display:block;width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.ai-heading-copy{display:grid;gap:4px;flex:1;min-width:0;text-align:left}
+.ai-panel .ai-heading-copy strong{font-size:14px;font-weight:750;line-height:1.35;letter-spacing:-.1px;color:#f6eff5}
+.ai-panel .ai-heading-copy small{font-size:11px;font-weight:400;line-height:1.4;color:#b9adb9;letter-spacing:0}
+.ai-panel-summary .workout-ai-chevron{margin-left:auto}.ai-panel[open]>.ai-panel-summary .workout-ai-chevron{transform:rotate(90deg)}
+.ai-panel-body{padding-top:14px}.ai-panel .coach-actions{margin:0 0 12px}
+.ai-action{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:9px 12px;border:1px solid #65505f;border-radius:11px;background:#40303d;color:#ffc0d3;font:inherit;font-size:12px;font-weight:700;cursor:pointer;line-height:1.25;text-align:center}
+.ai-action:hover{background:#503649}.ai-action:disabled{opacity:.5;cursor:default}.ai-action[hidden]{display:none!important}
+.ai-panel .ai-action-secondary{display:inline-flex;flex:none;width:auto;min-width:0;min-height:40px;padding:9px 10px;border:1px solid #574751;background:#ffffff04;border-radius:11px;color:#f2b7ca;gap:6px}
+.ai-panel .workout-ai-toggle,.ai-panel .progress-ai-toggle{flex:1;min-width:0;gap:10px;min-height:42px;padding:0}
+.ai-panel .workout-ai-toggle .workout-ai-chevron,.ai-panel .progress-ai-toggle .workout-ai-chevron{margin-left:2px}
+.ai-panel .small-print{font-size:12px;line-height:1.5}.ai-panel .small-print:empty{display:none}
+.ai-panel .ai-status{margin:12px 0 0;color:#c8bac8}.ai-panel .coach-results:empty{display:none}
+.ai-panel .coach-choice,.ai-food-suggestion{border-color:#574451;background:#332b35;border-radius:12px}
+.ai-data-note{font-size:10px;line-height:1.5;color:#a99ca9;margin:12px 0 0}
+.voice-meal-card>summary+.ai-panel-body>label{display:block;margin-top:6px}.voice-meal-card .coach-description{border-radius:11px;background:#211f27;font-size:16px;margin:6px 0 12px}
+.nutrition-ai-settings>summary>span{display:flex;align-items:center;gap:10px}
+.ai-panel-summary:focus-visible,.ai-action:focus-visible{outline:2px solid #ff9bad;outline-offset:3px}
+.ai-panel[aria-busy="true"] .ai-title-icon svg{animation:ai-pulse 1.4s ease-in-out infinite}.ai-inline-action{display:inline-flex;align-items:center;justify-content:center;gap:4px}.ai-inline-action svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}@keyframes ai-pulse{50%{opacity:.4;transform:scale(.9)}}@media(prefers-reduced-motion:reduce){.ai-panel[aria-busy="true"] .ai-title-icon svg{animation:none}}
+@media(max-width:390px){.ai-panel{padding:13px}.ai-panel-head,.ai-panel-summary{gap:8px}.ai-panel .ai-title-icon{flex-basis:28px;width:28px;height:28px}.ai-panel .ai-heading-copy small{font-size:10px}.ai-panel .ai-action-secondary{padding:8px;gap:5px;font-size:11px}.ai-panel .ai-action-secondary svg{width:16px;height:16px}}
 
 /* Nutrition photo suggestions and manual search cards. */
 .nutrition-editor .ai-recognition-results{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px;margin:10px 0 12px}
