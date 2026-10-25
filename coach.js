@@ -4,7 +4,7 @@
   const nutrition = () => window.LiftNutrition;
   const escape = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const errorText = error => error.name === 'AbortError' ? 'Request stopped. Try again when ready.' : error.message || 'AI is unavailable. Try again.';
-  let voiceVersion = 0, recording = null, voiceRequest = null, descriptionTimer;
+  let voiceVersion = 0, recording = null, voiceRequest = null;
   let coachCache={};try{const saved=JSON.parse(localStorage.getItem('lift-log-coach-cache-v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))coachCache=saved;}catch{}
   async function cachedCoach(mode,data,force=false){
     const key=(mode==='nutrition'?'advice-v2:':'')+JSON.stringify(data),saved=coachCache?.[mode];
@@ -26,7 +26,6 @@
     $('#voice-meal-status').classList.add('ai-status');$('#voice-meal-status').setAttribute('aria-busy',String(busy));
   }
   function cancelVoice(reset = false) {
-    clearTimeout(descriptionTimer);
     voiceVersion++;
     voiceRequest?.abort(); voiceRequest = null;
     if (recording) stopRecording(true);
@@ -102,7 +101,7 @@
   async function analyzeDescription(fromVoice=false) {
     if(nutrition().isPhotoBusy()){voiceStatus('Wait for the photo analysis to finish, then analyze your description.');return;}
     const description=$('#voice-description').value.trim();
-    if(!fromVoice&&nutrition().isFoodQuery?.(description)){await nutrition().searchFoods();return;}
+    if(!fromVoice&&(nutrition().isMatchingFood?.()||nutrition().isFoodQuery?.(description))){await nutrition().searchFoods();return;}
     if(description.length<3) { voiceStatus('Describe the foods and quantities first.'); return; }
     cancelVoice();const version=voiceVersion,draft=nutrition().draftIdentity(),controller=new AbortController();voiceRequest=controller;
     voiceBusy(true);voiceStatus('Finding foods and portions…');
@@ -186,8 +185,8 @@
   $('#voice-stop').onclick=()=>stopRecording();
   $('#voice-cancel').onclick=()=>cancelVoice();
   $('#voice-analyze').onclick=()=>analyzeDescription();
-  $('#voice-description').addEventListener('input',()=>{cancelVoice();voiceStatus('');const text=$('#voice-description').value.trim();if(text.length>=3&&!nutrition().isFoodQuery?.(text))descriptionTimer=setTimeout(analyzeDescription,1500);});
-  $('#voice-description').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clearTimeout(descriptionTimer);void analyzeDescription();}});
+  $('#voice-description').addEventListener('input',()=>{cancelVoice();voiceStatus('');});
+  $('#voice-description').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();void analyzeDescription();}});
   document.addEventListener('lift:meal-close',()=>cancelVoice(true));
   document.addEventListener('lift:meal-input-cleared',()=>cancelVoice(true));
   $('#meal-cancel').addEventListener('click',()=>cancelVoice(true));

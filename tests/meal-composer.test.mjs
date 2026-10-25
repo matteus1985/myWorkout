@@ -17,8 +17,10 @@ function fixture(){
     return elements.get(selector);
   };
   const nutrition={foodLogs:{},favorites:[],customFoods:[]};let saves=0,closed=0;
-  const context={draft:{date:'2026-10-25',name:'Meal',items:[],photoMode:'meal'},photoRequest:null,photoUrl:null,mealInputBusy:false,searchRequest:null,searchVersion:0,onlineFoods:[],searchTimer:null,$:element,$$:()=>[],esc:String,api:{getState:()=>({nutrition}),saveState:()=>saves++,showToast(){}},nutrition:()=>nutrition,getDay:date=>nutrition.foodLogs[date]||{meals:[]},allFoods:()=>[],today:()=>'',totals:meals=>meals.flatMap(meal=>meal.items).reduce((sum,item)=>{for(const key of ['kcal','protein','carbs','fat'])sum[key]+=Number(item[key])||0;return sum;},{kcal:0,protein:0,carbs:0,fat:0}),aiEndpoint:()=>({url:'https://worker.test/identify',token}),hasAISetup:()=>true,recordAIUsage(){},closeMeal:()=>closed++,render(){},document:{dispatchEvent(){}},Event,AbortController,setTimeout,clearTimeout,Date,Math};
+  const storage=new Map();
+  const context={navigator:{onLine:true},matchingFoodId:null,localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},draft:{date:'2026-10-25',name:'Meal',items:[],photoMode:'meal'},photoRequest:null,photoUrl:null,mealInputBusy:false,searchRequest:null,searchVersion:0,onlineFoods:[],searchTimer:null,$:element,$$:()=>[],esc:String,api:{getState:()=>({nutrition}),saveState:()=>saves++,showToast(){}},nutrition:()=>nutrition,getDay:date=>nutrition.foodLogs[date]||{meals:[]},allFoods:()=>[],today:()=>'',totals:meals=>meals.flatMap(meal=>meal.items).reduce((sum,item)=>{for(const key of ['kcal','protein','carbs','fat'])sum[key]+=Number(item[key])||0;return sum;},{kcal:0,protein:0,carbs:0,fat:0}),aiEndpoint:()=>({url:'https://worker.test/identify',token}),hasAISetup:()=>true,recordAIUsage(){},closeMeal:()=>closed++,render(){},document:{dispatchEvent(){}},Event,AbortController,setTimeout,clearTimeout,Date,Math};
   vm.createContext(context);
+  vm.runInContext(source.slice(source.indexOf('  const PHOTO_CACHE_KEY'),source.indexOf('  const $ =')),context);
   const load=(start,end)=>vm.runInContext(source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start))),context);
   load('  function aiFoodItem(','  function writeMealStatus(');
   load('  function writeMealStatus(','  function etaText(');
@@ -91,10 +93,10 @@ test('photo analysis carries identity uncertainty, rejects unusable entries and 
     const calls=[],env={APP_TOKEN:token,AI:{async run(model,input){calls.push({model,input});return {response:JSON.stringify({foods})};}}};
     const request=new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID'})});
     const response=await worker.fetch(request,env),result=await response.json();assert.equal(response.status,200);assert.equal(calls.length,1);
-    assert.equal(result.foods.length,foods.filter(food=>food.grams>0).length);
-    for(const item of result.foods)assert.equal(item.requiresConfirmation,item.name==='Cooked vegetables');
+    assert.equal(result.foods.length,foods.filter(food=>food.name).length);
+    for(const item of result.foods)assert.equal(item.requiresConfirmation,item.name==='Cooked vegetables'||item.name==='Invalid');
   }
-  let calls=0;const response=await worker.fetch(new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID'})}),{APP_TOKEN:token,AI:{async run(){calls++;return {};}}});assert.equal(response.status,503);assert.equal(calls,1);
+  let calls=0;const response=await worker.fetch(new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID'})}),{APP_TOKEN:token,AI:{async run(){calls++;return {};}}});assert.equal(response.status,502);assert.equal((await response.json()).code,'AI_EMPTY_RESPONSE');assert.equal(calls,1);
 });
 
 test('photo compression keeps small pictures and fits a larger picture within 1536 pixels',async()=>{
@@ -124,7 +126,74 @@ test('Nutrition initializes against the real shell IDs and opens the new meal co
   const window={LIFT_FOODS:[]},state={nutrition:{profile:{},foodLogs:{},weightChecks:[],favorites:[],customFoods:[]}};
   const context={window,document,localStorage:{getItem:()=>null},Date,Math,Event,AbortController,setTimeout,clearTimeout};vm.createContext(context);vm.runInContext(source,context);
   window.LiftNutrition.init({getState:()=>state,saveState(){},showToast(){},escapeHtml:String});
-  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');nodes.get('nutrition-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Your meal starts here/);assert.equal(nodes.get('meal-save').disabled,true);
+  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');nodes.get('nutrition-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
   nodes.get('meal-cancel').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),true);
   nodes.get('nutrition-date').value='2026-12-31';nodes.get('nutrition-next-day').onclick();assert.equal(nodes.get('nutrition-date').value,'2027-01-01');assert.match(nodes.get('nutrition-meals').innerHTML,/No meals logged/);
+});
+
+async function photoWorker(run,payload={}){
+  let calls=0,input;
+  const response=await worker.fetch(new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID',...payload})}),{APP_TOKEN:token,AI:{async run(model,value){calls++;input=value;return run(value);}}});
+  return {response,body:await response.json(),calls,input};
+}
+test('vision accepts structured and text responses without nutrients, preserves portions to confirm, and never repeats inference',async()=>{
+  const identity={name:'Spaghetti',searchName:'pasta',preparation:'cooked',grams:null,confidence:.9};
+  for(const result of [{response:{foods:[identity]}},{response:JSON.stringify({foods:[identity]})},{choices:[{message:{content:JSON.stringify({foods:[identity]})}}]}]){
+    const f=await photoWorker(()=>result);assert.equal(f.response.status,200);assert.equal(f.calls,1);assert.equal(f.body.foods[0].grams,150);assert.equal(f.body.foods[0].requiresConfirmation,true);assert.equal(f.body.foods[0].nutritionPer100g,undefined);
+    assert.equal(f.input.messages[0].content[1].image_url.url,'data:image/jpeg;base64,AQID');assert.doesNotMatch(f.input.messages[0].content[0].text,/nutritionPer100g/);
+  }
+});
+test('photo service errors distinguish quota, capacity, timeout, empty, malformed and missing food data',async()=>{
+  const cases=[
+    [{response:''},'AI_EMPTY_RESPONSE',502],
+    [{response:'this is not JSON'},'AI_INVALID_RESPONSE',502],
+    [{response:{foods:'wrong type'}},'AI_INVALID_RESPONSE',502],
+    [{response:{foods:[{grams:100}]}},'FOOD_DATA_INCOMPLETE',422],
+    [{response:{foods:[]}},'NO_FOOD_FOUND',200],
+    [{errors:[{code:3036,message:'Account limited'}]},'AI_QUOTA_EXHAUSTED',429],
+    [{errors:[{code:3040,message:'Capacity temporarily exceeded'}]},'AI_BUSY',503],
+    [{errors:[{code:3007,message:'Request timeout'}]},'AI_TIMEOUT',504],
+    [{errors:[{code:5004,message:'Invalid image input'}]},'AI_REQUEST_REJECTED',502],
+    [{errors:[{code:5035,message:'Model requires paid plan'}]},'AI_MODEL_UNAVAILABLE',503]
+  ];
+  for(const [result,code,status] of cases){const f=await photoWorker(()=>result);assert.equal(f.body.code,code);assert.equal(f.response.status,status);assert.equal(f.calls,1);assert.ok(f.body.requestId);assert.ok(f.body.workerVersion);}
+  const rate=await photoWorker(()=>{throw new Error('HTTP 429: rate limited');});assert.notEqual(rate.body.code,'AI_QUOTA_EXHAUSTED');
+});
+test('worker reports partial results and logs metadata without image, prompt or private code',async()=>{
+  const logs=[],original=console.info,requestId='12345678-1234-4234-9234-123456789012';let f;
+  try{console.info=value=>logs.push(value);f=await photoWorker(()=>({response:{foods:[{name:'Pasta',preparation:'cooked',grams:180,confidence:.95},null]}}),{requestId,imageBase64:'UEhPVE9fU0VDUkVU'});}finally{console.info=original;}
+  assert.equal(f.body.partial,true);assert.equal(f.body.foods.length,1);assert.equal(f.body.requestId,requestId);assert.equal(f.body.diagnostics.returned,2);assert.equal(f.body.diagnostics.accepted,1);
+  assert.ok(logs.length);assert.doesNotMatch(logs.join(''),/UEhPVE9fU0VDUkVU|test-private-token|Identify visible foods/);
+});
+function realCatalog(f){const data={window:{}};vm.createContext(data);vm.runInContext(readFileSync(new URL('../nutrition-data.js',import.meta.url),'utf8'),data);f.context.allFoods=()=>data.window.LIFT_FOODS;}
+test('pasta and rice use cooked catalog nutrition and cannot silently use the dry entry',async()=>{
+  const f=fixture(),c=f.context;realCatalog(f);c.fetch=()=>{throw Error('No catalog network needed');};
+  const foods=await c.resolvePhotoFoods([{name:'Spaghetti',searchName:'pasta',preparation:'cooked',grams:200,confidence:.95},{name:'Rice',preparation:'cooked',grams:150,confidence:.9}],new AbortController().signal);
+  assert.equal(foods[0].nutritionPer100g.kcal,157);assert.equal(foods[1].nutritionPer100g.kcal,130);assert.equal(foods[0].nutritionResolved,true);
+  const unknown=await c.resolvePhotoFoods([{name:'Pasta',grams:200}],new AbortController().signal);assert.equal(unknown[0].nutritionResolved,false);assert.equal(unknown[0].requiresConfirmation,true);
+});
+test('USDA matching caches data and ambiguous or failed lookups preserve visible unselected foods',async()=>{
+  const f=fixture(),c=f.context;let calls=0;
+  c.fetch=async(_url,options)=>{calls++;assert.equal(JSON.parse(options.body).source,'usda');return new Response(JSON.stringify({usda:[{id:'usda-1',name:'Couscous, cooked',source:'USDA FoodData Central',kcal:112,protein:3.8,carbs:23.2,fat:.2}]}));};
+  const identity={name:'Couscous',preparation:'cooked',grams:100,confidence:.9};
+  const first=await c.resolvePhotoFoods([identity],new AbortController().signal),again=await c.resolvePhotoFoods([identity],new AbortController().signal);assert.equal(calls,1);assert.equal(first[0].nutritionResolved,true);assert.equal(again[0].nutritionPer100g.kcal,112);
+  c.fetch=async()=>{throw new TypeError('Failed to fetch');};
+  const unresolved=await c.resolvePhotoFoods([{name:'Mixed vegetable curry',grams:250,confidence:.7}],new AbortController().signal);c.renderAISuggestions(unresolved);
+  assert.equal(c.draft.items.length,1);assert.equal(c.selectedDraftItems().length,0);assert.match(f.element('#meal-draft-list').innerHTML,/Nutrition needed/);assert.match(f.element('#meal-draft-list').innerHTML,/disabled/);
+  c.draft.items[0].selected=true;await c.commitMeal();assert.equal(f.saves(),0);
+  c.applyNutritionMatch(c.draft.items[0],{id:'match',name:'Vegetable curry',kcal:80,protein:3,carbs:10,fat:3});assert.equal(c.draft.items[0].grams,250);assert.equal(c.draft.items[0].kcal,200);assert.equal(c.selectedDraftItems().length,1);
+});
+test('frontend distinguishes unreadable Worker responses, no-food results and offline failures without losing existing items',async()=>{
+  for(const [response,expected] of [[new Response('<html>Worker failed</html>',{status:502}),'WORKER_INVALID_RESPONSE'],[new Response(JSON.stringify({foods:[],code:'NO_FOOD_FOUND'})),'NO_FOOD_FOUND'],[new Response(JSON.stringify({error:'Cloudflare AI: 3040: Capacity temporarily exceeded'}),{status:503}),'AI_BUSY']]){
+    const f=fixture(),c=f.context;c.renderAISuggestions([rice]);c.draft.photo={};c.compressMealPhoto=async()=>({size:100});c.blobToBase64=async()=>'AQID';c.fetch=async()=>response;
+    await c.identifyFood();assert.equal(c.draft.items.length,1);assert.ok(c.draft.photo);assert.match(f.element('#meal-photo-diagnostics').textContent,new RegExp(expected));
+  }
+  const f=fixture();f.context.navigator.onLine=false;f.context.draft.photo={};await f.context.identifyFood();assert.match(f.element('#ai-recognition-status').textContent,/offline/);
+});
+test('content-based titles use selected foods, preserve custom names and shorten long names',()=>{
+  const c=fixture().context;
+  assert.equal(c.mealDisplayName({name:'Meal',items:[{name:'Cooked shakshuka',grams:200},{name:'Bread',grams:30}]}),'Shakshuka');
+  assert.equal(c.mealDisplayName({name:'Meal',items:[{name:'Brasato (raw)',grams:140},{name:'Polenta (cooked)',grams:140}]}),'Brasato & Polenta');
+  assert.equal(c.mealDisplayName({name:'Meal',items:[{name:'Pasta, cooked',grams:200},{name:'Cheese',grams:200,selected:false}]}),'Pasta');
+  assert.equal(c.mealDisplayName({name:'Breakfast',items:[rice]}),'Breakfast');assert.ok(c.mealDisplayName({name:'Meal',items:[{name:'A'.repeat(100),grams:100}]}).length<=48);
 });
