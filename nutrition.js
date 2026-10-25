@@ -53,7 +53,7 @@
   async function copyAIToken(){const input=$('#food-ai-token');if(!input.value){writeAIStatus('Generate a private code first.','error');return;}input.type='text';input.select();try{await navigator.clipboard.writeText(input.value);writeAIStatus('Private code copied. Paste it into the Worker APP_TOKEN secret.','success');}catch{writeAIStatus('Private code selected. Copy it, then paste it into the Worker APP_TOKEN secret.','');}}
   async function testAIConnection(){
     try{const endpoint=aiEndpoint('health'),response=await fetch(endpoint.url,{headers:{Authorization:'Bearer '+endpoint.token}});let result;try{result=await response.json();}catch{throw new Error(PHOTO_MESSAGES.WORKER_INVALID_RESPONSE);}if(!response.ok)throw new Error(PHOTO_MESSAGES[photoResponseCode(result,response.status)]);if(!result.ok)throw new Error(PHOTO_MESSAGES.WORKER_INVALID_RESPONSE);
-      writeAIStatus(result.capabilities?.includes('photo-identities-v2')?'Connected. Worker '+result.version+' supports the new photo analysis.':'Connected to an older Worker. Replace its code with the updated Worker file to enable the new photo analysis.',result.capabilities?.includes('photo-identities-v2')?'success':'error');
+      const ready=result.capabilities?.includes('photo-nutrition-estimates-v1');writeAIStatus(ready?'Connected. Worker '+result.version+' returns food and nutrition estimates from a photo.':'Connected to an older Worker. Replace its code with the updated Worker file to enable nutrition estimates from a photo.',ready?'success':'error');
     }catch(error){writeAIStatus(error.message||PHOTO_MESSAGES.NETWORK_ERROR,'error');}
   }
   function profileEstimate(p){
@@ -150,14 +150,17 @@
   async function resolvePhotoFoods(foods,signal){
     return Promise.all(foods.slice(0,8).filter(food=>food&&typeof food.name==='string'&&food.name.trim()).map(async food=>{
       const portion=Number(food.grams),missingPortion=!(portion>=1&&portion<=10000),identity={...food,grams:missingPortion?150:Math.round(portion),requiresConfirmation:food.requiresConfirmation===true||missingPortion||food.portionNeedsConfirmation===true||(typeof food.confidence==='number'&&food.confidence<.65)};
-      if(validAIFoods([identity]).length)return {...identity,nutritionResolved:true};
       const local=allFoods().filter(candidate=>foodMatchAllowed(identity,candidate)),matches=exactFoodMatches(identity,local);
       let choices=matches.length?matches:local.filter(candidate=>comparableIdentity(candidate.name)===comparableIdentity(identity.searchName||identity.name));
-      if(matches.length!==1){const online=await lookupPhotoNutrition(identity,signal);choices=[...choices,...online];}
       const unique=[];for(const candidate of choices)if(!unique.some(existing=>sameFood(existing,candidate)))unique.push(candidate);
       const exact=exactFoodMatches(identity,unique);
       if(exact.length===1){const found=exact[0];return {...identity,nutritionResolved:true,estimatedFields:['grams'],nutritionPer100g:Object.fromEntries(NUTRIENTS.map(key=>[key,found[key]])),nutritionReference:found.source||'Local food catalog'};}
-      return {...identity,requiresConfirmation:true,nutritionResolved:false,nutritionPer100g:null,nutritionCandidates:unique.slice(0,4)};
+      if(validAIFoods([identity]).length)return {...identity,nutritionResolved:true,nutritionReference:'AI photo estimate'};
+      if(matches.length!==1){const online=await lookupPhotoNutrition(identity,signal);choices=[...unique,...online];}
+      const onlineUnique=[];for(const candidate of choices)if(!onlineUnique.some(existing=>sameFood(existing,candidate)))onlineUnique.push(candidate);
+      const onlineExact=exactFoodMatches(identity,onlineUnique);
+      if(onlineExact.length===1){const found=onlineExact[0];return {...identity,nutritionResolved:true,estimatedFields:['grams'],nutritionPer100g:Object.fromEntries(NUTRIENTS.map(key=>[key,found[key]])),nutritionReference:found.source||'USDA FoodData Central'};}
+      return {...identity,requiresConfirmation:true,nutritionResolved:false,nutritionPer100g:null,nutritionCandidates:onlineUnique.slice(0,4)};
     }));
   }
   async function compressMealPhoto(file){let image,bitmap=false;if(window.createImageBitmap){try{image=await createImageBitmap(file);bitmap=true;}catch{}}if(!image){image=await new Promise((resolve,reject)=>{const url=URL.createObjectURL(file),img=new Image();img.onload=()=>{URL.revokeObjectURL(url);resolve(img);};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error('Could not read this photo.'));};img.src=url;});}const scale=Math.min(1,1536/Math.max(image.width,image.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*scale));canvas.height=Math.max(1,Math.round(image.height*scale));const context=canvas.getContext('2d',{alpha:false});if(!context)throw new Error('Photo processing is unavailable in this browser.');context.drawImage(image,0,0,canvas.width,canvas.height);if(bitmap)image.close();let blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.82));if(!blob)throw new Error('Could not prepare the photo.');if(blob.size>4_000_000)blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.65));if(!blob||blob.size>4_000_000)throw new Error('This photo is too large to analyze. Try a smaller image.');return blob;}
@@ -222,16 +225,15 @@
     if(resumeMeal&&draft){resumeMeal=false;if(draft.photo){photoUrl=URL.createObjectURL(draft.photo);$('#meal-photo-preview').src=photoUrl;$('#meal-photo-preview').hidden=false;}$('#meal-editor').classList.remove('hidden');document.body.classList.add('meal-editor-open');renderFavorites();renderDraft();document.dispatchEvent(new Event('lift:meal-open'));return;}
     cancelPhoto();cancelFoodSearch();matchingFoodId=null;photoDiagnostics(null);if($('#meal-photo-settings'))$('#meal-photo-settings').hidden=true;draft={date:$('#nutrition-date').value||today(),name:'Meal',favoriteId:null,items:[],photo:null,photoMode:'meal'};photoInputMode='meal';mealInputBusy=false;onlineFoods=[];
     if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=null;}
-    $('#voice-description').value='';$('#food-search-status').textContent='';$('#meal-photo').value='';$('#meal-photo-camera').value='';$('#food-results').innerHTML='';$('#meal-photo-preview').removeAttribute('src');$('#meal-photo-preview').hidden=true;
-    writeMealStatus('');setPhotoMenu(false);$('#meal-editor').classList.remove('hidden');document.body.classList.add('meal-editor-open');renderFavorites();renderDraft();document.dispatchEvent(new Event('lift:meal-open'));
+    $('#voice-description').value='';$('#food-search-status').textContent='';$('#meal-photo').value='';$('#food-results').innerHTML='';$('#meal-photo-preview').removeAttribute('src');$('#meal-photo-preview').hidden=true;
+    writeMealStatus('');$('#meal-editor').classList.remove('hidden');document.body.classList.add('meal-editor-open');renderFavorites();renderDraft();document.dispatchEvent(new Event('lift:meal-open'));
     $('#meal-cancel').focus({preventScroll:true});
   }
   function closeMeal(){
     if($('#meal-editor').classList.contains('hidden'))return;
-    cancelPhoto();cancelFoodSearch();$('#meal-editor').classList.add('hidden');document.body.classList.remove('meal-editor-open');setPhotoMenu(false);if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=null;}
+    cancelPhoto();cancelFoodSearch();$('#meal-editor').classList.add('hidden');document.body.classList.remove('meal-editor-open');if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=null;}
     document.dispatchEvent(new Event('lift:meal-close'));$('#nutrition-add-meal').focus({preventScroll:true});
   }
-  function setPhotoMenu(open){$('#meal-photo-menu').hidden=!open;$('#meal-photo-menu-toggle').setAttribute('aria-expanded',String(open));}
 
   function saveFavoriteFromMeal(date,index){const meal=getDay(date).meals?.[index];if(!meal?.items?.length)return;const n=nutrition(),items=meal.items.map(item=>JSON.parse(JSON.stringify(item))),signature=mealKey(items),existing=n.favorites.find(favorite=>mealKey(favorite.items)===signature);if(existing){n.favorites=n.favorites.filter(favorite=>favorite.id!==existing.id);Object.values(n.foodLogs||{}).forEach(day=>(day.meals||[]).forEach(entry=>{if(entry.favoriteId===existing.id)delete entry.favoriteId;}));editingMealFavoriteId=null;api.saveState();render();api.showToast('Removed from favorites.');return;}const name=mealDisplayName(meal),id='favorite-'+Date.now().toString(36);n.favorites.push({id,name,items});meal.favoriteId=id;meal.name=name;editingMealFavoriteId=id;api.saveState();render();$('.meal-favorite-name-edit')?.focus();$('.meal-favorite-name-edit')?.select();}
   function renameFavorite(id,value){const favorite=nutrition().favorites.find(item=>item.id===id),name=String(value||'').trim();if(!favorite||!name){api.showToast('Enter a name for this favorite.');return;}favorite.name=name.slice(0,80);if(draft?.favoriteId===id)draft.name=favorite.name;const signature=mealKey(favorite.items);Object.values(nutrition().foodLogs||{}).forEach(day=>(day.meals||[]).forEach(meal=>{if(meal.favoriteId===id||mealKey(meal.items)===signature){meal.favoriteId=id;meal.name=favorite.name;}}));editingMealFavoriteId=null;api.saveState();renderFavorites();render();}
@@ -267,7 +269,7 @@
     finally{clearTimeout(timeout);if(version===searchVersion){searchRequest=null;status.setAttribute('aria-busy','false');}}
   }
   function selectMealPhoto(event){
-    const file=event.target.files?.[0];if(!file||!draft)return;event.target.value='';const mode=photoInputMode;photoInputMode='meal';setPhotoMenu(false);
+    const file=event.target.files?.[0];if(!file||!draft)return;event.target.value='';const mode=photoInputMode;photoInputMode='meal';
     if(file.size>20000000){api.showToast('Please choose a photo smaller than 20 MB.');return;}
     draft.photo=file;draft.photoMode=mode;writeMealStatus('');if(photoUrl)URL.revokeObjectURL(photoUrl);photoUrl=URL.createObjectURL(file);$('#meal-photo-preview').src=photoUrl;$('#meal-photo-preview').hidden=false;identifyFood();
   }
@@ -355,23 +357,19 @@
     $('#meal-cancel').onclick=closeMeal;
     $('#meal-save').onclick=commitMeal;
     $('#voice-description').addEventListener('input',()=>{cancelFoodSearch();onlineFoods=[];$('#food-search-status').textContent='';$('#food-search-status').setAttribute('aria-busy','false');renderFoodSearch();const query=$('#voice-description').value.trim();if(query.length>=2&&isFoodQuery(query))searchTimer=setTimeout(searchOnlineFoods,650);});
-    $('#meal-photo-menu-toggle').onclick=()=>setPhotoMenu($('#meal-photo-menu').hidden);
     $('#meal-photo-retry').onclick=identifyFood;
     $('#meal-photo-settings').onclick=()=>{closeMeal();resumeMeal=true;api.showAISettings?.();};
-    $('#meal-photo-camera').addEventListener('change',selectMealPhoto);$('#meal-photo').addEventListener('change',selectMealPhoto);
-    $('#meal-camera-open').onclick=()=>{photoInputMode='meal';setPhotoMenu(false);$('#meal-photo-camera').click();};
-    $('#meal-label-open').onclick=()=>{photoInputMode='product-label';setPhotoMenu(false);$('#meal-photo-camera').click();};
-    $('#meal-upload-open').onclick=()=>{photoInputMode='meal';setPhotoMenu(false);$('#meal-photo').click();};
+    $('#meal-photo').addEventListener('change',selectMealPhoto);
+    $('#meal-photo-open').onclick=()=>{photoInputMode='meal';$('#meal-photo').click();};
     document.addEventListener('keydown',event=>{
       if($('#meal-editor').classList.contains('hidden'))return;
-      if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();if(!$('#meal-photo-menu').hidden)setPhotoMenu(false);else closeMeal();return;}
+      if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();closeMeal();return;}
       if(event.key==='Tab'){
         const focusable=$$('#meal-editor button, #meal-editor input, #meal-editor textarea, #meal-editor summary').filter(element=>!element.disabled&&element.getClientRects().length);
         const first=focusable[0],last=focusable.at(-1);if(!first)return;
         if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
       }
     });
-    document.addEventListener('pointerdown',event=>{if(!$('#voice-meal-card').contains(event.target))setPhotoMenu(false);});
     if(window.visualViewport){const fit=()=>{const view=window.visualViewport;$('#meal-editor').style.setProperty('--meal-view-height',view.height+'px');$('#meal-editor').style.setProperty('--meal-view-top',view.offsetTop+'px');};window.visualViewport.addEventListener('resize',fit);window.visualViewport.addEventListener('scroll',fit);fit();}
 
     $('#nutrition-profile-save').onclick=saveProfile;$('#nutrition-target-save').onclick=()=>{const value=Number($('#nutrition-target-edit').value);if(!(value>=1000&&value<=7000)){api.showToast('Enter a daily target between 1,000 and 7,000 kcal.');return;}nutrition().calorieTarget=value;api.saveState();render();api.showToast('Calorie target saved.');};$('#weekly-weight-save').onclick=saveWeight;renderSettings();render();

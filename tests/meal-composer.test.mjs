@@ -136,12 +136,19 @@ async function photoWorker(run,payload={}){
   const response=await worker.fetch(new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID',...payload})}),{APP_TOKEN:token,AI:{async run(model,value){calls++;input=value;return run(value);}}});
   return {response,body:await response.json(),calls,input};
 }
-test('vision accepts structured and text responses without nutrients, preserves portions to confirm, and never repeats inference',async()=>{
+test('vision accepts structured and text identity responses, preserves portions to confirm, and never repeats inference',async()=>{
   const identity={name:'Spaghetti',searchName:'pasta',preparation:'cooked',grams:null,confidence:.9};
   for(const result of [{response:{foods:[identity]}},{response:JSON.stringify({foods:[identity]})},{choices:[{message:{content:JSON.stringify({foods:[identity]})}}]}]){
     const f=await photoWorker(()=>result);assert.equal(f.response.status,200);assert.equal(f.calls,1);assert.equal(f.body.foods[0].grams,150);assert.equal(f.body.foods[0].requiresConfirmation,true);assert.equal(f.body.foods[0].nutritionPer100g,undefined);
-    assert.equal(f.input.messages[0].content[1].image_url.url,'data:image/jpeg;base64,AQID');assert.doesNotMatch(f.input.messages[0].content[0].text,/nutritionPer100g/);
+    assert.equal(f.input.messages[0].content[1].image_url.url,'data:image/jpeg;base64,AQID');assert.match(f.input.messages[0].content[0].text,/nutritionPer100g/);
   }
+});
+test('photo Worker returns nutrition estimates and the app uses them immediately when no exact local match exists',async()=>{
+  const estimate={name:'Roasted aubergine',searchName:'eggplant cooked',preparation:'cooked',grams:180,confidence:.9,nutritionPer100g:{kcal:35,protein:1,carbs:8,fat:.2}};
+  const response=await photoWorker(()=>({response:{foods:[estimate]}}));assert.equal(response.response.status,200);assert.deepEqual(response.body.foods[0].estimatedFields,['kcal','protein','carbs','fat']);
+  const f=fixture(),c=f.context;c.fetch=()=>{throw Error('No secondary nutrition lookup should be needed');};
+  const [food]=await c.resolvePhotoFoods(response.body.foods,new AbortController().signal);assert.equal(food.nutritionResolved,true);assert.equal(food.nutritionReference,'AI photo estimate');
+  c.renderAISuggestions([food]);assert.equal(c.selectedDraftItems().length,1);assert.equal(c.draft.items[0].kcal,63);c.setItemGrams(c.draft.items[0],250);assert.equal(c.draft.items[0].kcal,88);assert.equal(c.draft.items[0].carbs,20);
 });
 test('photo service errors distinguish quota, capacity, timeout, empty, malformed and missing food data',async()=>{
   const cases=[

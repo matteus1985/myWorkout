@@ -21,7 +21,7 @@
     html,body{width:100%;max-width:100%;overflow-x:clip}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
-  <link rel="stylesheet" href="material.css?v=liftlog-20261025-ui-v48">
+  <link rel="stylesheet" href="material.css?v=liftlog-20261025-ui-v49">
   <style>
     html:not(.app-ready) body{background:#151416;color:#f8edf1;overflow:hidden}
     html:not(.app-ready) .app,html:not(.app-ready) .tabbar{visibility:hidden}
@@ -234,15 +234,14 @@
           <label for="voice-description">What did you eat?</label>
           <textarea id="voice-description" class="meal-smart-input" maxlength="2000" rows="2" placeholder="Search a food, or describe your meal…"></textarea>
           <div class="meal-input-toolbar"><div class="meal-input-tools">
-            <button type="button" class="meal-tool" id="meal-photo-menu-toggle" aria-label="Add a photo" aria-expanded="false" aria-controls="meal-photo-menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
+            <button type="button" class="meal-tool" id="meal-photo-open" aria-label="Add a photo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
             <button type="button" class="meal-tool" id="voice-record" aria-label="Describe your meal by voice"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg></button>
             <button type="button" class="meal-tool recording-stop" id="voice-stop" aria-label="Stop recording" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg><span>Stop</span></button>
             <button type="button" class="meal-tool" id="voice-cancel" aria-label="Cancel recording" hidden>Cancel</button>
           </div><button type="button" class="meal-submit" id="voice-analyze" aria-label="Search or analyze your meal"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></div>
-          <div id="meal-photo-menu" class="meal-photo-menu" hidden><button type="button" id="meal-camera-open">Take a photo</button><button type="button" id="meal-upload-open">Choose a photo</button><button type="button" id="meal-label-open">Scan product label</button></div>
           <p id="voice-meal-status" class="small-print ai-status" role="status"></p>
         </section>
-        <input id="meal-photo-camera" class="visually-hidden-input" type="file" accept="image/*" capture="environment" aria-label="Take a meal photo"><input id="meal-photo" class="visually-hidden-input" type="file" accept="image/*" aria-label="Upload a meal photo">
+        <input id="meal-photo" class="visually-hidden-input" type="file" accept="image/*" aria-label="Choose or take a meal photo">
         <div class="meal-photo-feedback"><img id="meal-photo-preview" alt="Meal photo preview" hidden><div><p id="ai-recognition-status" class="small-print ai-status" role="status"></p><button type="button" class="meal-retry" id="meal-photo-retry" hidden>Try again</button><button type="button" class="meal-retry" id="meal-photo-settings" hidden>Open AI settings</button><details id="meal-photo-details" class="meal-photo-details" hidden><summary>Technical details</summary><pre id="meal-photo-diagnostics"></pre></details></div></div>
         <div id="food-search-status" class="small-print meal-search-status" role="status"></div><div class="food-results meal-search-results" id="food-results"></div>
         <div id="nutrition-favorites" class="nutrition-favorites meal-favorites" hidden></div>
@@ -252,14 +251,14 @@
       <footer class="meal-composer-footer"><div class="meal-total" id="meal-draft-total" aria-live="polite"></div><button type="button" id="meal-save" class="btn btn-primary">Save meal</button></footer>
     </div>
   </div>
-<script src="catalogue.js?v=liftlog-20261025-ui-v48"></script>
-<script src="planner.js?v=liftlog-20261025-ui-v48"></script>
-<script src="sketches.js?v=liftlog-20261025-ui-v48"></script>
-<script src="exercise-art.js?v=liftlog-20261025-ui-v48"></script>
-<script src="nutrition-data.js?v=liftlog-20261025-ui-v48"></script>
-<script src="nutrition.js?v=liftlog-20261025-ui-v48"></script>
-<script src="app.js?v=liftlog-20261025-ui-v48"></script>
-<script src="coach.js?v=liftlog-20261025-ui-v48"></script>
+<script src="catalogue.js?v=liftlog-20261025-ui-v49"></script>
+<script src="planner.js?v=liftlog-20261025-ui-v49"></script>
+<script src="sketches.js?v=liftlog-20261025-ui-v49"></script>
+<script src="exercise-art.js?v=liftlog-20261025-ui-v49"></script>
+<script src="nutrition-data.js?v=liftlog-20261025-ui-v49"></script>
+<script src="nutrition.js?v=liftlog-20261025-ui-v49"></script>
+<script src="app.js?v=liftlog-20261025-ui-v49"></script>
+<script src="coach.js?v=liftlog-20261025-ui-v49"></script>
 
 </body>
 </html>
