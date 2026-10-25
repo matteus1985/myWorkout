@@ -12,7 +12,7 @@ function fixture(){
   const elements=new Map(),element=selector=>{
     if(!elements.has(selector)){
       const classes=new Set(),attrs=new Map();
-      elements.set(selector,{value:'',hidden:false,innerHTML:'',textContent:'',classList:{add:value=>classes.add(value),remove:value=>classes.delete(value),contains:value=>classes.has(value),toggle:(value,on)=>on?classes.add(value):classes.delete(value)},setAttribute:(key,value)=>attrs.set(key,value),getAttribute:key=>attrs.get(key),querySelectorAll:()=>[],focus(){}});
+      elements.set(selector,{value:'',hidden:false,innerHTML:'',textContent:'',classList:{add:value=>classes.add(value),remove:value=>classes.delete(value),contains:value=>classes.has(value),toggle:(value,on)=>on?classes.add(value):classes.delete(value)},setAttribute:(key,value)=>attrs.set(key,value),getAttribute:key=>attrs.get(key),querySelector:()=>null,querySelectorAll:()=>[],focus(){}});
     }
     return elements.get(selector);
   };
@@ -179,8 +179,8 @@ test('USDA matching caches data and ambiguous or failed lookups preserve visible
   const first=await c.resolvePhotoFoods([identity],new AbortController().signal),again=await c.resolvePhotoFoods([identity],new AbortController().signal);assert.equal(calls,1);assert.equal(first[0].nutritionResolved,true);assert.equal(again[0].nutritionPer100g.kcal,112);
   c.fetch=async()=>{throw new TypeError('Failed to fetch');};
   const unresolved=await c.resolvePhotoFoods([{name:'Mixed vegetable curry',grams:250,confidence:.7}],new AbortController().signal);c.renderAISuggestions(unresolved);
-  assert.equal(c.draft.items.length,1);assert.equal(c.selectedDraftItems().length,0);assert.match(f.element('#meal-draft-list').innerHTML,/Nutrition needed/);assert.match(f.element('#meal-draft-list').innerHTML,/disabled/);
-  c.draft.items[0].selected=true;await c.commitMeal();assert.equal(f.saves(),0);
+  assert.equal(c.draft.items.length,1);assert.equal(c.selectedDraftItems().length,0);assert.doesNotMatch(f.element('#meal-draft-list').innerHTML,/Nutrition needed|disabled/);
+  c.setDraftSelection(0,true);assert.equal(c.selectedDraftItems().length,1);assert.match(f.element('#meal-draft-total').innerHTML,/—/);await c.commitMeal();assert.equal(f.saves(),0);
   c.applyNutritionMatch(c.draft.items[0],{id:'match',name:'Vegetable curry',kcal:80,protein:3,carbs:10,fat:3});assert.equal(c.draft.items[0].grams,250);assert.equal(c.draft.items[0].kcal,200);assert.equal(c.selectedDraftItems().length,1);
 });
 test('frontend distinguishes unreadable Worker responses, no-food results and offline failures without losing existing items',async()=>{
@@ -196,4 +196,21 @@ test('content-based titles use selected foods, preserve custom names and shorten
   assert.equal(c.mealDisplayName({name:'Meal',items:[{name:'Brasato (raw)',grams:140},{name:'Polenta (cooked)',grams:140}]}),'Brasato & Polenta');
   assert.equal(c.mealDisplayName({name:'Meal',items:[{name:'Pasta, cooked',grams:200},{name:'Cheese',grams:200,selected:false}]}),'Pasta');
   assert.equal(c.mealDisplayName({name:'Breakfast',items:[rice]}),'Breakfast');assert.ok(c.mealDisplayName({name:'Meal',items:[{name:'A'.repeat(100),grams:100}]}).length<=48);
+});
+
+test('whole-card pointer and keyboard selection stay synchronized with checkbox without toggling embedded controls',()=>{
+  const f=fixture(),c=f.context;c.renderAISuggestions([rice]);
+  const card=f.element('#test-card'),checkbox={checked:true,dataset:{selectDraft:'0'},closest:()=>card};card.dataset={mealCard:'0'};card.querySelector=()=>checkbox;
+  c.$$=selector=>selector==='[data-meal-card]'?[card]:selector==='[data-select-draft]'?[checkbox]:[];c.renderDraft();
+  card.onclick({target:{closest:()=>null}});assert.equal(c.draft.items[0].selected,false);assert.equal(checkbox.checked,false);assert.ok(card.classList.contains('is-unselected'));
+  card.onclick({target:{closest:()=>({tagName:'INPUT'})}});assert.equal(c.draft.items[0].selected,false);
+  let prevented=false;card.onkeydown({target:card,key:' ',preventDefault(){prevented=true;}});assert.ok(prevented);assert.equal(checkbox.checked,true);
+  card.onkeydown({target:checkbox,key:'Enter',preventDefault(){throw Error('Nested input must handle its own key');}});assert.equal(c.draft.items[0].selected,true);
+  checkbox.checked=false;checkbox.onchange();assert.equal(c.draft.items[0].selected,false);assert.match(card.getAttribute('aria-label'),/not selected/);
+});
+test('card macro row follows grams and retains unknown markers instead of presenting missing nutrients as zero',()=>{
+  const f=fixture(),c=f.context;c.renderAISuggestions([rice]);const item=c.draft.items[0];
+  assert.match(c.cardMacros(item),/P 4.5 g/);c.setItemGrams(item,300);assert.match(c.cardMacros(item),/P 9 g/);assert.match(c.cardMacros(item),/C 84 g/);
+  const missing=c.aiFoodItem({name:'Curry',grams:150,nutritionResolved:false,requiresConfirmation:true});assert.match(c.cardMacros(missing),/P —/);assert.doesNotMatch(c.cardMacros(missing),/P 0/);
+  assert.ok(c.draftCardMarkup(item,0).indexOf('meal-food-macros')>c.draftCardMarkup(item,0).indexOf('</details>'));
 });

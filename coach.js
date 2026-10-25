@@ -7,10 +7,10 @@
   let voiceVersion = 0, recording = null, voiceRequest = null;
   let coachCache={};try{const saved=JSON.parse(localStorage.getItem('lift-log-coach-cache-v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))coachCache=saved;}catch{}
   async function cachedCoach(mode,data,force=false){
-    const key=(mode==='nutrition'?'advice-v2:':'')+JSON.stringify(data),saved=coachCache?.[mode];
-    if(!force&&saved?.key===key&&Date.now()-saved.at<6*3600000)return saved.result;
+    const key=(mode==='nutrition'?'advice-v3:':'')+JSON.stringify(data),saved=coachCache?.[mode];
+    if(!force&&saved?.key===key&&Date.now()-saved.at<6*3600000&&(mode!=='nutrition'||saved.result?.foods?.length))return saved.result;
     const result=await nutrition().requestAI('coach',{mode,data});
-    coachCache[mode]={key,at:Date.now(),result};try{localStorage.setItem('lift-log-coach-cache-v1',JSON.stringify(coachCache));}catch{}
+    if(mode!=='nutrition'||result?.foods?.length){coachCache[mode]={key,at:Date.now(),result};try{localStorage.setItem('lift-log-coach-cache-v1',JSON.stringify(coachCache));}catch{}}
     return result;
   }
   const voiceStatus = text => { $('#voice-meal-status').textContent = text; };
@@ -159,7 +159,7 @@
       const result=await cachedCoach('nutrition',context,force);
       if(JSON.stringify(nutrition().nutritionContext())!==JSON.stringify(context))throw new Error('Your diary or targets changed. Generate fresh food suggestions.');
       foodRendered=key;
-      if(!Array.isArray(result.foods)||!result.foods.length){status.textContent=String(result.summary||'No additional foods suggested.');return;}
+      if(!Array.isArray(result.foods)||!result.foods.length){status.textContent=String(result.summary||'No food ideas were returned. Try again.');button.hidden=false;return;}
       status.textContent=String(result.summary||'Food suggestions ready.');
       const remaining=context.remaining;
       root.innerHTML='<p class="nutrition-ideas-remaining">Remaining: '+Math.round(remaining.kcal)+' kcal · '+Math.round(remaining.protein||0)+' g protein · '+Math.round(remaining.carbs||0)+' g carbs · '+Math.round(remaining.fat||0)+' g fat</p><ul class="nutrition-ideas-text">'+result.foods.map(food=>{

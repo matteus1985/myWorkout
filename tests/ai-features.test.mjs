@@ -45,8 +45,18 @@ test('workout proposal excludes invented exercises, duplicate IDs, missing histo
 test('nutrition suggestions fit remaining calories and require nutrition targets',async()=>{
   const data={targets:{kcal:2500},remaining:{kcal:300,protein:20,carbs:50,fat:10}};
   const accepted=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data}),fakeEnv({summary:'A useful addition',foods:[food]}));assert.equal((await accepted.json()).foods.length,1);
-  const over=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data:{...data,remaining:{...data.remaining,kcal:50}}}),fakeEnv({foods:[food]}));assert.deepEqual((await over.json()).foods,[]);
+  const over=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data:{...data,remaining:{...data.remaining,kcal:50}}}),fakeEnv({foods:[food]}));const adjusted=await over.json();assert.equal(adjusted.foods.length,1);assert.equal(adjusted.portionsAdjusted,true);assert.ok(adjusted.foods[0].grams/100*adjusted.foods[0].nutritionPer100g.kcal<=50);
   assert.equal((await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data:{}}),fakeEnv({}))).status,400);
+});
+test('nutrition ideas remain useful with missing macro gaps or empty model food lists without hiding service failures',async()=>{
+  for(const kcal of [1,50,300,1500]){
+    const data={targets:{kcal:2500},remaining:{kcal,protein:0,carbs:0,fat:0}},env=fakeEnv({summary:'No exact macro combination',foods:[]});
+    const response=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data}),env),result=await response.json();assert.equal(response.status,200);assert.ok(result.foods.length>0);assert.equal(result.source,'catalog-fallback');assert.equal(env.calls.length,1);
+  }
+  const data={targets:{kcal:2500},remaining:{kcal:300,protein:20,carbs:40,fat:5}};
+  const structured=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data}),{APP_TOKEN:token,AI:{run:async()=>({response:{foods:[food],summary:'Rice'}})}});assert.equal((await structured.json()).foods.length,1);
+  const met=fakeEnv({});const response=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data:{...data,remaining:{...data.remaining,kcal:0}}}),met);assert.equal((await response.json()).foods.length,0);assert.equal(met.calls.length,0);
+  assert.equal((await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data}),fakeEnv(new Error('Quota exceeded')))).status,503);
 });
 test('quota/model failure preserves a recoverable server response',async()=>{
   const response=await worker.fetch(jsonRequest('/describe-meal',{description:'two eggs'}),fakeEnv(new Error('Quota exceeded')));assert.equal(response.status,503);assert.match((await response.json()).error,/Quota exceeded/);
@@ -126,6 +136,11 @@ test('recording cancellation releases microphone tracks without uploading audio'
 test('nutrition response is discarded when the selected day changes',async()=>{
   const f=coachFixture();let resolve;f.nutrition.requestAI=()=>new Promise(r=>resolve=r);const task=f.element('#nutrition-coach-generate').onclick();f.nutrition.nutritionContext=()=>({date:'2026-10-25',remaining:{kcal:300}});resolve({foods:[food]});await task;assert.equal(f.shown.length,0);assert.match(f.element('#nutrition-coach-status').textContent,/changed/);
 });
+test('an empty nutrition answer exposes retry and a later answer can recover without a six-hour empty cache',async()=>{
+  const f=coachFixture();let requests=0;f.nutrition.requestAI=async()=>{requests++;return requests===1?{summary:'No ideas',foods:[]}:{summary:'A useful idea',foods:[food]};};
+  await f.element('#nutrition-coach-generate').onclick();assert.equal(f.element('#nutrition-coach-generate').hidden,false);
+  await f.element('#nutrition-coach-generate').onclick();assert.equal(requests,2);assert.match(f.element('#nutrition-coach-result').innerHTML,/Cooked rice/);
+});
 
 test('all new UI controls and cached coach script exist once in the app shell',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
@@ -147,7 +162,7 @@ test('lower-focus plan settings swap a dedicated isolation exercise without chan
 test('UI includes shared PIN gate and AI loading states while chart stays inside its card',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
   assert.match(html,/id="app-lock"/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
-  assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v75/);
+  assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v77/);
 });
 
 test('nutrition ideas render a text list and reuse unchanged data without any meal actions',async()=>{
