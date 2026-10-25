@@ -76,7 +76,7 @@ function trainingFixture(){
   const day={id:'d1',name:'Upper',exercises:[{id:'e1',name:'Press',catalogId:'press',equipment:'dumbbell',sets:[{min:6,max:12},{min:6,max:12}]}]},logs={};
   const state={week:1,planRevision:0,equipment:['dumbbell'],experience:'beginner',weightSteps:{dumbbell:2},logs};let saves=0;
   const context={state,days:[day],activeDay:null,itemFor:()=>({id:'press'}),logFor:(_week,id)=>logs[id],LIFT_ENGINE:{histories:()=>[{sets:[{weight:20,reps:12},{weight:20,reps:12}],effort:3}]},reviewKey:JSON.stringify,currentLog:day=>logs[day.id]||(logs[day.id]={completed:false,exercises:{}}),showToast(){},saveState:()=>{saves++;},renderWorkout(){},updateHome(){},window:{},Date,Math};vm.createContext(context);
-  vm.runInContext(appSource.slice(appSource.indexOf('  function nextWorkoutContext(){'),appSource.indexOf('  initializeEditors();renderSettings();updateHome();')),context);
+  vm.runInContext(appSource.slice(appSource.indexOf('  function nextWorkoutContext(){'),appSource.indexOf('  initializeAppLock();initializeEditors();')),context);
   return {context,day,logs,state,saves:()=>saves};
 }
 test('app applies only approved valid loads as unfinished sets and rejects stale/finished workouts',()=>{
@@ -127,37 +127,49 @@ test('nutrition response is discarded when the selected day changes',async()=>{
   const f=coachFixture();let resolve;f.nutrition.requestAI=()=>new Promise(r=>resolve=r);const task=f.element('#nutrition-coach-generate').onclick();f.nutrition.nutritionContext=()=>({date:'2026-10-25',remaining:{kcal:300}});resolve({foods:[food]});await task;assert.equal(f.shown.length,0);assert.match(f.element('#nutrition-coach-status').textContent,/changed/);
 });
 
-test('spoken food preview supports partial Add all without duplicates, portion adjustment and removal',()=>{
-  const source=readFileSync(new URL('../nutrition.js',import.meta.url),'utf8'),nodes=new Map(),get=selector=>{if(!nodes.has(selector))nodes.set(selector,{hidden:true,textContent:'',dataset:{}});return nodes.get(selector);};
-  const foods=[food,{...food,name:'Egg',grams:50}],add=foods.map((_,index)=>({dataset:{aiAdd:String(index)}})),remove=foods.map((_,index)=>({dataset:{aiRemove:String(index)}})),adjust=foods.flatMap((_,index)=>['-','+'].map(sign=>({dataset:{aiAdjust:sign,aiIndex:String(index)}}))),all={};
-  const root={innerHTML:'',querySelector:selector=>selector==='[data-ai-add-all]'?all:get(selector)};
-  const draft={photoMode:'meal',items:[]};let renders=0;
-  const context={draft,$:()=>root,$$:selector=>({'[data-ai-add]':add,'[data-ai-remove]':remove,'[data-ai-adjust]':adjust}[selector]||[]),esc:String,api:{showToast(){}},renderDraft:()=>{renders++;},Date,Math};vm.createContext(context);
-  vm.runInContext(source.slice(source.indexOf('  function aiFoodItem('),source.indexOf('  function writeMealStatus(')),context);
-  context.renderAISuggestions(foods,'spoken-meal');assert.equal(draft.items.length,0);
-  add[0].onclick();add[0].onclick();assert.equal(draft.items.length,1);all.onclick();assert.equal(draft.items.length,2);assert.equal(all.disabled,true);all.onclick();assert.equal(draft.items.length,2);assert.equal(draft.items[0].nutritionSource,'spoken-meal');
-  adjust[1].onclick();assert.equal(draft.items[0].grams,160);assert.equal(draft.items[0].kcal,208);
-  remove[0].onclick();assert.equal(draft.items.length,1);assert.equal(all.disabled,false);add[0].onclick();assert.equal(draft.items.length,2);assert.ok(renders>0);
-});
-
 test('all new UI controls and cached coach script exist once in the app shell',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
   for(const id of ['next-coach-generate','next-coach-status','next-coach-result','nutrition-coach-generate','nutrition-coach-status','voice-meal-card','voice-record','voice-stop','voice-cancel','voice-description','voice-analyze','voice-meal-status'])assert.equal(html.split(`id="${id}"`).length-1,1,id);
   const script=html.match(/src="(coach\.js\?[^\"]+)"/)[1];assert.ok(shell.includes('./'+script));
 });
 
-test('nutrition ideas generate automatically, reuse unchanged data and require review before opening a meal',async()=>{
+test('lower-focus plan settings swap a dedicated isolation exercise without changing session size',()=>{
+  const window={},context={window,console,Math,Date};vm.createContext(context);
+  vm.runInContext(readFileSync(new URL('../catalogue.js',import.meta.url),'utf8'),context);context.LIFT_CATALOGUE=window.LIFT_CATALOGUE;
+  vm.runInContext(readFileSync(new URL('../exercise-art.js',import.meta.url),'utf8'),context);context.LIFT_REPDB_ART=window.LIFT_REPDB_ART;
+  vm.runInContext(readFileSync(new URL('../planner.js',import.meta.url),'utf8'),context);
+  const state={daysPerWeek:5,week:1,experience:'beginner',equipment:['barbell','dumbbell','machine','smith','cable','bodyweight','band'],weightSteps:{barbell:2.5,dumbbell:2,machine:2.5,smith:2.5,cable:1,bodyweight:1,band:.5},priorityMuscles:[],lowerFocusMuscles:['Biceps'],nutrition:{profile:{}},logs:{}};
+  const plan=window.LIFT_ENGINE.generate(state,[]),replacements=plan.days.flatMap(day=>day.exercises.filter(exercise=>exercise.replacedForLowerFocus==='Biceps')),baseline=window.LIFT_ENGINE.generate({...state,lowerFocusMuscles:[]},[]),count=current=>current.days.reduce((sum,day)=>sum+day.exercises.length,0);
+  assert.equal(replacements.length,1);assert.equal(count(plan),count(baseline));assert.ok(plan.days.every(day=>day.exercises.length>0));
+  assert.ok(plan.days.flatMap(day=>day.exercises).some(exercise=>exercise.pattern==='row'||exercise.pattern==='verticalPull'));
+});
+
+test('UI includes shared PIN gate and AI loading states while chart stays inside its card',()=>{
+  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
+  assert.match(html,/id="app-lock"/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
+  assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v73/);
+});
+
+test('nutrition ideas render a text list and reuse unchanged data without any meal actions',async()=>{
   const f=coachFixture();let requests=0;
   f.nutrition.requestAI=async()=>{requests++;return {summary:'A useful snack',foods:[food]};};
   f.element('#nutrition-screen').classList.add('active');
   f.events.get('lift:nutrition-updated')();await new Promise(resolve=>setTimeout(resolve,650));
   assert.equal(requests,1);assert.equal(f.shown.length,0);
   f.events.get('lift:nutrition-updated')();await new Promise(resolve=>setTimeout(resolve,650));assert.equal(requests,1);
-  f.element('#meal-editor').classList.add('hidden');f.element('#nutrition-coach-review').onclick();assert.equal(f.shown.length,1);
+  assert.match(f.element('#nutrition-coach-result').innerHTML,/Cooked rice/);assert.match(f.element('#nutrition-coach-result').innerHTML,/150 g \(about 195 kcal\)/);assert.match(f.element('#nutrition-coach-result').innerHTML,/<ul/);assert.doesNotMatch(f.element('#nutrition-coach-result').innerHTML,/<button|<article|Review foods|Add to meal/);assert.equal(f.shown.length,0);
 });
 test('plan insights load on expansion without a separate manual trigger',()=>{
   const elements=new Map(),element=id=>{if(!elements.has(id))elements.set(id,{hidden:true,setAttribute(){}});return elements.get(id);};let requests=0;
   const context={$:element,buildProgramReviewData:()=>({days:[]}),reviewKey:()=>'',loadAIReview:()=>{requests++;}};vm.createContext(context);
   vm.runInContext(appSource.slice(appSource.indexOf('  function setWorkoutAIExpanded('),appSource.indexOf('  function requestProgramReview(')),context);
   context.setWorkoutAIExpanded(true);assert.equal(requests,1);assert.equal(element('#workout-ai-content').hidden,false);context.setWorkoutAIExpanded(false);assert.equal(requests,1);
+});
+
+test('nutrition ideas stay idle while collapsed and fetch automatically on expansion',async()=>{
+  const f=coachFixture();let requests=0;f.nutrition.requestAI=async()=>{requests++;return {summary:'Daily ideas',foods:[food]};};
+  f.element('#nutrition-screen').classList.add('active');f.element('#nutrition-coach-card').open=false;
+  f.events.get('lift:nutrition-updated')();await new Promise(resolve=>setTimeout(resolve,650));assert.equal(requests,0);
+  f.element('#nutrition-coach-card').open=true;f.element('#nutrition-coach-card').listeners.get('toggle')();await new Promise(resolve=>setTimeout(resolve,650));assert.equal(requests,1);
+  const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.doesNotMatch(html,/<details[^>]*id="nutrition-coach-card"[^>]*\bopen\b/);
 });

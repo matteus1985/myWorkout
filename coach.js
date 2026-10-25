@@ -7,7 +7,7 @@
   let voiceVersion = 0, recording = null, voiceRequest = null, descriptionTimer;
   let coachCache={};try{const saved=JSON.parse(localStorage.getItem('lift-log-coach-cache-v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))coachCache=saved;}catch{}
   async function cachedCoach(mode,data,force=false){
-    const key=JSON.stringify(data),saved=coachCache?.[mode];
+    const key=(mode==='nutrition'?'advice-v2:':'')+JSON.stringify(data),saved=coachCache?.[mode];
     if(!force&&saved?.key===key&&Date.now()-saved.at<6*3600000)return saved.result;
     const result=await nutrition().requestAI('coach',{mode,data});
     coachCache[mode]={key,at:Date.now(),result};try{localStorage.setItem('lift-log-coach-cache-v1',JSON.stringify(coachCache));}catch{}
@@ -19,8 +19,11 @@
     $('#voice-record').disabled = busy;
     $('#voice-analyze').disabled = busy;
     $('#voice-description').disabled = busy;
+    $('#meal-photo-menu-toggle').disabled=busy;
+    nutrition().setInputBusy?.(busy);
     for(const id of ['meal-camera-open','meal-upload-open','meal-label-open']) $('#'+id).disabled=busy;
     $('#voice-meal-card').setAttribute('aria-busy',String(busy));
+    $('#voice-meal-status').classList.add('ai-status');$('#voice-meal-status').setAttribute('aria-busy',String(busy));
   }
   function cancelVoice(reset = false) {
     clearTimeout(descriptionTimer);
@@ -80,7 +83,7 @@
           if (typeof result.transcript !== 'string' || !result.transcript.trim()) throw new Error('No speech detected. Try again.');
           $('#voice-description').value=result.transcript.slice(0,2000);
           voiceRequest=null;voiceBusy(false);
-          await analyzeDescription();
+          await analyzeDescription(true);
         } catch(error) { if (session.version===voiceVersion) voiceStatus(errorText(error)); }
         finally { if (session.version===voiceVersion) { voiceRequest=null; voiceBusy(false); } }
       };
@@ -96,18 +99,19 @@
       if(version===voiceVersion) { voiceBusy(false); voiceStatus(error.name==='NotAllowedError'?'Microphone access denied. Allow it in browser settings, or type your meal below.':errorText(error)); }
     }
   }
-  async function analyzeDescription() {
+  async function analyzeDescription(fromVoice=false) {
     if(nutrition().isPhotoBusy()){voiceStatus('Wait for the photo analysis to finish, then analyze your description.');return;}
     const description=$('#voice-description').value.trim();
+    if(!fromVoice&&nutrition().isFoodQuery?.(description)){await nutrition().searchFoods();return;}
     if(description.length<3) { voiceStatus('Describe the foods and quantities first.'); return; }
     cancelVoice();const version=voiceVersion,draft=nutrition().draftIdentity(),controller=new AbortController();voiceRequest=controller;
     voiceBusy(true);voiceStatus('Finding foods and portions…');
-    $('#voice-analyze').hidden=true;
+
     try {
       const result=await nutrition().requestAI('describe-meal',{description},{signal:controller.signal});
       if(version!==voiceVersion||draft!==nutrition().draftIdentity()||$('#meal-editor').classList.contains('hidden'))return;
-      nutrition().showCoachFoods(result.foods,'spoken-meal');voiceStatus('Foods ready. Review portions below and choose Add or Add all.');
-    } catch(error) { if(version===voiceVersion){voiceStatus(errorText(error));$('#voice-analyze').hidden=false;} }
+      nutrition().showCoachFoods(result.foods,'spoken-meal');nutrition().clearInput?.();voiceStatus('');
+    } catch(error) { if(version===voiceVersion){voiceStatus(errorText(error));} }
     finally { if(version===voiceVersion){voiceRequest=null;voiceBusy(false);} }
   }
 
@@ -120,7 +124,7 @@
     root.replaceChildren();
     if(!context) { status.textContent='All workouts this week are completed.';return; }
     if(!context.data.exercises.some(e=>e.history.length)) { status.textContent='Log completed sets for this workout first. Your current starting loads remain available.';return; }
-    nextBusy=true;button.disabled=true;button.hidden=true;$('#next-coach-card').setAttribute('aria-busy','true');status.textContent='Reviewing recent performance for '+context.data.dayName+'…';
+    nextBusy=true;button.disabled=true;button.hidden=true;$('#next-coach-card').setAttribute('aria-busy','true');status.classList.add('ai-status');status.setAttribute('aria-busy','true');status.textContent='Reviewing recent performance for '+context.data.dayName+'…';
     try {
       const result=await cachedCoach('next-workout',context.data,force);
       if(window.LiftTrainingAI.nextWorkoutContext()?.key!==context.key)throw new Error('Your workout changed. Generate fresh suggestions.');
@@ -140,7 +144,7 @@
         else { root.replaceChildren();status.textContent='The workout changed. Generate new suggestions before applying.'; }
       };
     } catch(error){nextFailed={key:context.key,at:Date.now()};status.textContent=errorText(error);button.hidden=false;}
-    finally {nextBusy=false;button.disabled=false;$('#next-coach-card').setAttribute('aria-busy','false');scheduleAuto();}
+    finally {nextBusy=false;button.disabled=false;$('#next-coach-card').setAttribute('aria-busy','false');status.setAttribute('aria-busy','false');scheduleAuto();}
   }
   let foodBusy=false,foodRendered='',foodFailed={};
   async function suggestFoods(force=false) {
@@ -151,23 +155,21 @@
     if(!force&&(foodRendered===key||(foodFailed.key===key&&Date.now()-foodFailed.at<60000)))return;
     root.replaceChildren();
     if(context.remaining.kcal<=0){foodRendered=key;status.textContent='Your calorie target for this day is already met.';return;}
-    foodBusy=true;button.disabled=true;button.hidden=true;$('#nutrition-coach-card').setAttribute('aria-busy','true');status.textContent='Finding foods for your remaining daily targets…';
+    foodBusy=true;button.disabled=true;button.hidden=true;$('#nutrition-coach-card').setAttribute('aria-busy','true');status.classList.add('ai-status');status.setAttribute('aria-busy','true');status.textContent='Finding foods for your remaining daily targets…';
     try {
       const result=await cachedCoach('nutrition',context,force);
       if(JSON.stringify(nutrition().nutritionContext())!==JSON.stringify(context))throw new Error('Your diary or targets changed. Generate fresh food suggestions.');
       foodRendered=key;
       if(!Array.isArray(result.foods)||!result.foods.length){status.textContent=String(result.summary||'No additional foods suggested.');return;}
       status.textContent=String(result.summary||'Food suggestions ready.');
-      root.innerHTML='<button type="button" class="ai-action" id="nutrition-coach-review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg><span>Review foods</span></button>';
-      $('#nutrition-coach-review').onclick=()=>{
-        try{
-          if(JSON.stringify(nutrition().nutritionContext())!==key)throw new Error('Your diary changed. Food ideas are updating.');
-          if(!$('#meal-editor').classList.contains('hidden'))throw new Error('Close your current meal before reviewing these foods.');
-          nutrition().showCoachFoods(result.foods,'nutrition');
-        }catch(error){status.textContent=errorText(error);scheduleAuto();}
-      };
+      const remaining=context.remaining;
+      root.innerHTML='<p class="nutrition-ideas-remaining">Remaining: '+Math.round(remaining.kcal)+' kcal · '+Math.round(remaining.protein||0)+' g protein · '+Math.round(remaining.carbs||0)+' g carbs · '+Math.round(remaining.fat||0)+' g fat</p><ul class="nutrition-ideas-text">'+result.foods.map(food=>{
+        const calories=Math.round(Number(food.grams)/100*Number(food.nutritionPer100g?.kcal));
+        return '<li>'+escape(food.name)+' — '+escape(food.grams)+' g'+(Number.isFinite(calories)?' (about '+calories+' kcal)':'')+'</li>';
+      }).join('')+'</ul>';
+
     } catch(error){foodFailed={key,at:Date.now()};status.textContent=errorText(error);button.hidden=false;}
-    finally{foodBusy=false;button.disabled=false;$('#nutrition-coach-card').setAttribute('aria-busy','false');scheduleAuto();}
+    finally{foodBusy=false;button.disabled=false;$('#nutrition-coach-card').setAttribute('aria-busy','false');status.setAttribute('aria-busy','false');scheduleAuto();}
   }
 
   let autoTimer;
@@ -176,16 +178,18 @@
     autoTimer=setTimeout(()=>{
       if(!navigator.onLine||document.hidden||!nutrition()?.hasAISetup())return;
       if($('#home-screen')?.classList.contains('active'))suggestWorkout();
-      if($('#nutrition-screen')?.classList.contains('active'))suggestFoods();
+      if($('#nutrition-screen')?.classList.contains('active')&&$('#nutrition-coach-card').open)suggestFoods();
     },600);autoTimer?.unref?.();
   }
 
   $('#voice-record').onclick=startRecording;
   $('#voice-stop').onclick=()=>stopRecording();
   $('#voice-cancel').onclick=()=>cancelVoice();
-  $('#voice-analyze').onclick=analyzeDescription;
-  $('#voice-description').addEventListener('input',()=>{cancelVoice();$('#voice-analyze').hidden=true;if($('#voice-description').value.trim().length>=3)descriptionTimer=setTimeout(analyzeDescription,1500);});
-  $('#voice-meal-card').addEventListener('toggle',()=>{if(!$('#voice-meal-card').open)cancelVoice();});
+  $('#voice-analyze').onclick=()=>analyzeDescription();
+  $('#voice-description').addEventListener('input',()=>{cancelVoice();voiceStatus('');const text=$('#voice-description').value.trim();if(text.length>=3&&!nutrition().isFoodQuery?.(text))descriptionTimer=setTimeout(analyzeDescription,1500);});
+  $('#voice-description').addEventListener('keydown',event=>{if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();clearTimeout(descriptionTimer);void analyzeDescription();}});
+  document.addEventListener('lift:meal-close',()=>cancelVoice(true));
+  document.addEventListener('lift:meal-input-cleared',()=>cancelVoice(true));
   $('#meal-cancel').addEventListener('click',()=>cancelVoice(true));
   $('#meal-save').addEventListener('click',()=>cancelVoice());
   document.addEventListener('lift:meal-open',()=>cancelVoice(true));
@@ -194,6 +198,7 @@
   window.addEventListener('pagehide',()=>cancelVoice());
   $('#next-coach-generate').onclick=()=>suggestWorkout(true);
   $('#nutrition-coach-generate').onclick=()=>suggestFoods(true);
+  $('#nutrition-coach-card').addEventListener('toggle',scheduleAuto);
   document.addEventListener('lift:training-updated',scheduleAuto);
   document.addEventListener('lift:nutrition-updated',scheduleAuto);
   document.addEventListener('visibilitychange',scheduleAuto);

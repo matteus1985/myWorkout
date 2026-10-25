@@ -80,6 +80,27 @@ window.LIFT_ENGINE=(()=>{
     if(count===6){removeLegAccessory(days,['d6','d3'],['abduction','seatedCalf','kneeExtension','legCurl','calfRaise']);}
     return days;
   }
+  function rebalanceLowerFocus(days,state,groups){
+    const focus=new Set(groups||[]),experience=C.levels.indexOf(state.experience||'beginner'),isolation=new Set(['kneeExtension','legCurl','calfRaise','seatedCalf','lateralRaise','rearDelt','facePull','curl','hammerCurl','triceps','tricepsOverhead','crunch','antiRotation','shrug','uprightRow','abduction','fly']);
+    if(!focus.size)return;
+    const currentIds=new Set(days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId)).filter(Boolean));
+    for(const muscle of focus){
+      let replaced=false;
+      for(const day of [...days].sort((a,b)=>minutes(b.exercises)-minutes(a.exercises))){
+        const index=day.exercises.findIndex(exercise=>{const item=C.find(exercise.catalogId);return item?.primary.includes(muscle)&&isolation.has(exercise.pattern);});
+        if(index<0)continue;
+        const old=day.exercises[index],dayMuscles=new Set(day.exercises.filter((_,i)=>i!==index).flatMap(exercise=>C.find(exercise.catalogId)?.primary||[]).filter(group=>!focus.has(group)));
+        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
+        const weeklySets=new Map();for(const entry of days.flatMap(d=>d.exercises)){const item=C.find(entry.catalogId);for(const group of item?.primary||[])weeklySets.set(group,(weeklySets.get(group)||0)+entry.sets.length);}
+        candidates.sort((a,b)=>{const score=item=>item.primary.reduce((sum,group)=>sum+(weeklySets.get(group)||0),0);return score(a)-score(b)||a.name.localeCompare(b.name);});
+        const alternative=candidates[0];if(!alternative)continue;
+        day.exercises[index]=descriptor(alternative,old.id,state,{sets:old.sets.length,baseline:true});
+        day.exercises[index].replacedForLowerFocus=muscle;day.exercises[index].replacedExercise=old.name;
+        currentIds.delete(old.catalogId);currentIds.add(alternative.id);day.minutes=minutes(day.exercises);replaced=true;break;
+      }
+      if(!replaced)continue;
+    }
+  }
   function illustratedReplacement(item,state,{usedIds=[]}={}){
     const level=state.experience||'beginner',allowed=C.levels.indexOf(level),source=item?.primary?item:C.find(item?.catalogId)||C.find(item?.name)||C.find(item),sourceMuscles=source?.primary||[];
     if(!sourceMuscles.length)return null;
@@ -111,6 +132,7 @@ window.LIFT_ENGINE=(()=>{
       rebalance(days,Number(state.daysPerWeek)||5);
       for(const muscle of priorities)days.forEach(day=>{const index=day.exercises.findIndex(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle));if(index>0){const [e]=day.exercises.splice(index,1);day.exercises.unshift(e);}});
       days.forEach(day=>{day.priorityMuscles=[];for(const muscle of priorities)if(day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle)))day.priorityMuscles.push(muscle);});
+      rebalanceLowerFocus(days,state,[...new Set((state.lowerFocusMuscles||[]).filter(m=>C.exercises.some(e=>e.primary.includes(m))&&!priorities.includes(m)))].slice(0,2));
     const edits=state.persistentEdits?.[programId]||{};
     const removed=new Set(Object.values(edits).flatMap(edit=>edit.remove||[])),replacements=new Map(Object.values(edits).flatMap(edit=>edit.replace||[]).map(x=>[x.id,x])),setCounts=new Map(Object.values(edits).flatMap(edit=>edit.setCounts||[]).map(x=>[x.id,x.count]));
     days.forEach(day=>{const edit=edits[day.id]||{};day.exercises=day.exercises.filter(e=>!removed.has(e.id));for(const saved of edit.add||[]){const item=C.find(saved.catalogId);if(item&&hasArt(item))day.exercises.push(descriptor(item,saved.id,state,{sets:saved.sets||3}));}day.exercises=day.exercises.map(e=>{const replacement=replacements.get(e.id),item=replacement&&C.find(replacement.catalogId);if(item&&hasArt(item))e=descriptor(item,e.id,state,{sets:replacement.sets||3});const count=setCounts.get(e.id);if(count){while(e.sets.length<count)e.sets.push({...e.sets.at(-1)});e.sets=e.sets.slice(0,count);}return e;});day.minutes=minutes(day.exercises);day.optionalDropSet=day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;});
@@ -119,5 +141,5 @@ window.LIFT_ENGINE=(()=>{
   }
   function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan};
+  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus};
 })();
