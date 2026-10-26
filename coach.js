@@ -4,10 +4,11 @@
   const nutrition = () => window.LiftNutrition;
   const escape = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const errorText = error => error.name === 'AbortError' ? 'Request stopped. Try again when ready.' : error.message || 'AI is unavailable. Try again.';
+  const workoutCopy=(value,dayName)=>String(value||'').replace(/\bdayId\s*[:=]?\s*['\"]?d\d+['\"]?/gi,dayName||'the next workout').replace(/\bd\d+\b/gi,dayName||'the next workout');
   let voiceVersion = 0, recording = null, voiceRequest = null;
   let coachCache={};try{const saved=JSON.parse(localStorage.getItem('lift-log-coach-cache-v1')||'{}');if(saved&&typeof saved==='object'&&!Array.isArray(saved))coachCache=saved;}catch{}
   async function cachedCoach(mode,data,force=false){
-    const key=(mode==='nutrition'?'advice-v3:':'')+JSON.stringify(data),saved=coachCache?.[mode];
+    const key=(mode==='nutrition'?'advice-v3:':mode==='next-workout'?'optimization-only-v2:':'')+JSON.stringify(data),saved=coachCache?.[mode];
     if(!force&&saved?.key===key&&Date.now()-saved.at<6*3600000&&(mode!=='nutrition'||saved.result?.foods?.length))return saved.result;
     const result=await nutrition().requestAI('coach',{mode,data});
     if(mode!=='nutrition'||result?.foods?.length){coachCache[mode]={key,at:Date.now(),result};try{localStorage.setItem('lift-log-coach-cache-v1',JSON.stringify(coachCache));}catch{}}
@@ -113,37 +114,6 @@
     finally { if(version===voiceVersion){voiceRequest=null;voiceBusy(false);} }
   }
 
-  let nextBusy=false,nextRendered='',nextFailed={};
-  async function suggestWorkout(force=false) {
-    if(nextBusy)return;
-    const status=$('#next-coach-status'),root=$('#next-coach-result'),button=$('#next-coach-generate');
-    const context=window.LiftTrainingAI?.nextWorkoutContext();
-    if(!force&&context&&(nextRendered===context.key||(nextFailed.key===context.key&&Date.now()-nextFailed.at<60000)))return;
-    root.replaceChildren();
-    if(!context) { status.textContent='All workouts this week are completed.';return; }
-    if(!context.data.exercises.some(e=>e.history.length)) { status.textContent='Log completed sets for this workout first. Your current starting loads remain available.';return; }
-    nextBusy=true;button.disabled=true;button.hidden=true;$('#next-coach-card').setAttribute('aria-busy','true');status.classList.add('ai-status');status.setAttribute('aria-busy','true');status.textContent='Reviewing recent performance for '+context.data.dayName+'…';
-    try {
-      const result=await cachedCoach('next-workout',context.data,force);
-      if(window.LiftTrainingAI.nextWorkoutContext()?.key!==context.key)throw new Error('Your workout changed. Generate fresh suggestions.');
-      const seen=new Set(),suggestions=(Array.isArray(result.suggestions)?result.suggestions:[]).filter(s=>{
-        const e=context.data.exercises.find(e=>e.id===s.exerciseId);
-        if(!e||seen.has(e.id)||!e.history.length||!Number.isFinite(s.weight)||!Number.isInteger(s.reps)||s.weight<e.minWeight||s.weight>e.maxWeight||s.reps<e.minReps||s.reps>e.maxReps||Math.abs((s.weight-e.referenceWeight)/e.step-Math.round((s.weight-e.referenceWeight)/e.step))>.001)return false;
-        seen.add(e.id);return true;
-      });
-      status.textContent=String(result.summary||'Review the suggested working sets.');
-      nextRendered=context.key;
-      if(!suggestions.length) { root.textContent='No load changes suggested from the available history.';return; }
-      root.innerHTML=suggestions.map((s,index)=>{const e=context.data.exercises.find(e=>e.id===s.exerciseId);return `<label class="coach-choice"><input type="checkbox" data-coach-choice="${index}" checked><span><strong>${escape(e.name)}</strong><span>${escape(e.sets)} sets · ${escape(s.weight)} kg × ${escape(s.reps)} reps</span><small>${escape(s.reason)}</small></span></label>`;}).join('')+'<button type="button" class="btn btn-soft btn-small ai-action" id="next-coach-apply"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg><span>Apply selected</span></button>';
-      $('#next-coach-apply').onclick=()=>{
-        const selected=[...root.querySelectorAll('[data-coach-choice]:checked')].map(input=>suggestions[Number(input.dataset.coachChoice)]);
-        if(!selected.length) { status.textContent='Select at least one exercise.';return; }
-        if(window.LiftTrainingAI.applyNextWorkoutSuggestions(context,selected)){root.replaceChildren();status.textContent='Suggested working sets applied to '+context.data.dayName+'.';}
-        else { root.replaceChildren();status.textContent='The workout changed. Generate new suggestions before applying.'; }
-      };
-    } catch(error){nextFailed={key:context.key,at:Date.now()};status.textContent=errorText(error);button.hidden=false;}
-    finally {nextBusy=false;button.disabled=false;$('#next-coach-card').setAttribute('aria-busy','false');status.setAttribute('aria-busy','false');scheduleAuto();}
-  }
   let foodBusy=false,foodRendered='',foodFailed={};
   async function suggestFoods(force=false) {
     if(foodBusy)return;
@@ -174,9 +144,8 @@
   function scheduleAuto(){
     clearTimeout(autoTimer);
     autoTimer=setTimeout(()=>{
-      if(!navigator.onLine||document.hidden||!nutrition()?.hasAISetup())return;
-      if($('#home-screen')?.classList.contains('active'))suggestWorkout();
-      if($('#nutrition-screen')?.classList.contains('active')&&$('#nutrition-coach-card').open)suggestFoods();
+      if(!navigator.onLine||document.hidden)return;
+      if($('#nutrition-screen')?.classList.contains('active')&&$('#nutrition-coach-card').open&&nutrition()?.hasAISetup())suggestFoods();
     },600);autoTimer?.unref?.();
   }
 
@@ -194,7 +163,6 @@
   document.addEventListener('keydown',event=>{if(event.key==='Escape')cancelVoice(true);});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&recording)cancelVoice();});
   window.addEventListener('pagehide',()=>cancelVoice());
-  $('#next-coach-generate').onclick=()=>suggestWorkout(true);
   $('#nutrition-coach-generate').onclick=()=>suggestFoods(true);
   $('#nutrition-coach-card').addEventListener('toggle',scheduleAuto);
   document.addEventListener('lift:training-updated',scheduleAuto);

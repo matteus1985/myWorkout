@@ -221,3 +221,9 @@ test('card macro row follows grams and retains unknown markers instead of presen
   const missing=c.aiFoodItem({name:'Curry',grams:150,nutritionResolved:false,requiresConfirmation:true});assert.match(c.cardMacros(missing),/P —/);assert.doesNotMatch(c.cardMacros(missing),/P 0/);
   const markup=c.draftCardMarkup(item,0);assert.ok(markup.indexOf('meal-food-macros')<markup.indexOf('</details>'));assert.match(markup,/<summary aria-label=.*<svg/);assert.doesNotMatch(markup,/>Edit details</);
 });
+
+test('diary meal macro summary sits at the lower left beside its delete action',()=>{
+  const start=source.indexOf("$('#nutrition-meals').innerHTML="),end=source.indexOf("$('#nutrition-goal-estimate')",start),render=source.slice(start,end);
+  assert.match(render,/<div class="nutrition-food-list">[\s\S]*?<div class="nutrition-meal-bottom-actions"><small class="nutrition-meal-macros">/);
+  assert.ok(render.indexOf('nutrition-meal-macros')<render.indexOf('class="icon-button nutrition-delete"'));
+});

@@ -61,7 +61,7 @@ window.LIFT_ENGINE=(()=>{
     const [min,max]=range(item),planned=targets(state,item,Array.from({length:sets},()=>({weight:null,min,max})),baseline);
     return {id,catalogId:item.id,name:item.name,muscle:item.primary.join(' · '),equipment:item.equipment,pattern:item.pattern,level:item.level,unit:item.unit,sets:planned.sets,rest:compound.has(item.pattern)?150:90,note:'',estimated:planned.estimated,estimateSource:planned.estimateSource||null};
   }
-  function minutes(exercises){return Math.ceil((8+exercises.reduce((s,e)=>s+e.sets.length*.75+(e.sets.length-1)*e.rest/60+1.5,0))/5)*5;}
+  function minutes(exercises){const paired=new Set();let total=8;for(const e of exercises){const minis=e.sets.filter(s=>s.mini).length;total+=e.sets.length*.75+1.5;if(e.supersetGroup){if(!paired.has(e.supersetGroup)){paired.add(e.supersetGroup);total+=(e.sets.length-1)*e.rest/60;}}else total+=minis*.25+Math.max(0,e.sets.length-1-minis)*e.rest/60;}return Math.ceil(total/5)*5;}
   function removeLegAccessory(days,preferred,order){
     const groups=new Set(['Quadriceps','Hamstrings','Glutes','Calves']);
     const dayOrder=[...preferred,...days.map(d=>d.id).filter(id=>!preferred.includes(id))];
@@ -139,7 +139,7 @@ window.LIFT_ENGINE=(()=>{
     removeAdjacentDuplicates(days);
     return {version:4,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)]};
   }
-  function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
+  function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
   return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus};
 })();

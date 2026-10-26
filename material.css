@@ -373,7 +373,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .photo-action{min-width:0;min-height:68px;padding:7px 5px;font-size:11px;line-height:1.2;text-align:center}
 .photo-action svg{width:21px;height:21px}
 .photo-action-label{grid-column:auto}
-.photo-action:focus-visible,.workout-ai-refresh:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
+.photo-action:focus-visible{outline:3px solid #ff9bad;outline-offset:2px}
 .workout-ai-card{padding:8px 12px;border-radius:16px}
 .workout-ai-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0;min-height:40px}
 .workout-ai-toggle{display:flex;align-items:center;gap:10px;flex:1;min-width:0;min-height:40px;padding:0;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
@@ -381,19 +381,17 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .workout-ai-toggle .ai-title-icon{display:grid;place-items:center;width:28px;height:28px;flex:none;border-radius:9px;background:#e85d8d20;color:#ff9fbc;font-size:15px}
 .workout-ai-chevron{width:0;height:0;flex:none;margin:0 1px 0 2px;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #ff6e84;transform:rotate(0);transition:transform .18s ease}
 .workout-ai-toggle[aria-expanded="true"] .workout-ai-chevron,.exercise-collapse[aria-expanded="true"] .workout-ai-chevron{transform:rotate(90deg)}
-.workout-ai-refresh{display:grid;place-items:center;flex:none;width:40px;height:40px;min-height:40px;padding:0;border:0;border-radius:12px;background:transparent;color:#ffafc2;cursor:pointer}
-.workout-ai-refresh:hover{background:#ffffff08;color:#ffd2dc}
-.workout-ai-refresh svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
 .workout-ai-card #workout-ai-content[hidden]{display:none}
 .workout-ai-card #workout-ai-content:not([hidden]){padding-top:8px}
 .ai-review-suggestions-title{margin:12px 0 6px;font-size:12px}
 .ai-alternative-reason{display:block;margin-top:4px;color:#ffb0c4}
-.ai-review-suggestion{display:grid;grid-template-columns:minmax(0,1fr) 36px;align-items:center;gap:8px}
+.ai-review-suggestion{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
 .ai-review-suggestion>div{display:grid;gap:4px;min-width:0;overflow-wrap:anywhere}
 .ai-review-suggestion small{display:block;color:#c3b5bd;font-size:11px;line-height:1.4}
-.ai-apply-change{display:grid;place-items:center;width:34px;height:34px;padding:0;border:1px solid #61424c;border-radius:11px;background:#39262e;color:#ff9bad;cursor:pointer}
+.ai-apply-change{display:flex;align-items:center;justify-content:center;gap:6px;min-width:76px;min-height:36px;padding:0 10px;border:1px solid #8b5667;border-radius:10px;background:#39262e;color:#ffd6e1;font:inherit;font-size:11px;font-weight:750;cursor:pointer}
 .ai-apply-change:hover{background:#4a2934;color:#ffd0d8}
-.ai-apply-change svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ai-apply-change svg{width:15px;height:15px;flex:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 @media(max-width:370px){.photo-actions{gap:5px}.photo-action{min-height:64px;padding:6px 3px;font-size:10px}.photo-action svg{width:19px;height:19px}.workout-ai-toggle{gap:8px}.workout-ai-label{font-size:13px}}
 @media(prefers-reduced-motion:reduce){.workout-ai-chevron{transition:none}}
 #settings-screen .tool-grid{gap:9px}
@@ -425,8 +423,7 @@ details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
 #settings-screen .nutrition-settings-grid{gap:8px}
 @media(prefers-reduced-motion:reduce){details>summary:after{transition:none}}
 .food-result small{display:block}
-.workout-ai-refresh{border:0;background:transparent;box-shadow:none}
-.workout-ai-refresh:hover{background:transparent;color:#ffd2dc}
+
 .progress-ai-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .progress-ai-toggle{display:flex;align-items:center;gap:10px;min-width:0;min-height:44px;padding:3px 0;border:0;background:transparent;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
 .progress-ai-toggle>span:nth-child(2){display:grid;gap:4px;min-width:0}
@@ -598,7 +595,49 @@ body.meal-editor-open #toast.toast{z-index:80}
 .meal-food-details>summary svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .meal-food-details>.meal-food-macros{grid-column:1;grid-row:1;margin:0;padding:0;border:0}.meal-food-details>.meal-food-edit{grid-column:1/-1;grid-row:2}
 .nutrition-meal{padding-right:11px}.nutrition-meal .row>div:first-child{padding-right:0}
-.nutrition-meal-bottom-actions{display:flex;justify-content:flex-end;margin-top:5px}.nutrition-meal-bottom-actions .icon-button{display:grid;place-items:center;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:9px;background:#a93d5820;border-color:#874254;color:#ff9bb7}.nutrition-meal-bottom-actions svg{width:14px;height:14px}
+.nutrition-meal-bottom-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;padding-top:6px}.nutrition-meal-bottom-actions .icon-button{display:grid;place-items:center;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:9px;background:#a93d5820;border-color:#874254;color:#ff9bb7}.nutrition-meal-bottom-actions svg{width:14px;height:14px}
 .nutrition-meal .meal-title-line .meal-favorite-name-edit{flex:1 1 0;width:auto;min-width:0;height:40px;padding:7px 10px;font-size:14px}
 .nutrition-meal .meal-title-line .meal-favorite-edit-action{display:grid;place-items:center;flex:none;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:9px;background:#302632;border:1px solid #584653;color:#dda9c1}
 .nutrition-meal .meal-title-line .meal-favorite-edit-action svg{width:14px;height:14px}
+
+.nutrition-meal-macros{min-width:0;color:#c9b6cb;font-size:10px;font-weight:600;line-height:1.4;overflow-wrap:anywhere}
+
+/* Clear, categorized advice for the upcoming workout. */
+.next-workout-advice{display:grid;gap:4px;padding:10px 12px;border:1px solid #574451;border-left:3px solid #b47cbd;border-radius:11px;background:#332b35}.next-workout-advice>small{color:#eda9c3;font-size:10px;font-weight:750;text-transform:uppercase;letter-spacing:.5px}.next-workout-advice>strong{font-size:12px;color:#f8eaf4}.next-workout-advice>p{margin:0;color:#cbbcca;font-size:11px;line-height:1.5}
+
+#next-hero #next-coach-card{margin:16px 0 0;background:rgba(20,16,25,.22);border:1px solid rgba(255,255,255,.2);box-shadow:none}#next-hero #next-coach-card>summary{padding:12px}#next-hero .ai-panel-body{padding:0 12px 12px}#session-elapsed{display:block;font-size:12px;color:var(--muted,#bcb1c4);text-align:right;font-variant-numeric:tabular-nums;margin:0 0 5px}#next-week-preview[aria-busy="true"]{min-height:64px;display:flex;align-items:center;gap:12px}
+
+.next-ai-brief{display:flex;align-items:center;gap:9px;min-width:0;margin:10px 0 0;padding:8px 10px;border:1px solid #ffffff38;border-radius:11px;background:#281b2b32;color:#fff;font-size:12px;font-weight:600;line-height:1.4}.next-ai-brief>span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.next-ai-brief[hidden]{display:none}.next-ai-brief-icon{display:grid;place-items:center;flex:none;width:25px;height:25px;border-radius:8px;background:#241923;color:#ff9ab7}.next-ai-brief-icon svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}#next-hero #next-coach-card{margin:10px 0 0;padding:0;border:0;border-top:1px solid #ffffff35;border-radius:0;background:transparent}#next-hero #next-coach-card>summary{gap:9px;min-height:42px;padding:7px 0;color:#fff}#next-hero #next-coach-card .ai-title-icon{width:28px;height:28px;flex-basis:28px;border:1px solid #ffffff5c;border-radius:9px;background:#241923;color:#ff9ab7}#next-hero #next-coach-card .ai-title-icon svg{width:16px;height:16px;stroke:currentColor;stroke-width:1.8}#next-hero #next-coach-card .ai-heading-copy strong{color:#fff;font-size:13px}#next-hero #next-coach-card .ai-heading-copy small{color:#ffe3ee}#next-hero #next-coach-card .workout-ai-chevron{width:9px;height:9px;border-color:#fff;opacity:1}#next-hero .ai-panel-body{padding:0 0 8px}#next-hero #next-coach-status:empty{display:none}#next-hero .ai-status{margin:4px 0;color:#fff}
+.next-coach-advice-list{display:grid;gap:2px}.next-workout-advice{display:grid;grid-template-columns:28px minmax(0,1fr);align-items:center;gap:9px;padding:8px 2px;border:0;border-bottom:1px solid #ffffff24;border-radius:0;background:transparent}.next-workout-advice:last-child{border-bottom:0}.next-advice-icon{display:grid;place-items:center;width:26px;height:26px;border:1px solid #ffffff49;border-radius:8px;background:#2e2335;color:#ff9fbe}.next-advice-icon svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}.next-workout-advice>span:last-child{display:grid;gap:2px;min-width:0}.next-workout-advice>span>small{color:#ffe1ed;font-size:9px;font-weight:750;letter-spacing:.4px;text-transform:uppercase}.next-workout-advice>span>strong{color:#fff;font-size:11px;font-weight:550;line-height:1.4;overflow-wrap:anywhere}.next-coach-loads{margin-top:7px;border-top:1px solid #ffffff30}.next-coach-loads>summary{display:flex;align-items:center;gap:7px;min-height:36px;color:#fff;font-size:11px;font-weight:700;cursor:pointer;list-style:none}.next-coach-loads>summary::-webkit-details-marker{display:none}.next-coach-loads>summary::before{content:'＋';display:grid;place-items:center;width:20px;height:20px;border:1px solid #ffffff4d;border-radius:6px;color:#ffd7e6}.next-coach-loads[open]>summary::before{content:'−'}.next-coach-loads>summary>span{display:grid;place-items:center;min-width:19px;height:19px;padding:0 5px;border-radius:9px;background:#241923;color:#ff9fbe}.next-coach-load-list{display:grid;gap:6px}.next-coach-loads .coach-choice{padding:8px;border-color:#ffffff35;background:#24192366}.next-coach-loads .ai-action{width:100%;margin-top:7px;border-color:#ffffff5c;background:#251c2b;color:#fff}.next-coach-empty{margin:6px 0;color:#fff;font-size:11px;line-height:1.5}
+.next-coach-loads{margin-top:9px;padding-top:7px;border-top:1px solid #ffffff30}.next-coach-loads h3{margin:0 0 5px;color:#ffe1ed;font-size:10px;font-weight:750;letter-spacing:.4px;text-transform:uppercase}.next-coach-load{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:start;gap:8px;padding:7px 0;border-bottom:1px solid #ffffff20;color:#fff}.next-coach-load:last-child{border-bottom:0}.next-coach-load>input{width:15px;height:15px;margin:2px 0 0;accent-color:#ff759a}.next-coach-load>span{display:grid;gap:2px;min-width:0}.next-coach-load strong{font-size:11px;line-height:1.35}.next-coach-load>span>span{font-size:11px;color:#fff}.next-coach-load small{font-size:10px;line-height:1.35;color:#ffe1ed}.next-coach-loads .ai-action{width:100%;margin-top:7px;border-color:#ffffff5c;background:#251c2b;color:#fff}#next-hero #next-coach-card .workout-ai-chevron{width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #fff;opacity:1}
+
+/* Keep the next-workout panel compact and make its single disclosure control unmistakable. */
+#next-hero #next-coach-card{margin-top:8px}
+#next-hero #next-coach-card>summary{min-height:44px;padding:6px 2px;gap:9px;cursor:pointer;list-style:none}
+#next-hero #next-coach-card>summary::-webkit-details-marker{display:none}
+#next-hero #next-coach-card>summary::marker{content:""}
+#next-hero #next-coach-card .workout-ai-chevron{display:block;flex:none;width:9px;height:9px;margin:0 3px 4px auto;border:0;border-right:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(45deg);transition:transform .18s ease}
+#next-hero #next-coach-card[open] .workout-ai-chevron{transform:translateY(4px) rotate(225deg)}
+#next-hero #next-coach-card>summary:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:8px}
+#next-hero .ai-panel-body{padding:2px 0 4px}
+#next-hero #next-coach-result{margin-top:0}
+#next-hero .next-coach-loads{margin-top:3px;padding-top:7px}
+#next-hero .next-coach-loads h3{margin-bottom:3px;font-size:9px;letter-spacing:.35px}
+#next-hero .next-coach-load{grid-template-columns:16px minmax(0,1fr);gap:7px;padding:6px 0}
+#next-hero .next-coach-load>input{width:14px;height:14px}
+#next-hero .next-coach-load strong{font-size:11px}
+#next-hero .next-coach-load>span>span{font-size:10px;line-height:1.35}
+#next-hero .next-coach-load small{font-size:9px;line-height:1.35}
+#next-hero .next-coach-loads .ai-action{min-height:36px;margin-top:6px;padding:7px 10px;font-size:11px}
+#next-hero .next-advice-apply{justify-self:start;min-height:30px;margin-top:6px;padding:5px 10px;border:1px solid #ffffff80;border-radius:9px;background:#251c2b;color:#fff;font:inherit;font-size:10px;font-weight:750;cursor:pointer}
+#next-hero .next-advice-apply:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){#next-hero #next-coach-card .workout-ai-chevron{transition:none}}
+
+#session-elapsed{display:flex;align-items:center;justify-content:center;flex:none;min-width:0;height:auto;margin:0 0 0 auto;padding:0;border:0;border-radius:0;background:transparent;color:#f6dce6;font-size:12px;font-weight:750;text-align:center;font-variant-numeric:tabular-nums}
+.workout-sticky-head .screen-head #session-elapsed+#finish-button{flex:none}
+@media(max-width:380px){#session-elapsed{min-width:42px;padding:0 5px;font-size:11px}.workout-sticky-head .screen-head{gap:7px}}
+
+.drop-set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 0;padding:10px 12px;border:1px solid #57404a;border-radius:11px;background:#2e252c;color:#f5e7ee;font-size:11px;line-height:1.4}
+.drop-set-row>span{min-width:0}
+.drop-set-checkbox{width:20px;height:20px;flex:none;margin:0;accent-color:#f43f66;cursor:pointer}
+.drop-set-checkbox:focus-visible{outline:2px solid #ff9bad;outline-offset:3px}

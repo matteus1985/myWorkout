@@ -36,8 +36,9 @@ test('unsupported, oversized and silent recordings give usable errors',async()=>
 });
 test('workout proposal excludes invented exercises, duplicate IDs, missing history and unsafe loads',async()=>{
   const exercises=[{id:'press',history:[{sets:[{weight:20,reps:10}]}],referenceWeight:20,minWeight:17.5,maxWeight:22.5,step:2.5,minReps:6,maxReps:12},{id:'new',history:[],minWeight:0,maxWeight:5,step:2.5,minReps:6,maxReps:12}];
-  const env=fakeEnv({summary:'Keep progressing',suggestions:[{exerciseId:'press',weight:22.5,reps:8},{exerciseId:'press',weight:20,reps:10},{exerciseId:'invented',weight:20,reps:10},{exerciseId:'new',weight:2.5,reps:10}]});
-  const result=await (await worker.fetch(jsonRequest('/coach',{mode:'next-workout',data:{exercises}}),env)).json();assert.equal(result.suggestions.length,1);assert.equal(result.suggestions[0].weight,22.5);
+  const data={week:3,dayId:'d1',dayName:'Push A',exercises,weeklyProgram:[{name:'Push A',estimatedMinutes:50}],plannedWeeklyVolume:{Chest:{sets:10,frequency:2}},trainingHistory:[{week:3,completedSessions:1,completedSets:8,muscleWork:{Chest:{sets:5,loadTimesReps:1400}}}]};
+  const env=fakeEnv({summary:"Suggestions for dayId 'd1' with balanced progression.",suggestions:[{exerciseId:'press',weight:22.5,reps:8},{exerciseId:'press',weight:20,reps:10},{exerciseId:'invented',weight:20,reps:10},{exerciseId:'new',weight:2.5,reps:10}],recommendations:[{type:'duration',title:'Session length',message:'Shorten Push A to 50 minutes by reducing accessory rest.'},{type:'unknown',title:'Invalid',message:'Ignore me.'}]});
+  const result=await (await worker.fetch(jsonRequest('/coach',{mode:'next-workout',data}),env)).json();assert.equal(result.suggestions.length,1);assert.equal(result.suggestions[0].weight,22.5);assert.doesNotMatch(result.summary,/dayId|\bd1\b/);assert.match(result.summary,/Push A/);assert.equal(result.recommendations.length,1);assert.equal(result.recommendations[0].type,'duration');assert.match(env.calls[0].input.messages[0].content,/entire weeklyProgram/);assert.match(env.calls[0].input.messages[0].content,/never include them in summary/);
   for(const proposal of [{weight:100,reps:8},{weight:21,reps:8},{weight:20,reps:15},{weight:'20',reps:8}]){
     const response=await worker.fetch(jsonRequest('/coach',{mode:'next-workout',data:{exercises}}),fakeEnv({suggestions:[{exerciseId:'press',...proposal}]}));assert.deepEqual((await response.json()).suggestions,[]);
   }
@@ -85,25 +86,16 @@ test('catalogue displays missing equipment instead of an apparently dead Add but
 function trainingFixture(){
   const day={id:'d1',name:'Upper',exercises:[{id:'e1',name:'Press',catalogId:'press',equipment:'dumbbell',sets:[{min:6,max:12},{min:6,max:12}]}]},logs={};
   const state={week:1,planRevision:0,equipment:['dumbbell'],experience:'beginner',weightSteps:{dumbbell:2},logs};let saves=0;
-  const context={state,days:[day],activeDay:null,itemFor:()=>({id:'press'}),logFor:(_week,id)=>logs[id],LIFT_ENGINE:{histories:()=>[{sets:[{weight:20,reps:12},{weight:20,reps:12}],effort:3}]},reviewKey:JSON.stringify,currentLog:day=>logs[day.id]||(logs[day.id]={completed:false,exercises:{}}),showToast(){},saveState:()=>{saves++;},renderWorkout(){},updateHome(){},window:{},Date,Math};vm.createContext(context);
+  const context={state,days:[day],activeDay:null,itemFor:()=>({id:'press'}),logFor:(_week,id)=>logs[id],LIFT_ENGINE:{histories:()=>[{key:'1-d1',at:'2026-10-20',sets:[{weight:20,reps:12},{weight:20,reps:12}],effort:3}],volume:()=>({Chest:{sets:6,frequency:1}})},LIFT_CATALOGUE:{find:()=>null},sessionSeconds:()=>0,reviewKey:JSON.stringify,currentLog:day=>logs[day.id]||(logs[day.id]={completed:false,exercises:{}}),showToast(){},saveState:()=>{saves++;},renderWorkout(){},updateHome(){},window:{},Date,Math};vm.createContext(context);
   vm.runInContext(appSource.slice(appSource.indexOf('  function nextWorkoutContext(){'),appSource.indexOf('  initializeAppLock();initializeEditors();')),context);
   return {context,day,logs,state,saves:()=>saves};
 }
-test('app applies only approved valid loads as unfinished sets and rejects stale/finished workouts',()=>{
-  const f=trainingFixture(),proposal={exerciseId:'e1',weight:22,reps:8},context=f.context.nextWorkoutContext();
-  assert.equal(f.context.applyNextWorkoutSuggestions(context,[proposal]),true);assert.equal(f.logs.d1.exercises.e1.sets[0].done,false);assert.equal(f.logs.d1.exercises.e1.sets[0].weight,22);assert.equal(f.saves(),1);
-  assert.equal(f.context.applyNextWorkoutSuggestions(context,[proposal]),false);
-  const stale=trainingFixture(),snapshot=stale.context.nextWorkoutContext();stale.state.planRevision++;assert.equal(stale.context.applyNextWorkoutSuggestions(snapshot,[proposal]),false);
-  const done=trainingFixture(),pending=done.context.nextWorkoutContext();done.logs.d1={completed:true,exercises:{}};assert.equal(done.context.applyNextWorkoutSuggestions(pending,[proposal]),false);
-});
-test('manual entries are preserved and unlogged exercises never receive a load proposal',()=>{
-  const f=trainingFixture();f.logs.d1={completed:false,exercises:{e1:{sets:[{weight:17}]}}};assert.equal(f.context.nextWorkoutContext().data.exercises.length,0);
-  const empty=trainingFixture();empty.context.LIFT_ENGINE.histories=()=>[];const snapshot=empty.context.nextWorkoutContext();assert.equal(empty.context.applyNextWorkoutSuggestions(snapshot,[{exerciseId:'e1',weight:2,reps:8}]),false);
-});
 test('weekly summary includes completed sets from replaced exercises',()=>{
   const day={id:'d1',name:'Upper',exercises:[]},context={days:[day],state:{week:2,logs:{}},logFor:()=>({completed:false,exercises:{},variantHistory:[{name:'Old press',catalogId:'old',sets:[{done:true,weight:20,reps:10}]}]}),itemFor:()=>({unit:'reps'})};vm.createContext(context);
-  vm.runInContext(appSource.slice(appSource.indexOf('  function buildWeekReviewData(){'),appSource.indexOf('  function requestWeekReview()')),context);assert.equal(context.buildWeekReviewData().workouts[0].exercises[0].sets.length,1);
+  vm.runInContext(appSource.slice(appSource.indexOf('  function buildWeekReviewData(){'),appSource.indexOf('  function buildProgressReviewData(){')),context);assert.equal(context.buildWeekReviewData().workouts[0].exercises[0].sets.length,1);
 });
+
+function waitForCoachTick(){return new Promise(resolve=>setTimeout(resolve,650));}
 
 function coachFixture(){
   const elements=new Map(),events=new Map();
@@ -148,7 +140,7 @@ test('an empty nutrition answer exposes retry and a later answer can recover wit
 
 test('all new UI controls and cached coach script exist once in the app shell',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
-  for(const id of ['next-coach-generate','next-coach-status','next-coach-result','nutrition-coach-generate','nutrition-coach-status','voice-meal-card','voice-record','voice-stop','voice-cancel','voice-description','voice-analyze','voice-meal-status'])assert.equal(html.split(`id="${id}"`).length-1,1,id);
+  for(const id of ['nutrition-coach-generate','nutrition-coach-status','voice-meal-card','voice-record','voice-stop','voice-cancel','voice-description','voice-analyze','voice-meal-status'])assert.equal(html.split(`id="${id}"`).length-1,1,id);
   const script=html.match(/src="(coach\.js\?[^\"]+)"/)[1];assert.ok(shell.includes('./'+script));
 });
 
@@ -166,7 +158,7 @@ test('lower-focus plan settings swap a dedicated isolation exercise without chan
 test('UI includes shared PIN gate and AI loading states while chart stays inside its card',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
   assert.match(html,/id="app-lock"[^>]*hidden/);assert.match(html,/app-lock-settings" hidden/);assert.match(app,/APP_LOCK_ENABLED=false/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
-  assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v80/);
+  assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v90/);
   assert.match(html,/id="meal-photo-open"/);assert.match(html,/id="meal-photo"[^>]*accept="image\/\*"/);assert.doesNotMatch(html,/meal-photo-menu|meal-label-open|meal-photo-camera|capture=/);
 });
 
@@ -179,12 +171,6 @@ test('nutrition ideas render a text list and reuse unchanged data without any me
   f.events.get('lift:nutrition-updated')();await new Promise(resolve=>setTimeout(resolve,650));assert.equal(requests,1);
   assert.match(f.element('#nutrition-coach-result').innerHTML,/Cooked rice/);assert.match(f.element('#nutrition-coach-result').innerHTML,/150 g \(about 195 kcal\)/);assert.match(f.element('#nutrition-coach-result').innerHTML,/<ul/);assert.doesNotMatch(f.element('#nutrition-coach-result').innerHTML,/<button|<article|Review foods|Add to meal/);assert.equal(f.shown.length,0);
 });
-test('plan insights load on expansion without a separate manual trigger',()=>{
-  const elements=new Map(),element=id=>{if(!elements.has(id))elements.set(id,{hidden:true,setAttribute(){}});return elements.get(id);};let requests=0;
-  const context={$:element,buildProgramReviewData:()=>({days:[]}),reviewKey:()=>'',loadAIReview:()=>{requests++;}};vm.createContext(context);
-  vm.runInContext(appSource.slice(appSource.indexOf('  function setWorkoutAIExpanded('),appSource.indexOf('  function requestProgramReview(')),context);
-  context.setWorkoutAIExpanded(true);assert.equal(requests,1);assert.equal(element('#workout-ai-content').hidden,false);context.setWorkoutAIExpanded(false);assert.equal(requests,1);
-});
 
 test('nutrition ideas stay idle while collapsed and fetch automatically on expansion',async()=>{
   const f=coachFixture();let requests=0;f.nutrition.requestAI=async()=>{requests++;return {summary:'Daily ideas',foods:[food]};};
@@ -193,3 +179,5 @@ test('nutrition ideas stay idle while collapsed and fetch automatically on expan
   f.element('#nutrition-coach-card').open=true;f.element('#nutrition-coach-card').listeners.get('toggle')();await new Promise(resolve=>setTimeout(resolve,650));assert.equal(requests,1);
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');assert.doesNotMatch(html,/<details[^>]*id="nutrition-coach-card"[^>]*\bopen\b/);
 });
+
+test('weekly planning replaces home reviews and next-workout AI actions',()=>{assert.doesNotMatch(readFileSync(new URL('../index.html',import.meta.url),'utf8'),/id="(?:next-coach-card|workout-ai-toggle|next-ai-brief)"/);assert.doesNotMatch(readFileSync(new URL('../coach.js',import.meta.url),'utf8'),/suggestWorkout|cachedCoach\('next-workout'/);});

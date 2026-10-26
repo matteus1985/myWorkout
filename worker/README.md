@@ -14,7 +14,7 @@ Nutrition suggestions use the selected diary day's targets, consumed macros, log
 
 Run `node --test --test-isolation=none tests/ai-features.test.mjs tests/meal-composer.test.mjs` from the repository root. Tests use model responses and microphone mocks; they do not call Cloudflare or consume AI credits. A real microphone recording and the deployed model responses still require a check in the HTTPS app, preferably on the target iPhone/browser.
 
-Next-workout and nutrition ideas refresh automatically when their screen or underlying data changes. Unchanged coaching results are cached locally for six hours, and failed automatic attempts have a one-minute cooldown. Nutrition ideas are collapsed by default and load automatically when opened; they remain text-only advice. Program insights load when expanded; Refresh remains available. Saving meals and applying loads always require a user action.
+Next-workout and nutrition ideas refresh automatically when their screen or underlying data changes. Unchanged coaching results are cached locally for six hours, and failed automatic attempts have a one-minute cooldown. Nutrition ideas are collapsed by default and load automatically when opened; they remain text-only advice. Saving meals requires a user action. Weekly planning replaces the removed program and next-workout reviews.
 
 ## Meal composer and photo analysis
 
@@ -35,3 +35,13 @@ Upload the updated single file src/index.mjs to the existing Cloudflare Worker, 
 The local test suite mocks inference and external catalogs, covers text/structured responses, partial data, cooked/dry matches, caching, offline failures and stale responses, and consumes no AI credits. Actual recognition quality and timing must still be compared on the same real photos after deploying the Worker; no real-photo recall improvement is claimed from mocked tests. Responsive browser checks on the target iPhone remain required.
 
 Request and provider error formats were checked against [Cloudflare model documentation](https://developers.cloudflare.com/workers-ai/models/llama-4-scout-17b-16e-instruct/) and [Cloudflare AI error codes](https://developers.cloudflare.com/workers-ai/platform/errors/). Multimodal messages use image_url with a data URI. No automatic inference retry or paid provider fallback is added.
+
+## AI weekly planning (local release)
+
+POST /weekly-plan uses the existing token and AI binding. The health endpoint declares weekly-plan-v1. It generates the full next week from the compatible catalogue, recent exercise history, priorities and lower-focus groups. Programmes target 45–65 minutes. Superset groups and rest-pause mini-sets are stored in the plan and drive the workout timer. The app validates the entire response before atomically archiving the old week; failures offer retry or the explicit standard-plan fallback. There are no automatic AI retries.
+
+The upload-ready single file is cloudflare-worker.mjs; it is identical to src/index.mjs. No deployment is performed by preparing it. Check with node --test --test-isolation=none tests/workout-flow.test.mjs tests/ai-features.test.mjs tests/meal-composer.test.mjs. These checks mock inference; the live model and iPhone interface still need verification after the Worker is updated.
+
+## Simplified weekly workout flow
+
+The app no longer requests program reviews or next-workout coaching. Progress reviews remain available. At End week the selected session count generates and activates the next week directly, without a second preview. The weekly programmer applies history-based progression and justified exercise replacements, budgets 40–70 minutes including warm-up, rests and transitions, and treats skipped work as missing evidence rather than strength loss. The old Worker routes remain for older clients. Upload cloudflare-worker.mjs to enable the updated weekly rules.
