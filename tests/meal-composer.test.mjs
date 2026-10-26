@@ -34,7 +34,7 @@ function fixture(){
 test('one grid selects clear foods, keeps uncertain foods unchecked and deduplicates repeated recognition',()=>{
   const f=fixture(),c=f.context;c.renderAISuggestions([rice,vegetables]);
   assert.equal(c.draft.items.length,2);assert.equal(c.selectedDraftItems().length,1);
-  assert.equal(c.draft.items[1].selected,false);assert.match(f.element('#meal-draft-list').innerHTML,/To confirm/);
+  assert.equal(c.draft.items[1].selected,false);assert.doesNotMatch(f.element('#meal-draft-list').innerHTML,/To confirm/);assert.equal(c.draft.items[1].requiresConfirmation,true);
   assert.equal(f.element('#meal-draft-list').innerHTML.match(/data-meal-card=/g).length,2);
   c.renderAISuggestions([{...rice,name:'Cooked rice'}]);assert.equal(c.draft.items.length,2);c.draft.items[0].selected=false;c.renderAISuggestions([rice,vegetables]);assert.equal(c.draft.items.length,2);assert.equal(c.draft.items[0].selected,false);c.draft.items[0].selected=true;c.updateMealFooter();
   assert.match(f.element('#meal-draft-total').innerHTML,/195/);
@@ -219,5 +219,5 @@ test('card macro row follows grams and retains unknown markers instead of presen
   const f=fixture(),c=f.context;c.renderAISuggestions([rice]);const item=c.draft.items[0];
   assert.match(c.cardMacros(item),/P 4.5 g/);c.setItemGrams(item,300);assert.match(c.cardMacros(item),/P 9 g/);assert.match(c.cardMacros(item),/C 84 g/);
   const missing=c.aiFoodItem({name:'Curry',grams:150,nutritionResolved:false,requiresConfirmation:true});assert.match(c.cardMacros(missing),/P —/);assert.doesNotMatch(c.cardMacros(missing),/P 0/);
-  assert.ok(c.draftCardMarkup(item,0).indexOf('meal-food-macros')>c.draftCardMarkup(item,0).indexOf('</details>'));
+  const markup=c.draftCardMarkup(item,0);assert.ok(markup.indexOf('meal-food-macros')<markup.indexOf('</details>'));assert.match(markup,/<summary aria-label=.*<svg/);assert.doesNotMatch(markup,/>Edit details</);
 });

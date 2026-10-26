@@ -588,3 +588,17 @@ body.meal-editor-open #toast.toast{z-index:80}
 .nutrition-ideas-remaining{margin:0;color:#c5b4c8;font-size:12px;line-height:1.6}.nutrition-ideas-text{margin:4px 0 0;padding-left:20px;color:#f0e5ef;font-size:13px;line-height:1.65}.nutrition-ideas-text li{padding:4px 0;overflow-wrap:anywhere}
 
 .nutrition-page-header{position:sticky;top:0;z-index:15;display:flex;align-items:center;justify-content:space-between;gap:14px;margin:calc(-1 * env(safe-area-inset-top)) -16px 0;padding:calc(8px + env(safe-area-inset-top)) 16px 10px;background:var(--bg);border-bottom:1px solid #ffffff08}.nutrition-page-header>div{min-width:0}.nutrition-page-header h1{margin:6px 0 0}.nutrition-page-header .eyebrow{font-size:10px}
+
+/* Compact food confirmation and meal actions. */
+.meal-food-confirm{display:none!important}
+.meal-food-card{position:relative}
+.meal-food-details{display:grid;grid-template-columns:minmax(0,1fr) 28px;align-items:center;gap:0 8px;margin-top:auto;padding-top:8px;border-top:1px solid #ffffff12}
+.meal-food-details>summary{grid-column:2;grid-row:1;display:grid;place-items:center;width:28px;min-height:28px;height:28px;padding:0;border:1px solid #584653;border-radius:9px;background:#28232d;color:#dda9c1;cursor:pointer;list-style:none}
+.meal-food-details>summary::-webkit-details-marker{display:none}.meal-food-details>summary::marker{content:''}
+.meal-food-details>summary svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.meal-food-details>.meal-food-macros{grid-column:1;grid-row:1;margin:0;padding:0;border:0}.meal-food-details>.meal-food-edit{grid-column:1/-1;grid-row:2}
+.nutrition-meal{padding-right:11px}.nutrition-meal .row>div:first-child{padding-right:0}
+.nutrition-meal-bottom-actions{display:flex;justify-content:flex-end;margin-top:5px}.nutrition-meal-bottom-actions .icon-button{display:grid;place-items:center;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:9px;background:#a93d5820;border-color:#874254;color:#ff9bb7}.nutrition-meal-bottom-actions svg{width:14px;height:14px}
+.nutrition-meal .meal-title-line .meal-favorite-name-edit{flex:1 1 0;width:auto;min-width:0;height:40px;padding:7px 10px;font-size:14px}
+.nutrition-meal .meal-title-line .meal-favorite-edit-action{display:grid;place-items:center;flex:none;width:28px;min-width:28px;height:28px;min-height:28px;padding:0;border-radius:9px;background:#302632;border:1px solid #584653;color:#dda9c1}
+.nutrition-meal .meal-title-line .meal-favorite-edit-action svg{width:14px;height:14px}

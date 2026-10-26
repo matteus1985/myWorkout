@@ -166,7 +166,7 @@ test('lower-focus plan settings swap a dedicated isolation exercise without chan
 test('UI includes shared PIN gate and AI loading states while chart stays inside its card',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
   assert.match(html,/id="app-lock"[^>]*hidden/);assert.match(html,/app-lock-settings" hidden/);assert.match(app,/APP_LOCK_ENABLED=false/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
-  assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v79/);
+  assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v80/);
   assert.match(html,/id="meal-photo-open"/);assert.match(html,/id="meal-photo"[^>]*accept="image\/\*"/);assert.doesNotMatch(html,/meal-photo-menu|meal-label-open|meal-photo-camera|capture=/);
 });
 
