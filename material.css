@@ -578,6 +578,12 @@ body.meal-editor-open{overflow:hidden}
 .meal-card-portion input{font-size:16px}
 body.meal-editor-open #toast.toast{z-index:80}
 
+/* Compact diary details and visible horizontal-scroll affordances. */
+.nutrition-date-nav{gap:2px}.nutrition-date-nav>button{width:30px;min-height:34px}.nutrition-date-nav .nutrition-date-wrap{width:94px}.nutrition-date-nav #nutrition-date{min-height:34px;padding:3px 2px;font-size:11px;letter-spacing:-.2px}.nutrition-date-nav #nutrition-date::-webkit-datetime-edit{padding:0}.nutrition-date-nav #nutrition-date::-webkit-calendar-picker-indicator{width:12px;margin:0 0 0 1px;padding:0}
+.nutrition-meal .nutrition-food-list{display:block;min-width:0;margin-top:4px;line-height:1.35;overflow-wrap:anywhere}.nutrition-meal .meal-title-line{padding-right:0}.nutrition-meal .nutrition-meal-top-actions{top:4px;right:4px}.nutrition-meal-top-actions .icon-button{width:28px;min-width:28px;height:28px;min-height:28px}.nutrition-meal{padding-right:34px}
+.nutrition-diary-add{display:grid;place-items:center;width:36px;min-width:36px;height:36px;min-height:36px;padding:0;color:#ffafc7}.nutrition-diary-add svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.meal-favorites-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:9px}.meal-favorites-heading .meal-favorites-label{margin:0}.meal-favorites-hint{color:#e1b3ca;font-size:10px;font-weight:700;letter-spacing:.2px;white-space:nowrap}.meal-favorite-strip{scroll-snap-type:x proximity;touch-action:pan-x}.meal-favorite-chip{scroll-snap-align:start}
+
 
 .nutrition-ideas-remaining{margin:0;color:#c5b4c8;font-size:12px;line-height:1.6}.nutrition-ideas-text{margin:4px 0 0;padding-left:20px;color:#f0e5ef;font-size:13px;line-height:1.65}.nutrition-ideas-text li{padding:4px 0;overflow-wrap:anywhere}
 

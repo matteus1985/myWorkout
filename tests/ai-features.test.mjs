@@ -120,6 +120,10 @@ test('voice UI keeps typed fallback when microphone is unavailable or denied',as
   f.window.isSecureContext=true;f.window.MediaRecorder=function(){};f.context.MediaRecorder=f.window.MediaRecorder;f.context.navigator.mediaDevices={async getUserMedia(){throw Object.assign(new Error('Denied'),{name:'NotAllowedError'});}};
   await f.element('#voice-record').onclick();assert.equal(f.element('#voice-description').disabled,false);assert.match(f.element('#voice-meal-status').textContent,/access denied/);
 });
+test('voice actions no longer reference the removed photo menu controls',()=>{
+  const source=readFileSync(new URL('../coach.js',import.meta.url),'utf8');
+  assert.match(source,/\$\('#meal-photo-open'\)\.disabled=busy/);assert.doesNotMatch(source,/meal-photo-menu-toggle|meal-camera-open|meal-upload-open|meal-label-open/);
+});
 test('describing a meal previews foods without saving and discards responses for a closed or changed draft',async()=>{
   const f=coachFixture();f.element('#voice-description').value='Two eggs and toast';await f.element('#voice-analyze').onclick();assert.equal(f.shown.length,1);assert.equal(f.shown[0][1],'spoken-meal');
   let resolve;f.nutrition.requestAI=()=>new Promise(r=>resolve=r);
@@ -161,8 +165,8 @@ test('lower-focus plan settings swap a dedicated isolation exercise without chan
 
 test('UI includes shared PIN gate and AI loading states while chart stays inside its card',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
-  assert.match(html,/id="app-lock"/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
-  assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v78/);
+  assert.match(html,/id="app-lock"[^>]*hidden/);assert.match(html,/app-lock-settings" hidden/);assert.match(app,/APP_LOCK_ENABLED=false/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
+  assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v79/);
   assert.match(html,/id="meal-photo-open"/);assert.match(html,/id="meal-photo"[^>]*accept="image\/\*"/);assert.doesNotMatch(html,/meal-photo-menu|meal-label-open|meal-photo-camera|capture=/);
 });
 

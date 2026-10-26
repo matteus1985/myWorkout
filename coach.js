@@ -19,9 +19,8 @@
     $('#voice-record').disabled = busy;
     $('#voice-analyze').disabled = busy;
     $('#voice-description').disabled = busy;
-    $('#meal-photo-menu-toggle').disabled=busy;
+    $('#meal-photo-open').disabled=busy;
     nutrition().setInputBusy?.(busy);
-    for(const id of ['meal-camera-open','meal-upload-open','meal-label-open']) $('#'+id).disabled=busy;
     $('#voice-meal-card').setAttribute('aria-busy',String(busy));
     $('#voice-meal-status').classList.add('ai-status');$('#voice-meal-status').setAttribute('aria-busy',String(busy));
   }

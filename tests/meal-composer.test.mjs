@@ -126,7 +126,7 @@ test('Nutrition initializes against the real shell IDs and opens the new meal co
   const window={LIFT_FOODS:[]},state={nutrition:{profile:{},foodLogs:{},weightChecks:[],favorites:[],customFoods:[]}};
   const context={window,document,localStorage:{getItem:()=>null},Date,Math,Event,AbortController,setTimeout,clearTimeout};vm.createContext(context);vm.runInContext(source,context);
   window.LiftNutrition.init({getState:()=>state,saveState(){},showToast(){},escapeHtml:String});
-  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');nodes.get('nutrition-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
+  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');assert.equal(typeof nodes.get('nutrition-diary-add-meal').onclick,'function');nodes.get('nutrition-diary-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
   nodes.get('meal-cancel').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),true);
   nodes.get('nutrition-date').value='2026-12-31';nodes.get('nutrition-next-day').onclick();assert.equal(nodes.get('nutrition-date').value,'2027-01-01');assert.match(nodes.get('nutrition-meals').innerHTML,/No meals logged/);
 });
