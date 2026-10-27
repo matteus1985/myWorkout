@@ -1,18 +1,18 @@
-const CACHE = 'lift-log-shell-v100';
+const CACHE = 'lift-log-shell-v101';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261027-weekly-ai-v72',
-  './planner.js?v=liftlog-20261027-weekly-ai-v72',
-  './sketches.js?v=liftlog-20261027-weekly-ai-v72',
-  './exercise-art.js?v=liftlog-20261027-weekly-ai-v72',
-  './nutrition-data.js?v=liftlog-20261027-weekly-ai-v72',
-  './nutrition.js?v=liftlog-20261027-weekly-ai-v72',
-  './app.js?v=liftlog-20261027-weekly-ai-v72',
-  './coach.js?v=liftlog-20261027-weekly-ai-v72',
-  './material.css?v=liftlog-20261027-weekly-ai-v72',
-  './media/muscle-map-anatomy.png?v=liftlog-20261027-weekly-ai-v72'
+  './catalogue.js?v=liftlog-20261027-weekly-ai-v73',
+  './planner.js?v=liftlog-20261027-weekly-ai-v73',
+  './sketches.js?v=liftlog-20261027-weekly-ai-v73',
+  './exercise-art.js?v=liftlog-20261027-weekly-ai-v73',
+  './nutrition-data.js?v=liftlog-20261027-weekly-ai-v73',
+  './nutrition.js?v=liftlog-20261027-weekly-ai-v73',
+  './app.js?v=liftlog-20261027-weekly-ai-v73',
+  './coach.js?v=liftlog-20261027-weekly-ai-v73',
+  './material.css?v=liftlog-20261027-weekly-ai-v73',
+  './media/muscle-map-anatomy.png?v=liftlog-20261027-weekly-ai-v73'
 ];
 
 async function cacheShellFile(cache, path) {

@@ -634,7 +634,7 @@ body.meal-editor-open #toast.toast{z-index:80}
 @media(prefers-reduced-motion:reduce){#next-hero #next-coach-card .workout-ai-chevron{transition:none}}
 
 #session-elapsed{display:flex;align-items:center;justify-content:center;flex:none;min-width:0;height:auto;margin:0 0 0 auto;padding:0;border:0;border-radius:0;background:transparent;color:#f6dce6;font-size:12px;font-weight:750;text-align:center;font-variant-numeric:tabular-nums}
-.workout-sticky-head .screen-head #session-elapsed+#finish-button{flex:none}
+#finish-button{flex:none}
 @media(max-width:380px){#session-elapsed{min-width:42px;padding:0 5px;font-size:11px}.workout-sticky-head .screen-head{gap:7px}}
 
 .drop-set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:8px 0 0;padding:10px 12px;border:1px solid #57404a;border-radius:11px;background:#2e252c;color:#f5e7ee;font-size:11px;line-height:1.4}
@@ -665,7 +665,7 @@ body.meal-editor-open #toast.toast{z-index:80}
 /* Modern exercise cards: subtle depth, quieter controls, and an inline optional drop set. */
 .exercise{position:relative;overflow:hidden;border:1px solid #51434c;border-radius:18px;background:linear-gradient(145deg,#302a31 0%,#29272e 48%,#27252c 78%,#30252d 100%);box-shadow:inset 0 1px #ffffff09;padding:14px;transition:border-color .18s ease,background .18s ease}
 .exercise.completed{border-color:#765064;background:linear-gradient(145deg,#342932 0%,#29262d 58%,#30262e 100%)}
-.exercise-top{align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid #ffffff12}
+.exercise-top{align-items:center;gap:9px;padding-bottom:6px;border-bottom:0}
 .exercise-title h3{font-size:15px;line-height:1.25;letter-spacing:-.2px}
 .exercise-title .muscle{margin-top:3px;font-size:10px;color:#bdb0bf}
 .exercise-thumb{border-radius:11px;border:1px solid #ffffff16}
@@ -690,6 +690,16 @@ body.meal-editor-open #toast.toast{z-index:80}
 .effort-choice{min-height:32px;padding:3px 2px}
 .effort-row{border-bottom:0}
 @media(max-width:380px){.exercise{padding:11px}.exercise-top{gap:7px}.exercise-title h3{font-size:14px}.set-row{margin-right:-3px;margin-left:-3px;padding-right:3px;padding-left:3px}}
+.session-timer-toggle{display:grid;place-items:center;flex:none;width:27px;height:27px;min-height:27px;margin-left:auto;padding:0;border:0;border-radius:50%;background:transparent;color:#f5c7d7;cursor:pointer}
+.session-timer-toggle svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.session-timer-toggle .session-timer-play{display:none;fill:currentColor;stroke:none}
+.session-timer-toggle[aria-pressed="true"] .session-timer-pause{display:none}
+.session-timer-toggle[aria-pressed="true"] .session-timer-play{display:block}
+.session-timer-toggle:disabled{opacity:.35;cursor:default}
+.session-timer-toggle:focus-visible{outline:2px solid #ff8ca0;outline-offset:2px}
+.set-row .check{width:38px;height:38px;min-height:38px;justify-self:center;border-radius:50%}
+#session-elapsed{margin-left:0}
+#finish-button{flex:none}
 @media(prefers-reduced-motion:reduce){.exercise{transition:none}}
 
 /* End-week dialog: clear hierarchy and actions that fit narrow screens. */
