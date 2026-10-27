@@ -1,5 +1,5 @@
 const MODEL = '@cf/meta/llama-4-scout-17b-16e-instruct';
-const WORKER_VERSION = '2026-10-26-weekly-v3';
+const WORKER_VERSION = '2026-10-27-weekly-v7';
 const MAX_IMAGE_BYTES = 4_000_000;
 const MAX_BASE64_LENGTH = Math.ceil(MAX_IMAGE_BYTES / 3) * 4 + 8;
 const CORS = {
@@ -296,7 +296,7 @@ async function coachJSON(env, instruction, data, maxTokens=1800) {
 }
 
 function basicNutritionIdeas(remaining) {
-  const item=(name,grams,kcal,protein,carbs,fat)=>({name,grams,confidence:1,nutritionPer100g:{kcal,protein,carbs,fat},estimatedFields:['grams','kcal','protein','carbs','fat']});
+  const item=(name,grams,kcal,protein,carbs,fat)=>({name,grams,confidence:1,nutritionPer100g:{kcal,protein,carbs,fat},estimatedFields:['grams','kcal','protein','carbs','fat'],requiresConfirmation:false});
   const banana=item('Banana',120,89,1.1,22.8,.3),skyr=item('Skyr, plain',200,63,11,4,.2),almonds=item('Almonds',20,579,21.2,21.6,49.9);
   if(remaining.kcal>=600)return [item('Rice, cooked',200,130,2.7,28,.3),item('Chicken breast, cooked',150,165,31,0,3.6),skyr,banana,almonds,item('Broccoli, cooked',150,35,2.4,7.2,.4)];
   const foods=[];if(remaining.protein>=10)foods.push(skyr);if(remaining.carbs>=10)foods.push(banana);if(remaining.fat>=5)foods.push(almonds);
@@ -451,34 +451,93 @@ export default {
 
 async function handleWeeklyPlan(request,env){
  if(request.method!=='POST')return json({error:'Use POST /weekly-plan.'},405);
- try{const bytes=await boundedBody(request,220000),payload=JSON.parse(new TextDecoder().decode(bytes)),data=payload.data;if(!data||![3,4,5,6].includes(data.count)||!Array.isArray(data.catalogue)||data.catalogue.length>300) return json({error:'Invalid weekly planning data.'},400);
- const instruction='Create the complete next hypertrophy training week. Use exactly count days. Give every workout a concise human-readable split title such as Push A, Pull A, Legs A, or Upper B; never name it only Day 1. Each session must estimate 40–70 minutes including 8 minutes warm-up, 45 seconds per work set, rest between sets, and transitions. Estimate from actual structure, not invented duration. Prefer compound squat, hinge/deadlift, bench, row, pull-up, overhead press and dip patterns with available compatible variants; train major muscles 2–3 times where feasible. Adapt volume gradually to history and priorities/lower focus, never require 15–25 sets for everyone. Preserve useful exercise continuity and user edits. You are the sole weekly programmer: apply justified progressions and exercise substitutions directly, with no later optimization step. Use completed sets, reps, effort and actual session durations to adapt workload within 40–70 minutes. Missed sessions and unperformed exercises do not indicate strength loss: retain previous load references unless completed performance supports a change. Preserve main exercise continuity; substitute only for equipment, recovery, balance or performance reasons. Progress reps or load only when supported; do not invent historical performance or mandatory weekly increases. Use candidate weight as conservative ceiling plus at most one supplied step, or keep/reduce it. Respect rep ranges, level and equipment. Keep working-set loads mostly consistent rather than making the first set heavier by default. Aim for 1–2 reps in reserve on most sets; use technical failure only selectively on the final set of a stable isolation exercise, never by default on heavy compound lifts. Where recovery and exercise choices allow, include 1–2 antagonist superset pairs across the week; alternate the paired exercises with no rest between them and rest after each round. Do not force a pairing when it harms exercise quality. Rest-pause only stable isolation cable/machine exercises: one challenging set followed by mini-sets at the same load with 15-second rests. Avoid advanced techniques for beginners. Add sensible abs work if needed to reach 40 minutes, only if weekly recovery/volume permit. Do not pad with excessive abs. Do not claim growth stops after 72 hours or hormonal superiority. Return {summary,days:[{name,exercises:[{catalogId,sets:1..5,reps,weight,rest:45..240,rir:0..3,supersetGroup:null or paired string,restPause:boolean,note}]}]}. Catalogue IDs must be exact. No markdown.';
- const plan=validateGeneratedWeek(await coachJSON(env,instruction,data,6500),data);return json({plan,rulesVersion:'weekly-v3'});
- }catch(error){return json({code:'WEEK_PLAN_FAILED',error:safeModelError(error)},503);}
+ const requestId=crypto.randomUUID(),started=Date.now();let stage='request';
+ if(!env.AI)return json({code:'AI_NOT_CONFIGURED',error:'The Workers AI binding named AI is missing.',workerVersion:WORKER_VERSION,requestId,diagnostics:{version:WORKER_VERSION,requestId,durationMs:Date.now()-started,stage:'configuration'}},503);
+ try{const bytes=await boundedBody(request,220000),payload=JSON.parse(new TextDecoder().decode(bytes)),data=payload.data;if(!data||![3,4,5,6].includes(data.count)||!Array.isArray(data.catalogue)||data.catalogue.length>300) return json({code:'INVALID_WEEK_PLAN_REQUEST',error:'Invalid weekly planning data.',workerVersion:WORKER_VERSION,requestId},400);
+ const instruction='Create the complete next hypertrophy training week. Use exactly count days. Give every workout a concise human-readable split title such as Push A, Pull A, Legs A, or Upper B; never name it only Day 1. Each workout must contain at least 4 distinct exercises (usually 4–7), with enough productive working sets to train its assigned muscles; never leave an upper or lower day with only 3 exercises. Aim for 50–60 minutes, estimated only from actual warm-up, sets, normal rests and transitions. Never extend rest or add idle time to make a session appear longer. Use realistic rest: usually 90–150 seconds for compounds and 60–120 seconds for isolation. Each session must fit 40–70 minutes including 8 minutes warm-up, 45 seconds per work set, rest and transitions. Prefer compound squat, hinge/deadlift, bench, row, pull-up, overhead press and dip patterns with available compatible variants; train major muscles 2–3 times where feasible. Adapt volume gradually to history and priorities/lower focus, never require 15–25 sets for everyone. Preserve useful exercise continuity and user edits. You are the sole weekly programmer: apply justified progressions and exercise substitutions directly, with no later optimization step. Use completed sets, reps, effort and actual session durations to adapt workload within 40–70 minutes. Missed sessions and unperformed exercises do not indicate strength loss: retain previous load references unless completed performance supports a change. Preserve main exercise continuity; substitute only for equipment, recovery, balance or performance reasons. Progress reps or load only when supported; do not invent historical performance or mandatory weekly increases. Use candidate weight as conservative ceiling plus at most one supplied step, or keep/reduce it. Respect rep ranges, level and equipment. Keep working-set loads mostly consistent rather than making the first set heavier by default. Aim for 1–2 reps in reserve on most sets; use technical failure only selectively on the final set of a stable isolation exercise, never by default on heavy compound lifts. Supersets are optional. Use only exact opposing pairs: Chest–Back, Biceps–Triceps, or Quadriceps–Hamstrings. Give each pair a unique group label used by exactly two exercises in the same workout, with equal set counts; otherwise set supersetGroup to null. Alternate the two exercises without rest and rest after each round. Do not use a superset if it harms exercise quality. Rest-pause only stable isolation cable/machine exercises: one challenging set followed by mini-sets at the same load with 15-second rests. Avoid advanced techniques for beginners. Add sensible abs work if needed to reach 40 minutes, only if weekly recovery/volume permit. Do not pad with excessive abs. Do not claim growth stops after 72 hours or hormonal superiority. Return {summary,days:[{name,exercises:[{catalogId,sets:1..5,reps,weight,rest:45..240,rir:0..3,supersetGroup:null or paired string,restPause:boolean,note}]}]}. Catalogue IDs must be exact. All sets, reps, weight, rest and rir values must be JSON numbers, never strings or ranges. Rest is seconds and weight is kilograms. Respect catalogue minReps, maxReps, weight and step exactly. Aim for 50–60 minutes to allow rounding. No markdown.';
+ const modelData=weeklyModelData(data);
+ const referenceInstruction=instruction.replace('catalogId,sets:1..5','exerciseRef,sets:1..5').replace('Catalogue IDs must be exact.','For exerciseRef copy only an E-number from catalogue, such as E1. Never invent exercise names or catalogue IDs as references. Keep notes under 10 words and summary under 40 words.');
+ stage='model';const generated=await coachJSON(env,referenceInstruction,modelData,6500);stage='validation';const plan=validateGeneratedWeek(generated,data);return json({plan,rulesVersion:'weekly-v7',workerVersion:WORKER_VERSION,requestId,diagnostics:{durationMs:Date.now()-started,stage:'complete',...plan.validation}});
+ }catch(error){const diagnostics={version:WORKER_VERSION,requestId,durationMs:Date.now()-started,stage};console.warn('weekly-plan failure',JSON.stringify(diagnostics));return json({code:'WEEK_PLAN_FAILED',error:safeModelError(error),workerVersion:WORKER_VERSION,requestId,diagnostics},503);}
+}
+
+function weeklyModelData(data){
+ const refs=new Map(data.catalogue.map((item,index)=>[item.id,'E'+(index+1)]));
+ const mapReferences=value=>{
+  if(Array.isArray(value))return value.map(mapReferences);
+  if(!value||typeof value!=='object')return value;
+  const result={};for(const [key,entry]of Object.entries(value)){if(['id','catalogId'].includes(key)&&refs.has(entry))result.exerciseRef=refs.get(entry);else result[key]=mapReferences(entry);}return result;
+ };
+ return {...mapReferences(data),catalogue:data.catalogue.map((item,index)=>({exerciseRef:'E'+(index+1),name:item.name,primary:item.primary,pattern:item.pattern,equipment:item.equipment,unit:item.unit,weight:item.weight,step:item.step,minReps:item.minReps,maxReps:item.maxReps,history:(item.history||[]).slice(0,3).map(history=>({week:history.week,effort:history.effort,sets:(history.sets||[]).map(set=>({weight:set.weight,reps:set.reps}))}))}))};
+}
+
+function resolveWeeklyExercise(exercise,catalogue){
+ if(!exercise||typeof exercise!=='object')return null;
+ const direct=catalogue.find(item=>item.id===exercise.catalogId);if(direct)return direct;
+ const ref=typeof exercise.exerciseRef==='number'?String(exercise.exerciseRef):String(exercise.exerciseRef||'').trim();
+ const match=/^(?:E)?0*([1-9]\d*)$/i.exec(ref);if(match){const item=catalogue[Number(match[1])-1];if(item)return item;}
+ const normalize=value=>typeof value==='string'?value.normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]/g,''):'';
+ const names=[exercise.catalogId,exercise.name,exercise.exerciseName,exercise.exerciseRef].map(normalize).filter(Boolean);
+ const matches=catalogue.filter(item=>names.includes(normalize(item.id))||names.includes(normalize(item.name)));
+ return matches.length===1?matches[0]:null;
 }
 
 function validateGeneratedWeek(plan,data){
  if(!Array.isArray(plan?.days)||plan.days.length!==data.count)throw Error('Incomplete weekly plan.');
+ const validation={resolvedExercises:0,omittedExercises:0,duplicateExercises:0};
  const compound=new Set(['squat','hinge','deadlift','row','overheadPress','chestPress','inclinePress','verticalPull','dip','lunge','hipThrust']);
  for(const day of plan.days){
-  if(!Array.isArray(day.exercises)||day.exercises.length<3||day.exercises.length>10)throw Error('Invalid workout.');
-  const seen=new Set(),groups=new Map();let minutes=8;
+  if(!Array.isArray(day?.exercises))throw Error('AI returned an incomplete workout.');
+  const resolved=[],unique=new Set();
+  for(const exercise of day.exercises){
+   const candidate=resolveWeeklyExercise(exercise,data.catalogue);
+   if(!candidate){validation.omittedExercises++;continue;}
+   if(unique.has(candidate.id)){validation.duplicateExercises++;continue;}
+   if(exercise.catalogId!==candidate.id)validation.resolvedExercises++;
+   unique.add(candidate.id);resolved.push({...exercise,catalogId:candidate.id});
+  }
+  if(resolved.length<4&&resolved.length!==day.exercises.length)throw Error('Workout '+(plan.days.indexOf(day)+1)+': fewer than four available exercises remain after checking AI choices. Your current week is unchanged.');
+  day.exercises=resolved;
+  if(!Array.isArray(day.exercises)||day.exercises.length<4||day.exercises.length>10)throw Error('Workout '+(plan.days.indexOf(day)+1)+': include at least four exercises for balanced coverage.');
+  const seen=new Set(),groups=new Map();
   for(const e of day.exercises){
    const c=data.catalogue.find(c=>c.id===e.catalogId);
-   if(!c||seen.has(c.id)||!Number.isInteger(e.sets)||e.sets<1||e.sets>5||!Number.isFinite(e.weight)||e.weight<0||e.weight>Number(c.weight)+c.step||!(c.step>0)||Math.abs((e.weight-Number(c.weight))/c.step-Math.round((e.weight-Number(c.weight))/c.step))>.001||!Number.isInteger(e.reps)||e.reps<c.minReps||e.reps>c.maxReps||!Number.isInteger(e.rest)||e.rest<45||e.rest>240)throw Error('Invalid exercise targets.');
+   const position='Workout '+(plan.days.indexOf(day)+1)+', exercise '+(day.exercises.indexOf(e)+1);
+   if(!c)throw Error(position+': AI returned an exercise outside your available catalogue.');
+   if(seen.has(c.id))throw Error(position+': AI repeated an exercise in the same workout.');
+   const number=(value,field)=>{if(value===null||typeof value==='boolean'||value===''||!['number','string'].includes(typeof value)||!Number.isFinite(Number(value)))throw Error(position+': AI returned an unreadable '+field+' value.');return Number(value);};
+   const baseline=Number(c.weight),step=Number(c.step),min=Number(c.minReps),max=Number(c.maxReps);
+   if(!Number.isFinite(baseline)||baseline<0||!(step>0)||!Number.isFinite(step)||!Number.isInteger(min)||!Number.isInteger(max)||min>max)throw Error(position+': The exercise catalogue has incomplete load or repetition limits.');
+   e.sets=Math.max(1,Math.min(5,Math.round(number(e.sets,'set count'))));
+   e.reps=Math.max(min,Math.min(max,Math.round(number(e.reps,'repetition'))));
+   const proposed=number(e.weight,'weight');
+   e.weight=Number((baseline+Math.max(Math.ceil(-baseline/step),Math.min(1,Math.round((proposed-baseline)/step)))*step).toFixed(6));
+   e.rest=Math.max(45,Math.min(240,Math.round(number(e.rest,'rest time'))));
+   e.rir=[0,1,2,3].includes(Number(e.rir))?Number(e.rir):2;
+   e.restPause=e.restPause===true;
    seen.add(c.id);e.note=String(e.note||'').replace(/[<>]/g,'').slice(0,150);
-   if(e.restPause&&(data.experience==='beginner'||!['machine','cable'].includes(c.equipment)||compound.has(c.pattern)||e.sets<2))throw Error('Invalid rest-pause exercise.');
-   if(e.supersetGroup){if(typeof e.supersetGroup!=='string'||e.restPause)throw Error('Invalid superset.');const group=groups.get(e.supersetGroup)||[];group.push({e,c});groups.set(e.supersetGroup,group);}
-   minutes+=e.sets*.75+1.5;
-   if(!e.supersetGroup)minutes+=(e.sets-1)*(e.restPause ? 0.25 : e.rest/60);
+   if(e.restPause&&(data.experience==='beginner'||!['machine','cable'].includes(c.equipment)||compound.has(c.pattern)||e.sets<2))e.restPause=false;
+   if(e.supersetGroup&&typeof e.supersetGroup==='string'&&!e.restPause){const group=groups.get(e.supersetGroup)||[];group.push({e,c});groups.set(e.supersetGroup,group);}else e.supersetGroup=null;
   }
   for(const pair of groups.values()){
-   if(pair.length!==2||pair[0].e.sets!==pair[1].e.sets)throw Error('Invalid superset pairing.');
-   const [a,b]=pair.map(p=>p.c.primary||[]);if(![['Chest','Back'],['Biceps','Triceps'],['Quadriceps','Hamstrings']].some(([x,y])=>a.includes(x)&&b.includes(y)||a.includes(y)&&b.includes(x)))throw Error('Supersets must use antagonist muscles.');
-   minutes+=(pair[0].e.sets-1)*pair[0].e.rest/60;
+   const [a,b]=pair.map(p=>p.c.primary||[]),valid=pair.length===2&&pair[0].e.sets===pair[1].e.sets&&[['Chest','Back'],['Biceps','Triceps'],['Quadriceps','Hamstrings']].some(([x,y])=>a.includes(x)&&b.includes(y)||a.includes(y)&&b.includes(x));
+   if(!valid)for(const entry of pair)entry.e.supersetGroup=null;
+   else {const rest=Math.max(...pair.map(entry=>entry.e.rest));for(const entry of pair)entry.e.rest=rest;}
   }
-  if(Math.ceil(minutes/5)*5<40||Math.ceil(minutes/5)*5>70)throw Error('Workout does not fit 40–70 minutes.');
+  const duration=()=>{let total=8;const paired=new Set();for(const e of day.exercises){total+=e.sets*.75+1.5;if(e.supersetGroup){if(!paired.has(e.supersetGroup)){paired.add(e.supersetGroup);total+=(e.sets-1)*e.rest/60;}}else total+=(e.sets-1)*(e.restPause?0.25:e.rest/60);}return Math.ceil(total/5)*5;};
+  // Add productive sets to short sessions; never inflate duration with longer rests.
+  const bundles=[],handled=new Set();
+  for(const e of day.exercises){if(e.supersetGroup){if(handled.has(e.supersetGroup))continue;handled.add(e.supersetGroup);bundles.push(day.exercises.filter(item=>item.supersetGroup===e.supersetGroup));}else bundles.push([e]);}
+  bundles.sort((a,b)=>Number(b.some(e=>compound.has(e.pattern)))-Number(a.some(e=>compound.has(e.pattern))));
+  for(let attempt=0;attempt<40&&duration()<40;attempt++){const bundle=bundles.find(items=>items.every(e=>!e.restPause&&e.sets<5));if(!bundle)break;for(const e of bundle)e.sets++;}
+  // If the model overestimates duration, shorten recovery within sensible limits.
+  for(let attempt=0;attempt<39&&duration()>70;attempt++){
+   let changed=false;const handledGroups=new Set();
+   for(const e of day.exercises){if(e.supersetGroup){if(handledGroups.has(e.supersetGroup))continue;handledGroups.add(e.supersetGroup);const pair=day.exercises.filter(item=>item.supersetGroup===e.supersetGroup),next=Math.max(45,Math.max(...pair.map(item=>item.rest))-5);for(const item of pair)if(item.rest!==next){item.rest=next;changed=true;}}else if(!e.restPause&&e.rest>45){e.rest=Math.max(45,e.rest-5);changed=true;}}
+   if(!changed)break;
+  }
+  if(duration()<40||duration()>70)throw Error('Workout '+(plan.days.indexOf(day)+1)+': AI returned a session that cannot fit 40–70 minutes with suitable recovery.');
   day.name=String(day.name||'Workout').replace(/[<>]/g,'').slice(0,60);
  }
- plan.summary=String(plan.summary||'').replace(/[<>]/g,'').slice(0,500);return plan;
+ plan.summary=String(plan.summary||'').replace(/[<>]/g,'').slice(0,500);plan.validation=validation;return plan;
 }

@@ -641,3 +641,73 @@ body.meal-editor-open #toast.toast{z-index:80}
 .drop-set-row>span{min-width:0}
 .drop-set-checkbox{width:20px;height:20px;flex:none;margin:0;accent-color:#f43f66;cursor:pointer}
 .drop-set-checkbox:focus-visible{outline:2px solid #ff9bad;outline-offset:3px}
+
+/* Floating navigation with a soft gradient frame and a clear active state. */
+.tabbar{left:50%;right:auto;bottom:calc(10px + env(safe-area-inset-bottom));width:min(560px,calc(100% - 24px));transform:translateX(-50%);padding:7px;border:1px solid transparent;border-radius:22px;background:linear-gradient(#211f27ed,#211f27ed) padding-box,linear-gradient(115deg,#f43b62 0%,#a64ddb 56%,#5f7ce8 100%) border-box;box-shadow:0 10px 34px #08060db3,0 2px 12px #d94f8724;backdrop-filter:blur(20px) saturate(1.2);-webkit-backdrop-filter:blur(20px) saturate(1.2);grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.tab{position:relative;min-width:0;min-height:54px;align-content:center;gap:3px;padding:5px 3px;border-radius:15px;color:#aaa3b2;font-size:10px;transition:color .18s ease,background .18s ease,transform .18s ease}
+.tab .tab-icon{display:grid;place-items:center;font-size:20px;line-height:1}
+.tab .tab-icon svg{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tab.active{color:#ffd4e4;background:linear-gradient(145deg,#fa42652b,#aa52d52b)}
+.tab.active::before{content:"";position:absolute;top:2px;left:50%;width:22px;height:2px;border-radius:99px;transform:translateX(-50%);background:linear-gradient(90deg,#ff5571,#d56bff)}
+.tab.active .tab-icon{color:#ff91b3;filter:drop-shadow(0 0 7px #ff588855)}
+.tab:active{transform:scale(.96)}
+.tab:focus-visible{outline:2px solid #ff9cbd;outline-offset:1px}
+@media(max-width:370px){.tabbar{width:calc(100% - 18px);gap:2px;padding:6px}.tab{min-height:51px;font-size:9px}.tab .tab-icon svg{width:20px;height:20px}}
+@media(prefers-reduced-motion:reduce){.tab{transition:none}}
+
+/* Keep labels readable while trimming the floating bar height. */
+.tabbar{bottom:calc(8px + env(safe-area-inset-bottom));padding:5px;gap:3px}
+.tab{min-height:46px;gap:2px;padding:4px 3px}
+.tab .tab-icon svg{width:19px;height:19px}
+.tab.active::before{top:1px}
+@media(max-width:370px){.tabbar{padding:4px;gap:2px}.tab{min-height:45px;font-size:9px}.tab .tab-icon svg{width:19px;height:19px}}
+
+/* Modern exercise cards: subtle depth, quieter controls, and an inline optional drop set. */
+.exercise{position:relative;overflow:hidden;border:1px solid #51434c;border-radius:18px;background:linear-gradient(145deg,#302a31 0%,#29272e 48%,#27252c 78%,#30252d 100%);box-shadow:inset 0 1px #ffffff09;padding:14px;transition:border-color .18s ease,background .18s ease}
+.exercise.completed{border-color:#765064;background:linear-gradient(145deg,#342932 0%,#29262d 58%,#30262e 100%)}
+.exercise-top{align-items:center;gap:9px;padding-bottom:10px;border-bottom:1px solid #ffffff12}
+.exercise-title h3{font-size:15px;line-height:1.25;letter-spacing:-.2px}
+.exercise-title .muscle{margin-top:3px;font-size:10px;color:#bdb0bf}
+.exercise-thumb{border-radius:11px;border:1px solid #ffffff16}
+.target{background:linear-gradient(120deg,#49313e,#352c3a);border:1px solid #684956;color:#ffd0dc;padding:6px 8px}
+.set-head{padding:10px 1px 4px;font-size:9px;letter-spacing:.65px;color:#b6aab8}
+.set-row{margin:2px -4px;padding:5px 4px;border-radius:12px;background:linear-gradient(100deg,#ffffff05,#cf75aa0b)}
+.field{background:linear-gradient(150deg,#353139,#2d2b32);border-color:#514852;border-radius:10px}
+.step-button{background:linear-gradient(150deg,#38323a,#2f2c33);border-color:#514852;color:#f3dfe8}
+.set-row .check{border-color:#514852;background:linear-gradient(145deg,#332f36,#2c2930)}
+.set-row .check.done{border-color:transparent;background:linear-gradient(135deg,#f43b62,#a64ddb);box-shadow:0 3px 10px #d1437328}
+.effort-row{margin-top:10px;padding-bottom:9px;border-bottom:1px solid #ffffff12;color:#d0c2d0;font-size:11px}
+.effort-choice{border-color:#504451;background:linear-gradient(145deg,#332d35,#2c2930);color:#eadce9}
+.effort-choice.selected{border-color:#cf6e9b;background:linear-gradient(120deg,#71334f,#48314f);color:#fff}
+.drop-set-row{display:flex;align-items:center;gap:12px;margin:0;padding:9px 2px;border:0;border-bottom:1px solid #ffffff12;border-radius:0;background:transparent;color:#d4c2d1;font-size:10px;line-height:1.4}
+.drop-set-row>span{flex:1;min-width:0}
+.drop-set-checkbox{width:19px;height:19px;accent-color:#ed4c82}
+.exercise-actions{margin-top:8px;padding-top:8px;border-color:#ffffff12}
+.icon-action{border-color:#594651;background:linear-gradient(145deg,#382f39,#2e2a32)}
+.step-button{width:24px;height:38px;padding:0;border:0!important;border-radius:8px;background:transparent!important;box-shadow:none;color:#f0c6d4;font-size:19px;font-weight:600}
+.step-button:hover{background:#ffffff0a!important;color:#fff}
+.effort-choices{gap:3px}
+.effort-choice{min-height:32px;padding:3px 2px}
+.effort-row{border-bottom:0}
+@media(max-width:380px){.exercise{padding:11px}.exercise-top{gap:7px}.exercise-title h3{font-size:14px}.set-row{margin-right:-3px;margin-left:-3px;padding-right:3px;padding-left:3px}}
+@media(prefers-reduced-motion:reduce){.exercise{transition:none}}
+
+/* End-week dialog: clear hierarchy and actions that fit narrow screens. */
+.endweek-modal .modal{width:min(430px,calc(100vw - 28px));padding:20px;border-color:#57475c;background:linear-gradient(145deg,#2b2731 0%,#252329 72%,#2d242c 100%);box-shadow:0 24px 70px #0008}
+.endweek-modal .modal>.row{align-items:center;margin-bottom:5px}
+.endweek-modal #endweek-title{font-size:21px;letter-spacing:-.4px}
+.endweek-modal #endweek-summary{display:inline-flex;margin:9px 0 14px;padding:7px 10px;border:1px solid #ffffff12;border-radius:9px;background:#ffffff08;color:#d2c7d5;font-size:11px;font-weight:650}
+.endweek-modal .settings-label{display:block;margin:12px 0 6px;font-size:12px}
+.endweek-modal #endweek-weight,.endweek-modal #next-week-days{width:100%;min-height:44px}
+.endweek-modal .small-print{margin:6px 0 12px;font-size:11px}
+.endweek-modal .next-week-preview{min-height:46px;max-height:24dvh;margin-top:12px;padding:11px 12px;border-color:#554957;border-radius:12px;background:linear-gradient(120deg,#302b35,#29262e);font-size:12px;line-height:1.5}
+.endweek-modal .modal-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.endweek-modal .modal-buttons .btn{min-width:0;min-height:46px;padding:10px;font-size:12px;line-height:1.25}
+.endweek-modal #endweek-confirm{grid-column:2;grid-row:1}
+.endweek-modal #endweek-cancel{grid-column:1;grid-row:1}
+.endweek-modal.has-week-error .modal-buttons{grid-template-rows:auto auto}
+.endweek-modal.has-week-error #endweek-confirm{grid-column:1/-1;grid-row:1;min-height:48px}
+.endweek-modal.has-week-error #endweek-cancel{grid-column:1;grid-row:2}
+.endweek-modal.has-week-error #endweek-local{grid-column:2;grid-row:2}
+.endweek-modal.has-week-error #next-week-preview{border-color:#76536a;background:linear-gradient(120deg,#342a34,#2d2730);color:#f1d9e6}
+@media(max-width:380px){.endweek-modal .modal{padding:17px}.endweek-modal #endweek-title{font-size:19px}.endweek-modal .modal-buttons .btn{padding:9px 7px;font-size:11px}}

@@ -385,7 +385,7 @@
       const response=await fetch(endpoint.url,{method:'POST',headers:{'Content-Type':audio?(payload.type||'audio/webm'):'application/json',Authorization:'Bearer '+endpoint.token},body:audio?payload:JSON.stringify(payload),signal:controller.signal});
       let result={};try{result=await response.json();}catch{}
       if(response.status===404)throw new Error('Update and deploy your Cloudflare Worker to enable these AI features.');
-      if(!response.ok)throw new Error(result.error||'AI is temporarily unavailable. Try again.');
+      if(!response.ok){const error=new Error(result.error||'AI is temporarily unavailable. Try again.');error.code=result.code;error.requestId=result.requestId;throw error;}
       return result;
     }finally{clearTimeout(timer);options.signal?.removeEventListener('abort',cancel);}
   }
