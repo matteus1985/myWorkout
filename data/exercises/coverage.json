@@ -1,0 +1,1903 @@
+{
+  "previousCount": 316,
+  "importedCount": 1324,
+  "total": 1605,
+  "exercises": [
+    {
+      "id": "incline-dumbbell-press",
+      "name": "Incline Dumbbell Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-barbell-bench-press",
+      "name": "Incline Barbell Bench Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-machine-press",
+      "name": "Incline Machine Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-smith-machine-press",
+      "name": "Incline Smith Machine Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-incline-dumbbell-press",
+      "name": "Single-Arm Incline Dumbbell Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-cable-press",
+      "name": "Incline Cable Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-band-press",
+      "name": "Incline Band Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "feet-elevated-push-up",
+      "name": "Feet-Elevated Push-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reverse-grip-incline-barbell-press",
+      "name": "Reverse-Grip Incline Barbell Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "machine-chest-press",
+      "name": "Machine Chest Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "flat-dumbbell-press",
+      "name": "Flat Dumbbell Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "flat-barbell-bench-press",
+      "name": "Flat Barbell Bench Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "smith-machine-bench-press",
+      "name": "Smith Machine Bench Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-chest-press",
+      "name": "Cable Chest Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "push-up",
+      "name": "Push-Up",
+      "datasetId": "0662",
+      "status": "exact"
+    },
+    {
+      "id": "incline-push-up",
+      "name": "Incline Push-Up",
+      "datasetId": "0493",
+      "status": "exact"
+    },
+    {
+      "id": "kneeling-push-up",
+      "name": "Kneeling Push-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-chest-press",
+      "name": "Band Chest Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-machine-chest-press",
+      "name": "Single-Arm Machine Chest Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-floor-press",
+      "name": "Dumbbell Floor Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-dumbbell-floor-press",
+      "name": "Single-Arm Dumbbell Floor Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "decline-dumbbell-press",
+      "name": "Decline Dumbbell Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "decline-barbell-bench-press",
+      "name": "Decline Barbell Bench Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ring-push-up",
+      "name": "Ring Push-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "weighted-push-up",
+      "name": "Weighted Push-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "low-to-high-cable-fly",
+      "name": "Low-to-High Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pec-deck-fly",
+      "name": "Pec Deck Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-cable-fly",
+      "name": "Standing Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "high-to-low-cable-fly",
+      "name": "High-to-Low Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "flat-dumbbell-fly",
+      "name": "Flat Dumbbell Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-dumbbell-fly",
+      "name": "Incline Dumbbell Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-fly",
+      "name": "Single-Arm Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-cable-fly",
+      "name": "Incline Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-chest-fly",
+      "name": "Band Chest Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "supine-cable-fly",
+      "name": "Supine Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-cable-fly",
+      "name": "Chest-Supported Cable Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-row",
+      "name": "Chest-Supported Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-t-bar-row",
+      "name": "Chest-Supported T-Bar Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-dumbbell-row",
+      "name": "Chest-Supported Dumbbell Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-cable-row",
+      "name": "Seated Cable Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "one-arm-dumbbell-row",
+      "name": "One-Arm Dumbbell Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-row",
+      "name": "Barbell Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "inverted-row",
+      "name": "Inverted Row",
+      "datasetId": "0499",
+      "status": "exact"
+    },
+    {
+      "id": "band-row",
+      "name": "Band Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-machine-row",
+      "name": "Single-Arm Machine Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seal-row",
+      "name": "Seal Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pendlay-row",
+      "name": "Pendlay Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "meadows-row",
+      "name": "Meadows Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "landmine-row",
+      "name": "Landmine Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-row",
+      "name": "Single-Arm Cable Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "humble-row",
+      "name": "Humble Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ring-row",
+      "name": "Ring Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "kneeling-cable-row",
+      "name": "Kneeling Cable Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "wide-grip-seated-cable-row",
+      "name": "Wide-Grip Seated Cable Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "underhand-barbell-row",
+      "name": "Underhand Barbell Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-chest-supported-dumbbell-row",
+      "name": "Single-Arm Chest-Supported Dumbbell Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "neutral-grip-lat-pulldown",
+      "name": "Neutral-Grip Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "wide-grip-pronated-lat-pulldown",
+      "name": "Wide-Grip Pronated Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "underhand-lat-pulldown",
+      "name": "Underhand Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-lat-pulldown",
+      "name": "Single-Arm Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "half-kneeling-single-arm-pulldown",
+      "name": "Half-Kneeling Single-Arm Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pull-up",
+      "name": "Pull-Up",
+      "datasetId": "0652",
+      "status": "exact"
+    },
+    {
+      "id": "weighted-pull-up",
+      "name": "Weighted Pull-Up",
+      "datasetId": "0841",
+      "status": "exact"
+    },
+    {
+      "id": "chin-up",
+      "name": "Chin-Up",
+      "datasetId": "1326",
+      "status": "exact"
+    },
+    {
+      "id": "weighted-chin-up",
+      "name": "Weighted Chin-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "neutral-grip-pull-up",
+      "name": "Neutral-Grip Pull-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "assisted-pull-up-machine",
+      "name": "Assisted Pull-Up Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-assisted-pull-up",
+      "name": "Band-Assisted Pull-Up",
+      "datasetId": "0970",
+      "status": "exact"
+    },
+    {
+      "id": "band-lat-pulldown",
+      "name": "Band Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ring-pull-up",
+      "name": "Ring Pull-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "kneeling-cable-lat-pulldown",
+      "name": "Kneeling Cable Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "close-grip-lat-pulldown",
+      "name": "Close-Grip Lat Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "straight-arm-pulldown",
+      "name": "Straight-Arm Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-pullover",
+      "name": "Dumbbell Pullover",
+      "datasetId": "0375",
+      "status": "exact"
+    },
+    {
+      "id": "cable-pullover",
+      "name": "Cable Pullover",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "machine-pullover",
+      "name": "Machine Pullover",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "kneeling-straight-arm-pulldown",
+      "name": "Kneeling Straight-Arm Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-straight-arm-pulldown",
+      "name": "Band Straight-Arm Pulldown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-pullover",
+      "name": "Single-Arm Cable Pullover",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "floor-dumbbell-pullover",
+      "name": "Floor Dumbbell Pullover",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "back-squat",
+      "name": "Back Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "front-squat",
+      "name": "Front Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "goblet-squat",
+      "name": "Goblet Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-squat",
+      "name": "Dumbbell Squat",
+      "datasetId": "0413",
+      "status": "exact"
+    },
+    {
+      "id": "smith-machine-squat",
+      "name": "Smith Machine Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hack-squat",
+      "name": "Hack Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "leg-press",
+      "name": "Leg Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bodyweight-squat",
+      "name": "Bodyweight Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pendulum-squat",
+      "name": "Pendulum Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "belt-squat",
+      "name": "Belt Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "safety-bar-squat",
+      "name": "Safety-Bar Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "box-squat",
+      "name": "Box Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "zercher-squat",
+      "name": "Zercher Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "heel-elevated-goblet-squat",
+      "name": "Heel-Elevated Goblet Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-leg-press",
+      "name": "Single-Leg Leg Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "landmine-squat",
+      "name": "Landmine Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-reverse-lunge",
+      "name": "Dumbbell Reverse Lunge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bodyweight-reverse-lunge",
+      "name": "Bodyweight Reverse Lunge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-split-squat",
+      "name": "Dumbbell Split Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bodyweight-split-squat",
+      "name": "Bodyweight Split Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bulgarian-split-squat",
+      "name": "Bulgarian Split Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "smith-machine-split-squat",
+      "name": "Smith Machine Split Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "walking-dumbbell-lunge",
+      "name": "Walking Dumbbell Lunge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-reverse-lunge",
+      "name": "Barbell Reverse Lunge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-step-up",
+      "name": "Dumbbell Step-Up",
+      "datasetId": "0431",
+      "status": "exact"
+    },
+    {
+      "id": "bodyweight-step-up",
+      "name": "Bodyweight Step-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "deficit-reverse-lunge",
+      "name": "Deficit Reverse Lunge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "front-foot-elevated-split-squat",
+      "name": "Front-Foot-Elevated Split Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-romanian-deadlift",
+      "name": "Barbell Romanian Deadlift",
+      "datasetId": "0085",
+      "status": "exact"
+    },
+    {
+      "id": "dumbbell-romanian-deadlift",
+      "name": "Dumbbell Romanian Deadlift",
+      "datasetId": "1459",
+      "status": "exact"
+    },
+    {
+      "id": "smith-machine-romanian-deadlift",
+      "name": "Smith Machine Romanian Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-dumbbell-romanian-deadlift",
+      "name": "Single-Leg Dumbbell Romanian Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "b-stance-dumbbell-romanian-deadlift",
+      "name": "B-Stance Dumbbell Romanian Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-pull-through",
+      "name": "Cable Pull-Through",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-good-morning",
+      "name": "Band Good Morning",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-good-morning",
+      "name": "Barbell Good Morning",
+      "datasetId": "0044",
+      "status": "exact"
+    },
+    {
+      "id": "45-degree-back-extension",
+      "name": "45-Degree Back Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "weighted-back-extension",
+      "name": "Weighted Back Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-good-morning",
+      "name": "Seated Good Morning",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-bodyweight-hip-hinge",
+      "name": "Single-Leg Bodyweight Hip Hinge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "conventional-deadlift",
+      "name": "Conventional Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reset-deadlift",
+      "name": "Reset Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "sumo-deadlift",
+      "name": "Sumo Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "trap-bar-deadlift",
+      "name": "Trap-Bar Deadlift",
+      "datasetId": "0811",
+      "status": "exact"
+    },
+    {
+      "id": "dumbbell-deadlift",
+      "name": "Dumbbell Deadlift",
+      "datasetId": "0300",
+      "status": "exact"
+    },
+    {
+      "id": "block-pull",
+      "name": "Block Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "deficit-deadlift",
+      "name": "Deficit Deadlift",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "rack-pull",
+      "name": "Rack Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-hip-thrust",
+      "name": "Barbell Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hip-thrust-machine",
+      "name": "Hip Thrust Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "smith-machine-hip-thrust",
+      "name": "Smith Machine Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-hip-thrust",
+      "name": "Dumbbell Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bodyweight-hip-thrust",
+      "name": "Bodyweight Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-hip-thrust",
+      "name": "Single-Leg Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-glute-bridge",
+      "name": "Barbell Glute Bridge",
+      "datasetId": "1409",
+      "status": "exact"
+    },
+    {
+      "id": "dumbbell-glute-bridge",
+      "name": "Dumbbell Glute Bridge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bodyweight-glute-bridge",
+      "name": "Bodyweight Glute Bridge",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-hip-thrust",
+      "name": "Band Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "b-stance-hip-thrust",
+      "name": "B-Stance Hip Thrust",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "leg-extension",
+      "name": "Leg Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-leg-extension",
+      "name": "Single-Leg Leg Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-leg-extension",
+      "name": "Cable Leg Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-leg-extension",
+      "name": "Band Leg Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reverse-nordic-curl",
+      "name": "Reverse Nordic Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "assisted-reverse-nordic-curl",
+      "name": "Assisted Reverse Nordic Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "sissy-squat-machine",
+      "name": "Sissy Squat Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "supported-sissy-squat",
+      "name": "Supported Sissy Squat",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-leg-curl",
+      "name": "Seated Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "lying-leg-curl",
+      "name": "Lying Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-single-leg-curl",
+      "name": "Standing Single-Leg Curl",
+      "datasetId": "0795",
+      "status": "exact"
+    },
+    {
+      "id": "sliding-hamstring-curl",
+      "name": "Sliding Hamstring Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "stability-ball-hamstring-curl",
+      "name": "Stability-Ball Hamstring Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-leg-curl",
+      "name": "Band Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "nordic-curl",
+      "name": "Nordic Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-assisted-nordic-curl",
+      "name": "Band-Assisted Nordic Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-leg-curl",
+      "name": "Cable Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-seated-leg-curl",
+      "name": "Single-Leg Seated Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-lying-leg-curl",
+      "name": "Single-Leg Lying Leg Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-calf-raise",
+      "name": "Standing Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "leg-press-calf-raise",
+      "name": "Leg Press Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-calf-raise",
+      "name": "Single-Leg Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-standing-calf-raise",
+      "name": "Dumbbell Standing Calf Raise",
+      "datasetId": "0417",
+      "status": "exact"
+    },
+    {
+      "id": "barbell-calf-raise",
+      "name": "Barbell Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "smith-machine-calf-raise",
+      "name": "Smith Machine Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-calf-raise",
+      "name": "Band Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "donkey-calf-raise-machine",
+      "name": "Donkey Calf Raise Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-dumbbell-calf-raise",
+      "name": "Single-Leg Dumbbell Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-calf-raise",
+      "name": "Seated Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-dumbbell-calf-raise",
+      "name": "Seated Dumbbell Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-barbell-calf-raise",
+      "name": "Seated Barbell Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-smith-machine-calf-raise",
+      "name": "Seated Smith Machine Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-band-calf-raise",
+      "name": "Seated Band Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-leg-seated-calf-raise",
+      "name": "Single-Leg Seated Calf Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-lateral-raise",
+      "name": "Cable Lateral Raise",
+      "datasetId": "0178",
+      "status": "exact"
+    },
+    {
+      "id": "dumbbell-lateral-raise",
+      "name": "Dumbbell Lateral Raise",
+      "datasetId": "0334",
+      "status": "exact"
+    },
+    {
+      "id": "machine-lateral-raise",
+      "name": "Machine Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-lateral-raise-behind-body",
+      "name": "Cable Lateral Raise Behind Body",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-dumbbell-lateral-raise",
+      "name": "Seated Dumbbell Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "leaning-cable-lateral-raise",
+      "name": "Leaning Cable Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-dumbbell-lateral-raise",
+      "name": "Single-Arm Dumbbell Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-lateral-raise",
+      "name": "Band Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "lying-dumbbell-lateral-raise",
+      "name": "Lying Dumbbell Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-dumbbell-lateral-raise",
+      "name": "Chest-Supported Dumbbell Lateral Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reverse-pec-deck",
+      "name": "Reverse Pec Deck",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-rear-delt-fly",
+      "name": "Cable Rear-Delt Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-rear-delt-raise",
+      "name": "Dumbbell Rear-Delt Raise",
+      "datasetId": "2292",
+      "status": "exact"
+    },
+    {
+      "id": "chest-supported-rear-delt-raise",
+      "name": "Chest-Supported Rear-Delt Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-pull-apart",
+      "name": "Band Pull-Apart",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-rear-delt-fly",
+      "name": "Single-Arm Cable Rear-Delt Fly",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "prone-rear-delt-raise",
+      "name": "Prone Rear-Delt Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-bent-over-rear-delt-raise",
+      "name": "Seated Bent-Over Rear-Delt Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "rope-face-pull",
+      "name": "Rope Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-cable-face-pull",
+      "name": "Seated Cable Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "half-kneeling-cable-face-pull",
+      "name": "Half-Kneeling Cable Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-face-pull",
+      "name": "Band Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-face-pull",
+      "name": "Single-Arm Cable Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "supine-cable-face-pull",
+      "name": "Supine Cable Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "high-pulley-rope-face-pull",
+      "name": "High-Pulley Rope Face Pull",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-arnold-press",
+      "name": "Dumbbell Arnold Press",
+      "datasetId": "2137",
+      "status": "exact"
+    },
+    {
+      "id": "seated-dumbbell-shoulder-press",
+      "name": "Seated Dumbbell Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-overhead-press",
+      "name": "Barbell Overhead Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "machine-shoulder-press",
+      "name": "Machine Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-shoulder-press",
+      "name": "Single-Arm Cable Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pike-push-up",
+      "name": "Pike Push-Up",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-smith-machine-shoulder-press",
+      "name": "Seated Smith Machine Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "half-kneeling-landmine-press",
+      "name": "Half-Kneeling Landmine Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-dumbbell-shoulder-press",
+      "name": "Standing Dumbbell Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-overhead-press",
+      "name": "Band Overhead Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-dumbbell-shoulder-press",
+      "name": "Single-Arm Dumbbell Shoulder Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-rope-upright-row",
+      "name": "Cable Rope Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-upright-row",
+      "name": "Dumbbell Upright Row",
+      "datasetId": "0437",
+      "status": "exact"
+    },
+    {
+      "id": "wide-grip-barbell-upright-row",
+      "name": "Wide-Grip Barbell Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "wide-grip-cable-upright-row",
+      "name": "Wide-Grip Cable Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-upright-row",
+      "name": "Band Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "smith-machine-upright-row",
+      "name": "Smith Machine Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-upright-row",
+      "name": "Single-Arm Cable Upright Row",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "preacher-curl-machine",
+      "name": "Preacher Curl Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "bayesian-cable-curl",
+      "name": "Bayesian Cable Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-curl",
+      "name": "Cable Curl",
+      "datasetId": "0868",
+      "status": "exact"
+    },
+    {
+      "id": "incline-dumbbell-curl",
+      "name": "Incline Dumbbell Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ez-bar-curl",
+      "name": "EZ-Bar Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-curl",
+      "name": "Band Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "concentration-curl",
+      "name": "Concentration Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "machine-curl",
+      "name": "Machine Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-dumbbell-curl",
+      "name": "Standing Dumbbell Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "barbell-curl",
+      "name": "Barbell Curl",
+      "datasetId": "0031",
+      "status": "exact"
+    },
+    {
+      "id": "dumbbell-preacher-curl",
+      "name": "Dumbbell Preacher Curl",
+      "datasetId": "0372",
+      "status": "exact"
+    },
+    {
+      "id": "spider-curl",
+      "name": "Spider Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "high-cable-curl",
+      "name": "High Cable Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-dumbbell-curl",
+      "name": "Seated Dumbbell Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-curl",
+      "name": "Single-Arm Cable Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ez-bar-preacher-curl",
+      "name": "EZ-Bar Preacher Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hammer-curl",
+      "name": "Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "rope-hammer-curl",
+      "name": "Rope Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cross-body-hammer-curl",
+      "name": "Cross-Body Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "incline-hammer-curl",
+      "name": "Incline Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-hammer-curl",
+      "name": "Band Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "preacher-hammer-curl",
+      "name": "Preacher Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-hammer-curl",
+      "name": "Seated Hammer Curl",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "rope-pushdown",
+      "name": "Rope Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-triceps-extension",
+      "name": "Single-Arm Cable Triceps Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-cable-pushdown",
+      "name": "Single-Arm Cable Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "straight-bar-pushdown",
+      "name": "Straight-Bar Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "v-bar-pushdown",
+      "name": "V-Bar Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-pushdown",
+      "name": "Band Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "machine-triceps-extension",
+      "name": "Machine Triceps Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reverse-grip-cable-pushdown",
+      "name": "Reverse-Grip Cable Pushdown",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ez-bar-skull-crusher",
+      "name": "EZ-Bar Skull Crusher",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-skull-crusher",
+      "name": "Dumbbell Skull Crusher",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-skull-crusher",
+      "name": "Cable Skull Crusher",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-triceps-kickback",
+      "name": "Dumbbell Triceps Kickback",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-triceps-kickback",
+      "name": "Cable Triceps Kickback",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "overhead-cable-extension",
+      "name": "Overhead Cable Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-overhead-extension",
+      "name": "Dumbbell Overhead Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-dumbbell-overhead-extension",
+      "name": "Single-Arm Dumbbell Overhead Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "single-arm-overhead-cable-extension",
+      "name": "Single-Arm Overhead Cable Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-overhead-triceps-extension",
+      "name": "Band Overhead Triceps Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ez-bar-overhead-triceps-extension",
+      "name": "EZ-Bar Overhead Triceps Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-cable-overhead-extension",
+      "name": "Seated Cable Overhead Extension",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "parallel-bar-dip",
+      "name": "Parallel-Bar Dip",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "weighted-dips",
+      "name": "Weighted Dips",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "assisted-dip-machine",
+      "name": "Assisted Dip Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-assisted-dip",
+      "name": "Band-Assisted Dip",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ring-dip",
+      "name": "Ring Dip",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "weighted-ring-dip",
+      "name": "Weighted Ring Dip",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "straight-bar-dip",
+      "name": "Straight-Bar Dip",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-crunch",
+      "name": "Cable Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ab-crunch-machine",
+      "name": "Ab Crunch Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "floor-crunch",
+      "name": "Floor Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-crunch",
+      "name": "Band Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "decline-crunch",
+      "name": "Decline Crunch",
+      "datasetId": "0277",
+      "status": "exact"
+    },
+    {
+      "id": "weighted-crunch",
+      "name": "Weighted Crunch",
+      "datasetId": "0832",
+      "status": "exact"
+    },
+    {
+      "id": "kneeling-cable-crunch",
+      "name": "Kneeling Cable Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "stability-ball-crunch",
+      "name": "Stability-Ball Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-cable-crunch",
+      "name": "Seated Cable Crunch",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hanging-leg-raise",
+      "name": "Hanging Leg Raise",
+      "datasetId": "0472",
+      "status": "exact"
+    },
+    {
+      "id": "weighted-hanging-leg-raise",
+      "name": "Weighted Hanging Leg Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hanging-knee-raise",
+      "name": "Hanging Knee Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "captain-s-chair-knee-raise",
+      "name": "Captain's-Chair Knee Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "lying-leg-raise",
+      "name": "Lying Leg Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "reverse-crunch",
+      "name": "Reverse Crunch",
+      "datasetId": "0872",
+      "status": "exact"
+    },
+    {
+      "id": "incline-bench-leg-raise",
+      "name": "Incline Bench Leg Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-reverse-crunch",
+      "name": "Cable Reverse Crunch",
+      "datasetId": "0873",
+      "status": "exact"
+    },
+    {
+      "id": "captain-s-chair-leg-raise",
+      "name": "Captain's-Chair Leg Raise",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "pallof-press",
+      "name": "Pallof Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-pallof-press",
+      "name": "Band Pallof Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "half-kneeling-pallof-press",
+      "name": "Half-Kneeling Pallof Press",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "plank",
+      "name": "Plank",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "side-plank",
+      "name": "Side Plank",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dead-bug",
+      "name": "Dead Bug",
+      "datasetId": "0276",
+      "status": "exact"
+    },
+    {
+      "id": "bird-dog",
+      "name": "Bird Dog",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "ab-wheel-rollout",
+      "name": "Ab Wheel Rollout",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-suitcase-carry",
+      "name": "Dumbbell Suitcase Carry",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "farmer-s-carry",
+      "name": "Farmer's Carry",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hip-abduction-machine",
+      "name": "Hip Abduction Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-cable-hip-abduction",
+      "name": "Standing Cable Hip Abduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-band-hip-abduction",
+      "name": "Standing Band Hip Abduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "side-lying-hip-abduction",
+      "name": "Side-Lying Hip Abduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "band-clamshell",
+      "name": "Band Clamshell",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "lateral-band-walk",
+      "name": "Lateral Band Walk",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "side-lying-cable-hip-abduction",
+      "name": "Side-Lying Cable Hip Abduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "hip-adduction-machine",
+      "name": "Hip Adduction Machine",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-cable-hip-adduction",
+      "name": "Standing Cable Hip Adduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "standing-band-hip-adduction",
+      "name": "Standing Band Hip Adduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "side-lying-hip-adduction",
+      "name": "Side-Lying Hip Adduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "copenhagen-plank",
+      "name": "Copenhagen Plank",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "short-lever-copenhagen-plank",
+      "name": "Short-Lever Copenhagen Plank",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "side-lying-cable-hip-adduction",
+      "name": "Side-Lying Cable Hip Adduction",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "dumbbell-shrug",
+      "name": "Dumbbell Shrug",
+      "datasetId": "0406",
+      "status": "exact"
+    },
+    {
+      "id": "barbell-shrug",
+      "name": "Barbell Shrug",
+      "datasetId": "0095",
+      "status": "exact"
+    },
+    {
+      "id": "smith-machine-shrug",
+      "name": "Smith Machine Shrug",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "cable-shrug",
+      "name": "Cable Shrug",
+      "datasetId": "0220",
+      "status": "exact"
+    },
+    {
+      "id": "machine-shrug",
+      "name": "Machine Shrug",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "seated-dumbbell-shrug",
+      "name": "Seated Dumbbell Shrug",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "trap-bar-shrug",
+      "name": "Trap-Bar Shrug",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    },
+    {
+      "id": "chest-supported-dumbbell-shrug",
+      "name": "Chest-Supported Dumbbell Shrug",
+      "datasetId": null,
+      "status": "preserved-local-variant"
+    }
+  ]
+}

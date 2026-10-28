@@ -1,18 +1,18 @@
-const CACHE = 'lift-log-shell-v101';
+const CACHE = 'lift-log-shell-v109';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './sw.js',
-  './catalogue.js?v=liftlog-20261027-weekly-ai-v73',
-  './planner.js?v=liftlog-20261027-weekly-ai-v73',
-  './sketches.js?v=liftlog-20261027-weekly-ai-v73',
-  './exercise-art.js?v=liftlog-20261027-weekly-ai-v73',
-  './nutrition-data.js?v=liftlog-20261027-weekly-ai-v73',
-  './nutrition.js?v=liftlog-20261027-weekly-ai-v73',
-  './app.js?v=liftlog-20261027-weekly-ai-v73',
-  './coach.js?v=liftlog-20261027-weekly-ai-v73',
-  './material.css?v=liftlog-20261027-weekly-ai-v73',
-  './media/muscle-map-anatomy.png?v=liftlog-20261027-weekly-ai-v73'
+  './catalogue.js?v=liftlog-20261028-workout-review-v81',
+  './planner.js?v=liftlog-20261028-workout-review-v81',
+  './exercise-art.js?v=liftlog-20261028-workout-review-v81',
+  './exercise-gif-map.js?v=liftlog-20261028-workout-review-v81',
+  './nutrition-data.js?v=liftlog-20261028-workout-review-v81',
+  './nutrition.js?v=liftlog-20261028-workout-review-v81',
+  './app.js?v=liftlog-20261028-workout-review-v81',
+  './coach.js?v=liftlog-20261028-workout-review-v81',
+  './material.css?v=liftlog-20261028-workout-review-v81',
+  './media/muscle-map-anatomy.png?v=liftlog-20261028-workout-review-v81'
 ];
 
 async function cacheShellFile(cache, path) {

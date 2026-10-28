@@ -23,7 +23,7 @@ function fixture(){
   vm.runInContext(source.slice(source.indexOf('  const PHOTO_CACHE_KEY'),source.indexOf('  const $ =')),context);
   const load=(start,end)=>vm.runInContext(source.slice(source.indexOf(start),source.indexOf(end,source.indexOf(start))),context);
   load('  function aiFoodItem(','  function writeMealStatus(');
-  load('  function writeMealStatus(','  function etaText(');
+  load('  function writeMealStatus(','  function shiftDiaryDate(');
   load('  function normalizeFoodName(','  function isFoodQuery(');
   load('  function isFoodQuery(','  const openDb=');
   load('  async function commitMeal(','  async function saveWeight(');

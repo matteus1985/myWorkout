@@ -1,3 +1,9 @@
+# Catalogue and workout review update — 2026-10-28
+
+Upload the complete contents of cloudflare-upload.js in the Cloudflare editor, or deploy src/index.mjs with Wrangler. Both files and cloudflare-worker.mjs contain identical code. Preserve the existing AI binding and APP_TOKEN secret. This update adds the workout-summary coach mode, accepts the bounded local exercise catalogue context and advertises catalogue-ai-v1 and workout-summary-v1 in /health. Version: 2026-10-28-catalogue-ai-v1.
+
+The app generates initial, replacement and next-week programmes using AI. It retains the current programme if generation or storage fails. The one-time catalogue migration uses a new plan revision without removing logs or older plan snapshots.
+
 # Lift Log AI Worker
 
 Replace the deployed Worker's code with `src/index.mjs`, then deploy. Keep the existing Workers AI binding named `AI` and private secret `APP_TOKEN`.
