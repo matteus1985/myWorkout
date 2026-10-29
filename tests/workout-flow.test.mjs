@@ -50,7 +50,7 @@ test('elapsed time starts with the first completed set, includes background time
 function planFixture(){
   const item={id:'press',name:'Press',primary:['Chest'],equipment:'machine',unit:'reps',pattern:'chestPress',level:'beginner'};
   const c=run(['areAntagonists','validateWeekPlan'],{state:{},itemFor:e=>e.catalogId==='press'?item:null,LIFT_CATALOGUE:{find:()=>item},LIFT_ENGINE:{descriptor:(item,id,state,{sets})=>({id,catalogId:item.id,muscle:'Chest',sets:Array.from({length:sets},()=>({min:6,max:12}))}),minutes:()=>55}});
-  const input={count:3,week:2,experience:'intermediate',catalogue:['press','row','squat','curl'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,equipment:'machine',pattern:'chestPress'}))};
+  const input={count:3,week:2,experience:'intermediate',catalogue:['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,equipment:'machine',pattern:'chestPress'}))};
   const raw={summary:'Progress gradually',days:Array.from({length:3},()=>({name:'Upper',exercises:input.catalogue.map(c=>({catalogId:c.id,sets:3,reps:8,weight:20,rest:90,rir:2}))}))};return {c,input,raw};
 }
 test('weekly plan validation rejects unknown exercises, excessive loads, incomplete plans and unsafe techniques',()=>{
@@ -80,7 +80,7 @@ test('weekly Worker authenticates, validates targets and preserves retryable err
 });
 
 test('weekly Worker returns a complete valid programme within the actual duration budget',async()=>{
-  const catalogue=['press','row','squat','curl'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,primary:[id==='row'?'Back':id==='press'?'Chest':id==='squat'?'Quadriceps':'Biceps'],equipment:'machine',pattern:id}));
+  const catalogue=['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,primary:[id==='row'||id==='pulldown'?'Back':id==='press'?'Chest':id==='squat'?'Quadriceps':'Biceps'],equipment:'machine',pattern:id}));
   const plan={summary:'Build gradually',days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2}))}))};
   const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue,experience:'intermediate'}})});
   const response=await worker.fetch(request,{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
@@ -92,7 +92,8 @@ test('weekly Worker keeps the programme when an optional superset is not antagon
     {id:'press-a',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Chest'],equipment:'machine',pattern:'chestPress'},
     {id:'press-b',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Chest'],equipment:'machine',pattern:'chestPress'},
     {id:'squat',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Quadriceps'],equipment:'machine',pattern:'squat'},
-    {id:'row',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back'],equipment:'machine',pattern:'row'}
+    {id:'row',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back'],equipment:'machine',pattern:'row'},
+    {id:'curl',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Biceps'],equipment:'machine',pattern:'curl'}
   ];
   const plan={summary:'Build gradually',days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2,supersetGroup:c.id==='squat'?null:'invalid-pair'}))}))};
   const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue,experience:'intermediate'}})});
@@ -128,7 +129,7 @@ function realPlannerContext(){
 test('weekly plans normalize model targets and pass the real app validator for 3, 4, 5 and 6 sessions',async()=>{
  for(const count of [3,4,5,6]){
   const context=realPlannerContext();
-  const items=['flat-barbell-bench-press','seated-cable-row','leg-extension'].map(id=>context.LIFT_CATALOGUE.find(id));items.push(context.LIFT_CATALOGUE.exercises.find(item=>item.pattern==='lateralRaise'));
+  const items=['flat-barbell-bench-press','seated-cable-row','leg-extension'].map(id=>context.LIFT_CATALOGUE.find(id));items.push(context.LIFT_CATALOGUE.exercises.find(item=>item.pattern==='lateralRaise'),context.LIFT_CATALOGUE.exercises.find(item=>item.pattern==='verticalPull'));
   assert.ok(items.every(Boolean));
   const catalogue=items.map(item=>({...item,weight:7.5,step:2.5,minReps:6,maxReps:12}));
   const input={count,week:28,experience:'intermediate',catalogue:items.map(item=>({...item,weight:7.5,step:2.5,minReps:6,maxReps:12}))};
@@ -137,12 +138,12 @@ test('weekly plans normalize model targets and pass the real app validator for 3
   const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:input})}),{APP_TOKEN:'test-token',AI:{run:async()=>{calls++;return {response:JSON.stringify(raw)};}}});
   const result=await response.json();assert.equal(response.status,200,JSON.stringify(result));assert.equal(calls,1);
   const accepted=context.validateWeekPlan(result.plan,input);assert.equal(accepted.days.length,count);
-  for(const day of accepted.days){assert.ok(day.minutes>=40&&day.minutes<=70);assert.equal(day.exercises.length,4);for(const e of day.exercises){assert.equal(e.sets[0].weight,10);assert.equal(e.sets[0].target,12);assert.ok(e.rest>=45&&e.rest<=150);}}
+  for(const day of accepted.days){assert.ok(day.minutes>=40&&day.minutes<=70);assert.equal(day.exercises.length,5);for(const e of day.exercises){assert.equal(e.sets[0].weight,10);assert.equal(e.sets[0].target,12);assert.ok(e.rest>=45&&e.rest<=150);}}
  }
 });
 
 test('weekly Worker identifies an unreadable target without logging or exposing the model response',async()=>{
- const catalogue=['press','row','squat','curl'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12}));
+ const catalogue=['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12}));
  const plan={days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:'twenty',rest:180}))}))};
  const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue}})}),{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
  const result=await response.json();assert.equal(response.status,503);assert.match(result.error,/Workout 1, exercise 1.*unreadable weight/);assert.doesNotMatch(result.error,/twenty/);assert.ok(result.requestId);
@@ -193,5 +194,5 @@ test('ambiguous catalogue names are never guessed, and insufficient available ex
  for(const day of plan.days)day.exercises[5]={...day.exercises[5],exerciseRef:undefined,name:'Ambiguous press'};
  let result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,200);assert.equal(result.result.diagnostics.omittedExercises,4);
  plan.days[0].exercises=plan.days[0].exercises.slice(0,3).concat({exerciseRef:'E999',sets:3,reps:8,weight:20,rest:120});
- result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,503);assert.match(result.result.error,/fewer than four available exercises/);assert.equal(result.result.plan,undefined);assert.equal(result.calls,1);
+ result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,503);assert.match(result.result.error,/fewer than five available exercises/);assert.equal(result.result.plan,undefined);assert.equal(result.calls,1);
 });

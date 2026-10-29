@@ -43,6 +43,11 @@ test('workout proposal excludes invented exercises, duplicate IDs, missing histo
     const response=await worker.fetch(jsonRequest('/coach',{mode:'next-workout',data:{exercises}}),fakeEnv({suggestions:[{exerciseId:'press',...proposal}]}));assert.deepEqual((await response.json()).suggestions,[]);
   }
 });
+test('workout review returns one concise motivating sentence in a legacy-compatible shape',async()=>{
+  const env=fakeEnv({summary:'You met your planned work and are steadily building strength; keep the next session consistent.'});
+  const result=await worker.fetch(jsonRequest('/coach',{mode:'workout-summary',data:{dayName:'Push A',partial:false,completedSetCount:9,plannedSetCount:9,exercises:[{name:'Bench press',planned:[{weight:20,reps:8}],actual:[{done:true,weight:20,reps:9}]}]}}),env);
+  const body=await result.json();assert.equal(result.status,200);assert.equal(typeof body.summary,'string');assert.ok(body.summary);assert.equal(body.bullets.length,1);assert.equal(body.bullets[0],body.summary);assert.match(env.calls[0].input.messages[0].content,/one concise, motivating English sentence/);assert.doesNotMatch(env.calls[0].input.messages[0].content,/bullet 1|bullet 2/);
+});
 test('nutrition suggestions fit remaining calories and require nutrition targets',async()=>{
   const data={targets:{kcal:2500},remaining:{kcal:300,protein:20,carbs:50,fat:10}};
   const accepted=await worker.fetch(jsonRequest('/coach',{mode:'nutrition',data}),fakeEnv({summary:'A useful addition',foods:[food]}));assert.equal((await accepted.json()).foods.length,1);
