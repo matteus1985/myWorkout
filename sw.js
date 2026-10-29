@@ -1,4 +1,4 @@
-const CACHE = 'lift-log-shell-v110';
+const CACHE = 'lift-log-shell-v112';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [

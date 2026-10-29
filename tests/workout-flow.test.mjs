@@ -5,6 +5,7 @@ import vm from 'node:vm';
 import worker from '../worker/src/index.mjs';
 
 const source=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+const splitTitles=count=>({3:['Full Body A','Full Body B','Full Body C'],4:['Upper A','Lower A','Upper B','Lower B'],5:['Push A','Pull A','Legs A','Upper B','Lower B'],6:['Push A','Pull A','Legs A','Push B','Pull B','Legs B']})[count];
 function extract(name){
   let start=source.indexOf('  function '+name+'(');
   if(start<0)start=source.indexOf('  async function '+name+'(');
@@ -49,12 +50,18 @@ test('elapsed time starts with the first completed set, includes background time
 
 function planFixture(){
   const item={id:'press',name:'Press',primary:['Chest'],equipment:'machine',unit:'reps',pattern:'chestPress',level:'beginner'};
-  const c=run(['areAntagonists','validateWeekPlan'],{state:{},itemFor:e=>e.catalogId==='press'?item:null,LIFT_CATALOGUE:{find:()=>item},LIFT_ENGINE:{descriptor:(item,id,state,{sets})=>({id,catalogId:item.id,muscle:'Chest',sets:Array.from({length:sets},()=>({min:6,max:12}))}),minutes:()=>55}});
-  const input={count:3,week:2,experience:'intermediate',catalogue:['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,equipment:'machine',pattern:'chestPress'}))};
-  const raw={summary:'Progress gradually',days:Array.from({length:3},()=>({name:'Upper',exercises:input.catalogue.map(c=>({catalogId:c.id,sets:3,reps:8,weight:20,rest:90,rir:2}))}))};return {c,input,raw};
+  const catalogue=['press','row','squat','curl','pulldown'].map((id,index)=>({id,primary:[['Chest'],['Back'],['Quadriceps'],['Biceps'],['Back']][index],weight:20,step:2.5,minReps:6,maxReps:12,equipment:'machine',pattern:'chestPress'}));
+  const items={exercises:catalogue,find:id=>catalogue.find(item=>item.id===id)};
+  const c=run(['weekSplitTitles','areAntagonists','validateWeekPlan'],{state:{},itemFor:e=>items.find(e.catalogId),LIFT_CATALOGUE:items,LIFT_ENGINE:{descriptor:(item,id,state,{sets})=>({id,catalogId:item.id,muscle:item.primary[0],sets:Array.from({length:sets},()=>({min:6,max:12}))}),minutes:()=>55}});
+  const input={count:3,week:2,experience:'intermediate',catalogue};
+  const raw={summary:'Progress gradually',days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:input.catalogue.map(c=>({catalogId:c.id,sets:3,reps:8,weight:20,rest:90,rir:2}))}))};return {c,input,raw};
 }
 test('weekly plan validation rejects unknown exercises, excessive loads, incomplete plans and unsafe techniques',()=>{
   const {c,input,raw}=planFixture();assert.equal(c.validateWeekPlan(raw,input).days.length,3);
+  const fourExercises=structuredClone(raw);fourExercises.days[0].exercises=fourExercises.days[0].exercises.slice(0,4);assert.equal(c.validateWeekPlan(fourExercises,input).days[0].exercises.length,4);
+  const tooMany=structuredClone(raw);tooMany.days[0].exercises=Array.from({length:11},(_,i)=>({...raw.days[0].exercises[i%raw.days[0].exercises.length],catalogId:'press-'+i}));assert.throws(()=>c.validateWeekPlan(tooMany,input),/incomplete workout/);
+  const wrongTitle=structuredClone(raw);wrongTitle.days[0].name='Push A';assert.throws(()=>c.validateWeekPlan(wrongTitle,input),/must be named Full Body A/);
+  const missingBody=structuredClone(raw);missingBody.days[0].exercises=missingBody.days[0].exercises.filter(exercise=>exercise.catalogId!=='squat');assert.throws(()=>c.validateWeekPlan(missingBody,input),/upper push, upper pull and lower body/);
   const invalid=structuredClone(raw);invalid.days[0].exercises[0].weight=100;assert.throws(()=>c.validateWeekPlan(invalid,input),/incompatible/);
   invalid.days[0].exercises[0].weight=20;invalid.days[0].exercises[0].catalogId='invented';assert.throws(()=>c.validateWeekPlan(invalid,input),/incompatible/);
   assert.throws(()=>c.validateWeekPlan({days:[]},input),/number/);
@@ -65,8 +72,15 @@ test('weekly plan validation rejects unknown exercises, excessive loads, incompl
 test('failed storage leaves both current week and archived weeks unchanged',()=>{
   const initial={week:4,endedWeeks:{},weekPlans:{},nutrition:{profile:{},weightChecks:[]}};
   const elements={'#endweek-weight':{value:'75'},'#next-week-days':{value:'3'}};
-  const c=run(['commitEndWeek'],{state:initial,pendingWeekPlan:{plan:{days:[]}},days:[],LIFT_ENGINE:{clone:structuredClone},updateDropSuggestion(){},$:id=>elements[id],endWeekWeightDate:()=> '2026-10-26',snapshotKey:()=> '4:0',logFor:()=>null,KEY:'test',localStorage:{setItem(){throw Error('Full');}},showToast(){}});
+  const c=run(['clearWeekWorkoutReviews','commitEndWeek'],{state:initial,pendingWeekPlan:{plan:{days:[]}},days:[],LIFT_ENGINE:{clone:structuredClone},updateDropSuggestion(){},$:id=>elements[id],endWeekWeightDate:()=> '2026-10-26',snapshotKey:()=> '4:0',logFor:()=>null,KEY:'test',localStorage:{setItem(){throw Error('Full');}},showToast(){}});
   c.commitEndWeek();assert.equal(c.state,initial);assert.equal(c.state.week,4);assert.deepEqual(c.state.endedWeeks,{});assert.ok(c.pendingWeekPlan);
+});
+
+test('new week removes only archived-week AI recap data and Home recap selection is current-week-only',()=>{
+  const logs={'27-d1':{completed:true,dayName:'Old',aiComment:'Old recap',aiCommentStatus:'ready',aiReviewProgress:{done:2,planned:3,pct:67},exercises:{press:{sets:[{done:true}]}}},'26-d1':{completed:true,aiComment:'Older history',aiCommentStatus:'ready'},'28-d1':{completed:true,aiComment:'Current',aiCommentStatus:'ready',completedAt:'2026-10-28'}};
+  const c=run(['clearWeekWorkoutReviews','latestWorkoutReview'],{});c.clearWeekWorkoutReviews(logs,27);
+  assert.equal(logs['27-d1'].aiComment,undefined);assert.equal(logs['27-d1'].aiCommentStatus,undefined);assert.equal(logs['27-d1'].aiReviewProgress,undefined);assert.deepEqual(logs['27-d1'].exercises.press.sets,[{done:true}]);
+  assert.equal(logs['26-d1'].aiComment,'Older history');assert.equal(c.latestWorkoutReview(logs,28).aiComment,'Current');assert.equal(c.latestWorkoutReview(logs,27),null);
 });
 
 test('weekly Worker authenticates, validates targets and preserves retryable errors',async()=>{
@@ -81,10 +95,37 @@ test('weekly Worker authenticates, validates targets and preserves retryable err
 
 test('weekly Worker returns a complete valid programme within the actual duration budget',async()=>{
   const catalogue=['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,primary:[id==='row'||id==='pulldown'?'Back':id==='press'?'Chest':id==='squat'?'Quadriceps':'Biceps'],equipment:'machine',pattern:id}));
-  const plan={summary:'Build gradually',days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2}))}))};
+  const plan={summary:'Build gradually',days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2}))}))};
   const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue,experience:'intermediate'}})});
   const response=await worker.fetch(request,{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
-  assert.equal(response.status,200);const result=await response.json();assert.equal(result.plan.days.length,3);assert.equal(result.rulesVersion,'weekly-v7');
+  assert.equal(response.status,200);const result=await response.json();assert.equal(result.plan.days.length,3);assert.deepEqual(result.plan.days.map(day=>day.name),splitTitles(3));assert.equal(result.rulesVersion,'weekly-v9');
+});
+
+test('weekly Worker rotates a recent accessory to a compatible alternative and preserves compounds',async()=>{
+  const catalogue=[
+    {id:'press',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Chest'],equipment:'machine',pattern:'chestPress'},
+    {id:'row',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back'],equipment:'machine',pattern:'row'},
+    {id:'squat',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Quadriceps'],equipment:'machine',pattern:'squat'},
+    {id:'curl',weight:10,step:1,minReps:8,maxReps:15,primary:['Biceps'],equipment:'cable',pattern:'curl'},
+    {id:'curl-alt',weight:10,step:1,minReps:8,maxReps:15,primary:['Biceps'],equipment:'cable',pattern:'curl'},
+    {id:'pulldown',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back'],equipment:'machine',pattern:'verticalPull'}
+  ];
+  const days=splitTitles(3).map(name=>({name,exercises:catalogue.filter(item=>item.id!=='curl-alt').map(item=>({catalogId:item.id,sets:3,reps:10,weight:item.weight,rest:90,rir:2}))}));
+  const data={count:3,catalogue,experience:'intermediate',recentAccessoryIds:['curl']};
+  const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data})});
+  const response=await worker.fetch(request,{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify({summary:'Rotate accessories',days})})}});
+  assert.equal(response.status,200);const result=await response.json();
+  assert.equal(result.plan.days[0].exercises.some(item=>item.catalogId==='curl-alt'),true);
+  assert.equal(result.plan.days[0].exercises.some(item=>item.catalogId==='curl'),false);
+  assert.equal(result.diagnostics.rotatedAccessories,3);
+  assert.equal(result.plan.days[0].exercises.some(item=>item.catalogId==='press'),true);
+});
+
+test('three-day full-body plans are rejected when a session misses a major movement group',async()=>{
+ const catalogue=[{id:'press',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Chest']},{id:'row',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back']},{id:'squat',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Quadriceps']},{id:'curl',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Biceps']},{id:'shoulder',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Front delts']}];
+ const days=splitTitles(3).map(name=>({name,exercises:catalogue.map(c=>({catalogId:c.id,sets:3,reps:8,weight:20,rest:240,rir:2}))}));days[1].exercises=days[1].exercises.filter(e=>e.catalogId!=='squat').concat({catalogId:'curl',sets:3,reps:8,weight:20,rest:240,rir:2});
+ const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue}})}),{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify({days})})}});
+ const result=await response.json();assert.equal(response.status,503);assert.match(result.error,/full-body session/);
 });
 
 test('weekly Worker keeps the programme when an optional superset is not antagonistic',async()=>{
@@ -95,7 +136,7 @@ test('weekly Worker keeps the programme when an optional superset is not antagon
     {id:'row',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Back'],equipment:'machine',pattern:'row'},
     {id:'curl',weight:20,step:2.5,minReps:6,maxReps:12,primary:['Biceps'],equipment:'machine',pattern:'curl'}
   ];
-  const plan={summary:'Build gradually',days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2,supersetGroup:c.id==='squat'?null:'invalid-pair'}))}))};
+  const plan={summary:'Build gradually',days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2,supersetGroup:c.id==='squat'?null:'invalid-pair'}))}))};
   const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue,experience:'intermediate'}})});
   const response=await worker.fetch(request,{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
   assert.equal(response.status,200);const result=await response.json();assert.equal(result.plan.days.length,3);assert.equal(result.plan.days[0].exercises[0].supersetGroup,null);assert.equal(result.plan.days[0].exercises[1].supersetGroup,null);
@@ -123,7 +164,7 @@ function realPlannerContext(){
  vm.runInContext(readFileSync(new URL('../planner.js',import.meta.url),'utf8'),context);
  context.LIFT_ENGINE=context.window.LIFT_ENGINE;context.state={experience:'intermediate',week:27,logs:{},weightSteps:{}};
  context.itemFor=e=>context.LIFT_CATALOGUE.find(e.catalogId);context.snapshotKey=()=> '27:0';
- return run(['areAntagonists','validateWeekPlan'],context);
+ return run(['weekSplitTitles','areAntagonists','validateWeekPlan'],context);
 }
 
 test('weekly plans normalize model targets and pass the real app validator for 3, 4, 5 and 6 sessions',async()=>{
@@ -133,7 +174,7 @@ test('weekly plans normalize model targets and pass the real app validator for 3
   assert.ok(items.every(Boolean));
   const catalogue=items.map(item=>({...item,weight:7.5,step:2.5,minReps:6,maxReps:12}));
   const input={count,week:28,experience:'intermediate',catalogue:items.map(item=>({...item,weight:7.5,step:2.5,minReps:6,maxReps:12}))};
-  const raw={days:Array.from({length:count},()=>({name:'Full Body',exercises:input.catalogue.map(c=>({catalogId:c.id,sets:'3',reps:'15',weight:'999',rest:'45',rir:'2'}))}))};
+  const raw={days:Array.from({length:count},(_,index)=>({name:splitTitles(count)[index],exercises:input.catalogue.map(c=>({catalogId:c.id,sets:'3',reps:'15',weight:'999',rest:'45',rir:'2'}))}))};
   let calls=0;
   const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:input})}),{APP_TOKEN:'test-token',AI:{run:async()=>{calls++;return {response:JSON.stringify(raw)};}}});
   const result=await response.json();assert.equal(response.status,200,JSON.stringify(result));assert.equal(calls,1);
@@ -143,8 +184,8 @@ test('weekly plans normalize model targets and pass the real app validator for 3
 });
 
 test('weekly Worker identifies an unreadable target without logging or exposing the model response',async()=>{
- const catalogue=['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12}));
- const plan={days:Array.from({length:3},()=>({name:'Full body',exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:'twenty',rest:180}))}))};
+ const catalogue=['press','row','squat','curl','pulldown'].map(id=>({id,weight:20,step:2.5,minReps:6,maxReps:12,primary:id==='press'?['Chest']:id==='row'||id==='pulldown'?['Back']:id==='squat'?['Quadriceps']:['Biceps']}));
+ const plan={days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:'twenty',rest:180}))}))};
  const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue}})}),{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
  const result=await response.json();assert.equal(response.status,503);assert.match(result.error,/Workout 1, exercise 1.*unreadable weight/);assert.doesNotMatch(result.error,/twenty/);assert.ok(result.requestId);
 });
@@ -156,7 +197,7 @@ function weeklyReferenceFixture(count=6){
   return {...item,weight:20,step:2.5,minReps:exercise.sets[0].min,maxReps:exercise.sets[0].max,history:[]};
  });
  const data={count,week:28,experience:'intermediate',catalogue};
- const plan={days:Array.from({length:count},(_,index)=>({name:'Upper '+(index+1),exercises:catalogue.map((c,i)=>({exerciseRef:'E'+(i+1),sets:3,reps:c.minReps,weight:20,rest:120,rir:2}))}))};
+ const plan={days:Array.from({length:count},(_,index)=>({name:splitTitles(count)[index],exercises:catalogue.map((c,i)=>({exerciseRef:'E'+(i+1),sets:3,reps:c.minReps,weight:20,rest:120,rir:2}))}))};
  return {context,data,plan};
 }
 
@@ -194,5 +235,5 @@ test('ambiguous catalogue names are never guessed, and insufficient available ex
  for(const day of plan.days)day.exercises[5]={...day.exercises[5],exerciseRef:undefined,name:'Ambiguous press'};
  let result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,200);assert.equal(result.result.diagnostics.omittedExercises,4);
  plan.days[0].exercises=plan.days[0].exercises.slice(0,3).concat({exerciseRef:'E999',sets:3,reps:8,weight:20,rest:120});
- result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,503);assert.match(result.result.error,/fewer than five available exercises/);assert.equal(result.result.plan,undefined);assert.equal(result.calls,1);
+ result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,503);assert.match(result.result.error,/fewer than four available exercises/);assert.equal(result.result.plan,undefined);assert.equal(result.calls,1);
 });
