@@ -9,7 +9,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .anatomy-plate{display:grid;grid-template-columns:minmax(0,1fr);gap:12px;width:100%;height:auto;margin:14px 0}.anatomy-pose{display:block;width:100%;height:auto;border-radius:16px;background:#f7f3ed}.guide-modal .modal{max-height:85dvh;overflow:auto}
 .day-card:disabled{opacity:.58;cursor:not-allowed}
 .topbar{justify-content:flex-end}
-.home-heading{display:flex;align-items:center;gap:13px;margin:8px 0 18px}.home-app-icon{display:block;width:58px;height:58px;flex:none;border-radius:16px;box-shadow:0 4px 16px #0004}.home-heading h1{font-size:27px;line-height:1.1;margin:0;letter-spacing:-.8px}.home-heading .sub{font-size:13px;line-height:1.3;margin:5px 0 0}.brand-space{flex:1}.exercise-top{align-items:center}.exercise-title{min-width:0}.exercise-thumb{display:block;flex:none;object-fit:cover;border:1px solid var(--line);border-radius:10px;background:#292528}.exercise-thumb[hidden]{display:none}.workout-thumb{width:52px;height:64px}.catalogue-thumb{width:44px;height:55px}.catalogue-entry{gap:9px}.catalogue-entry>div{flex:1;min-width:0}.tabbar{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bottom));}
+.home-heading{display:flex;align-items:center;gap:13px;margin:8px 0 18px}.home-app-icon{display:block;width:58px;height:58px;flex:none;border-radius:16px;box-shadow:0 4px 16px #0004}.home-heading h1{font-size:27px;line-height:1.1;margin:0;letter-spacing:-.8px}.home-heading .sub{font-size:13px;line-height:1.3;margin:5px 0 0}.home-heading .home-scan-food{margin-left:auto;flex:none}.brand-space{flex:1}.exercise-top{align-items:center}.exercise-title{min-width:0}.exercise-thumb{display:block;flex:none;object-fit:cover;border:1px solid var(--line);border-radius:10px;background:#292528}.exercise-thumb[hidden]{display:none}.workout-thumb{width:52px;height:64px}.catalogue-thumb{width:44px;height:55px}.catalogue-entry{gap:9px}.catalogue-entry>div{flex:1;min-width:0}.tabbar{bottom:0;padding-bottom:calc(5px + env(safe-area-inset-bottom));}
 .image-credit{margin-top:12px;font-size:10px;opacity:.62;text-align:right}.image-credit a{color:inherit;text-decoration:none}.image-credit a:focus-visible{outline:2px solid var(--red);outline-offset:3px;border-radius:3px}
 @media(max-width:380px){.home-heading{gap:10px}.home-app-icon{width:52px;height:52px;border-radius:14px}.home-heading h1{font-size:25px}.workout-thumb{width:48px;height:60px}.catalogue-thumb{width:40px;height:50px}}
  .priority-muscles-note{line-height:1.5}.drop-toggle{display:block;margin:4px 0 0 auto;color:#ff8398}.drop-set-row{border-top:1px dashed #57404a;margin-top:4px;padding-top:9px}.drop-set-row .field{width:100%}.exercise-thumb{object-fit:contain}.catalogue-entry .exercise-thumb{background:#272327}
@@ -146,6 +146,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .progress-graph{min-width:0}
 .progress-graph svg{display:block;width:100%;height:auto;overflow:visible}
 .progress-chart-grid{stroke:#3e3d44;stroke-width:1}
+.progress-chart-axis-line{stroke:#77737f;stroke-width:1.2}.progress-chart-tick{stroke:#77737f;stroke-width:1}
 .progress-chart-axis{fill:#aaa7b2;font-size:10px;font-family:inherit}
 .progress-chart-line{fill:none;stroke:#ff617b;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
 .progress-chart-area{fill:url(#muscle-trend-fill);opacity:.28}
@@ -488,7 +489,7 @@ details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
 .confirm-modal h2{font-size:25px;line-height:1.2}.confirm-modal p{font-size:16px;line-height:1.55;margin:12px 0 4px;color:#d3c8d0}.confirm-modal .modal-buttons{margin-top:23px}.confirm-modal .modal-buttons .btn{min-height:50px;font-size:14px}
 
 /* Keep workout rhythm charts within their card at every viewport width. */
-.progress-graph{width:100%;max-width:100%;overflow:hidden}.progress-graph svg{width:100%;max-width:100%;overflow:hidden;aspect-ratio:340/174}
+.progress-graph{width:100%;max-width:100%;overflow:hidden}.progress-graph svg{display:block;width:100%;max-width:100%;height:auto;overflow:visible;aspect-ratio:auto}
 .consistency-single{max-width:100%;overflow:hidden}.consistency-track-row{grid-template-columns:minmax(56px,76px) minmax(0,1fr) 24px}
 
 /* More visible rest completion plus a simple local app lock. */
@@ -739,3 +740,43 @@ body.meal-editor-open #toast.toast{z-index:80}
 /* Weekly volume stays expandable, but reads as aligned plain text rather than a card. */
 .weekly-volume-panel{margin:12px 0 18px;padding:0;border:0;background:none;box-shadow:none}.weekly-volume-panel>summary{display:flex;align-items:center;min-height:24px;margin:0;padding:0 2px;font:inherit;font-size:14px;font-weight:400;line-height:1.4;color:var(--muted);text-align:left;cursor:pointer;list-style:none}.weekly-volume-panel>summary::-webkit-details-marker{display:none}.weekly-volume-panel>summary::marker{content:""}.weekly-volume-panel[open]>.volume-grid{margin-top:10px}.weekly-volume-panel>.small-print{margin:8px 2px 0}.workout-review-percent{font-size:16px}
 .workout-review-motivation{margin:5px 0 0;color:#ddd7df;font-size:13px;line-height:1.45}
+.nutrition-page-header .nutrition-header-scan{display:grid;place-items:center;width:40px;min-width:40px;height:40px;min-height:40px;padding:0;border:1px solid #ff90ae44;border-radius:50%;background:linear-gradient(145deg,#342733,#2c252f);color:#ffafc7}
+.nutrition-page-header .nutrition-header-scan svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.section-head .nutrition-add-action{flex:none;min-height:36px;padding:8px 13px;border:1px solid #ff90ae44;border-radius:12px;background:linear-gradient(110deg,#ef2f58,#a94dbb);color:#fff;font-size:12px}
+.meal-food-meta{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:28px}
+.meal-food-meta .meal-food-calories{font-size:12px;color:#e9c5da}
+.meal-food-meta .meal-food-details{display:block;flex:none;margin:0;padding:0;border:0;background:none}
+.meal-food-meta .meal-food-details>summary{display:grid;place-items:center;width:28px;height:28px;min-height:28px;padding:0;border:1px solid #584653;border-radius:9px;background:#28232d;color:#dda9c1;cursor:pointer;list-style:none}
+.meal-food-meta .meal-food-details>summary::-webkit-details-marker{display:none}.meal-food-meta .meal-food-details>summary::marker{content:''}
+.meal-food-meta .meal-food-details>summary svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.meal-food-meta .meal-food-edit{display:grid;gap:9px;padding-top:8px}
+.meal-food-card>.meal-food-macros{display:flex;align-items:center;flex-wrap:wrap;gap:3px 4px;margin-top:auto;padding-top:8px;border-top:1px solid #ffffff12;font-size:10px;line-height:1.5;color:#d5bdd1}
+.meal-food-card.is-unselected>.meal-food-macros{color:#a99baa}
+
+/* Compact workout and clearer progress presentation. */
+#workout-screen .exercise{padding:12px 14px;border-color:#514550}
+#workout-screen .exercise-top{gap:9px;padding-bottom:4px}
+#workout-screen .set-head{padding:8px 2px 3px}
+#workout-screen .set-row{min-height:46px;margin:2px -3px;padding:2px 3px;align-items:center}
+#workout-screen .exercise:has(.set-row .check:not(.done)):not(.exercise:has(.set-row .check:not(.done)) ~ .exercise) .set-row:has(.check:not(.done)):not(.set-row:has(.check:not(.done)) ~ .set-row){background:linear-gradient(100deg,#f0446b16,#a358c010)}
+#workout-screen .stepper{gap:2px}
+#workout-screen .step-button{min-width:28px;min-height:44px;color:#efc4d6}
+#workout-screen .set-row .check{width:38px;height:38px;min-width:38px;min-height:38px}
+#workout-screen .effort-row{margin-top:7px;padding-bottom:6px}
+#workout-screen .effort-choice{min-height:38px}
+#workout-screen .drop-set-row{min-height:44px}
+#workout-screen .drop-set-checkbox{width:21px;height:21px}
+#workout-screen .exercise-actions{margin-top:6px;padding-top:7px}
+#workout-screen{padding-bottom:calc(132px + env(safe-area-inset-bottom))}
+#rest-dock{gap:10px;border-top-color:#8a536b;background:linear-gradient(110deg,#28222bed,#241d2aef)}
+#rest-dock .rest-dock-status span{color:#f8e7ef;font-size:12px}
+#rest-dock .timer{font-size:19px;font-variant-numeric:tabular-nums}
+#rest-dock.rest-complete .timer{color:#fff;font-size:22px}
+#progress-screen .progress-card{margin-bottom:14px}
+#progress-screen .progress-card h2{line-height:1.25}
+#muscle-trend-chart .progress-chart-axis{fill:#c8c1cf;font-size:10px}
+#muscle-trend-chart .progress-chart-axis-line,#muscle-trend-chart .progress-chart-tick{stroke:#918997}
+#progress-screen .progress-volume-legend{gap:8px 14px;flex-wrap:wrap;line-height:1.4}
+#progress-screen .muscle-map-group h3{letter-spacing:.04em}
+.endweek-modal .back,#workout-screen .info-button,#workout-screen .exercise-collapse{flex:none}
+@media(max-width:380px){#workout-screen .exercise{padding:11px}#workout-screen .step-button{min-width:24px}#rest-dock{gap:6px}#rest-dock .timer{font-size:16px}}

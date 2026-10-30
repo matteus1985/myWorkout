@@ -126,7 +126,7 @@ test('Nutrition initializes against the real shell IDs and opens the new meal co
   const window={LIFT_FOODS:[]},state={nutrition:{profile:{},foodLogs:{},weightChecks:[],favorites:[],customFoods:[]}};
   const context={window,document,localStorage:{getItem:()=>null},Date,Math,Event,AbortController,setTimeout,clearTimeout};vm.createContext(context);vm.runInContext(source,context);
   window.LiftNutrition.init({getState:()=>state,saveState(){},showToast(){},escapeHtml:String});
-  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');assert.equal(typeof nodes.get('nutrition-diary-add-meal').onclick,'function');assert.match(html,/id="nutrition-camera-photo"[^>]*capture="environment"/);nodes.get('nutrition-diary-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.equal(nodes.get('nutrition-camera-photo').clicks,1);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
+  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');assert.equal(typeof nodes.get('nutrition-diary-add-meal').onclick,'function');assert.match(html,/id="nutrition-camera-photo"[^>]*capture="environment"/);nodes.get('nutrition-add-meal').onclick();assert.equal(nodes.get('nutrition-camera-photo').clicks,1);assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);nodes.get('meal-cancel').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),true);nodes.get('nutrition-diary-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.equal(nodes.get('nutrition-camera-photo').clicks,1);assert.equal(typeof nodes.get('home-scan-food').onclick,'function');nodes.get('home-scan-food').onclick();assert.equal(nodes.get('nutrition-camera-photo').clicks,2);
   nodes.get('meal-cancel').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),true);
   nodes.get('nutrition-date').value='2026-12-31';nodes.get('nutrition-next-day').onclick();assert.equal(nodes.get('nutrition-date').value,'2027-01-01');assert.match(nodes.get('nutrition-meals').innerHTML,/No meals logged/);
 });
@@ -230,7 +230,7 @@ test('card macro row follows grams and retains unknown markers instead of presen
   const f=fixture(),c=f.context;c.renderAISuggestions([rice]);const item=c.draft.items[0];
   assert.match(c.cardMacros(item),/P 4.5 g/);c.setItemGrams(item,300);assert.match(c.cardMacros(item),/P 9 g/);assert.match(c.cardMacros(item),/C 84 g/);
   const missing=c.aiFoodItem({name:'Curry',grams:150,nutritionResolved:false,requiresConfirmation:true});assert.match(c.cardMacros(missing),/P —/);assert.doesNotMatch(c.cardMacros(missing),/P 0/);
-  const markup=c.draftCardMarkup(item,0);assert.ok(markup.indexOf('meal-food-macros')<markup.indexOf('</details>'));assert.match(markup,/<summary aria-label=.*<svg/);assert.doesNotMatch(markup,/>Edit details</);
+  const markup=c.draftCardMarkup(item,0);assert.ok(markup.indexOf('meal-food-macros')>markup.indexOf('</details>'));assert.match(markup,/<summary aria-label=.*<svg/);assert.doesNotMatch(markup,/>Edit details</);
 });
 
 test('diary meal macro summary sits at the lower left beside its delete action',()=>{

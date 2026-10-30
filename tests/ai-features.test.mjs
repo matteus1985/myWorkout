@@ -153,6 +153,7 @@ test('lower-focus plan settings swap a dedicated isolation exercise without chan
   const window={},context={window,console,Math,Date};vm.createContext(context);
   vm.runInContext(readFileSync(new URL('../catalogue.js',import.meta.url),'utf8'),context);context.LIFT_CATALOGUE=window.LIFT_CATALOGUE;
   vm.runInContext(readFileSync(new URL('../exercise-art.js',import.meta.url),'utf8'),context);context.LIFT_REPDB_ART=window.LIFT_REPDB_ART;
+  vm.runInContext(readFileSync(new URL('../exercise-gif-map.js',import.meta.url),'utf8'),context);context.LIFT_REPDB_ART=window.LIFT_REPDB_ART;
   vm.runInContext(readFileSync(new URL('../planner.js',import.meta.url),'utf8'),context);
   const state={daysPerWeek:5,week:1,experience:'beginner',equipment:['barbell','dumbbell','machine','smith','cable','bodyweight','band'],weightSteps:{barbell:2.5,dumbbell:2,machine:2.5,smith:2.5,cable:1,bodyweight:1,band:.5},priorityMuscles:[],lowerFocusMuscles:['Biceps'],nutrition:{profile:{}},logs:{}};
   const plan=window.LIFT_ENGINE.generate(state,[]),replacements=plan.days.flatMap(day=>day.exercises.filter(exercise=>exercise.replacedForLowerFocus==='Biceps')),baseline=window.LIFT_ENGINE.generate({...state,lowerFocusMuscles:[]},[]),count=current=>current.days.reduce((sum,day)=>sum+day.exercises.length,0);
@@ -164,7 +165,7 @@ test('UI includes shared PIN gate and AI loading states while chart stays inside
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),styles=readFileSync(new URL('../material.css',import.meta.url),'utf8'),shell=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
   assert.match(html,/id="app-lock"[^>]*hidden/);assert.match(html,/app-lock-settings" hidden/);assert.match(app,/APP_LOCK_ENABLED=false/);assert.match(app,/APP_PIN='1133'/);assert.match(html,/id="app-lock-faceid"/);assert.match(app,/30\*60\*1000/);
   assert.match(html,/id="nutrition-diary-add-meal"/);assert.match(styles,/\.ai-status\[aria-busy="true"\]::before/);assert.match(styles,/\.progress-graph\{width:100%;max-width:100%;overflow:hidden\}/);assert.match(shell,/lift-log-shell-v\d+/);for(const [,asset] of html.matchAll(/(?:src|href)="([^"?]+\.(?:js|css)\?v=[^"]+)"/g))assert.ok(shell.includes(asset),asset+" must be precached with the same version");
-  assert.match(html,/id="meal-photo-open"/);assert.match(html,/id="meal-photo"[^>]*accept="image\/\*"/);assert.doesNotMatch(html,/meal-photo-menu|meal-label-open|meal-photo-camera|capture=/);
+  assert.match(html,/id="nutrition-camera-photo"[^>]*capture="environment"/);assert.doesNotMatch(html,/meal-photo-menu|meal-label-open|meal-photo-camera/);
 });
 
 test('nutrition ideas render a text list and reuse unchanged data without any meal actions',async()=>{

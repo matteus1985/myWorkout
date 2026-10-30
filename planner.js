@@ -88,12 +88,12 @@ window.LIFT_ENGINE=(()=>{
     const currentIds=new Set(days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId)).filter(Boolean));
     for(const muscle of focus){
       let replaced=false;
+      const weeklySets=new Map();for(const entry of days.flatMap(d=>d.exercises)){const item=C.find(entry.catalogId);for(const group of item?.primary||[])weeklySets.set(group,(weeklySets.get(group)||0)+entry.sets.length);}
       for(const day of [...days].sort((a,b)=>minutes(b.exercises)-minutes(a.exercises))){
         const index=day.exercises.findIndex(exercise=>{const item=C.find(exercise.catalogId);return item?.primary.includes(muscle)&&isolation.has(exercise.pattern);});
         if(index<0)continue;
         const old=day.exercises[index],dayMuscles=new Set(day.exercises.filter((_,i)=>i!==index).flatMap(exercise=>C.find(exercise.catalogId)?.primary||[]).filter(group=>!focus.has(group)));
         const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
-        const weeklySets=new Map();for(const entry of days.flatMap(d=>d.exercises)){const item=C.find(entry.catalogId);for(const group of item?.primary||[])weeklySets.set(group,(weeklySets.get(group)||0)+entry.sets.length);}
         candidates.sort((a,b)=>{const score=item=>item.primary.reduce((sum,group)=>sum+(weeklySets.get(group)||0),0);return score(a)-score(b)||a.name.localeCompare(b.name);});
         const alternative=candidates[0];if(!alternative)continue;
         day.exercises[index]=descriptor(alternative,old.id,state,{sets:old.sets.length,baseline:true});

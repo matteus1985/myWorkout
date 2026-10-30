@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import worker from '../worker/src/index.mjs';
 const source=fs.readFileSync('app.js','utf8');
-const c={window:{}};vm.createContext(c);vm.runInContext(fs.readFileSync('catalogue.js','utf8'),c);
+const c={window:{}};vm.createContext(c);vm.runInContext(fs.readFileSync('catalogue.js','utf8'),c);c.LIFT_CATALOGUE=c.window.LIFT_CATALOGUE;vm.runInContext(fs.readFileSync('planner.js','utf8'),c);c.LIFT_ENGINE=c.window.LIFT_ENGINE;
 const catalogue=c.window.LIFT_CATALOGUE;
 test('all previous IDs survive and every imported record has local image and GIF',()=>{
  const coverage=JSON.parse(fs.readFileSync('data/exercises/coverage.json'));
@@ -16,7 +16,7 @@ test('all previous IDs survive and every imported record has local image and GIF
 });
 test('every exercise muscle resolves to a muscle-map region',()=>{
  const start=source.indexOf('  function progressMuscleGroup('),end=source.indexOf('\n  function ',start+4);
- const scope={progressMuscleGroups:['Chest','Shoulders','Biceps','Triceps','Core','Back','Traps','Quadriceps','Adductors','Glutes','Hamstrings','Calves']};vm.createContext(scope);vm.runInContext(source.slice(start,end),scope);
+ const scope={LIFT_ENGINE:c.LIFT_ENGINE,progressMuscleGroups:['Chest','Shoulders','Biceps','Triceps','Core','Back','Traps','Quadriceps','Adductors','Glutes','Hamstrings','Calves']};vm.createContext(scope);vm.runInContext(source.slice(start,end),scope);
  for(const e of catalogue.exercises)for(const m of [...e.primary,...e.secondary])assert.ok(scope.progressMuscleGroup(m),e.name+': '+m);
 });
 function migrationFixture(fail=false){

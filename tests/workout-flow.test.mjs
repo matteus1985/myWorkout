@@ -44,8 +44,8 @@ test('exercise completion does not require optional effort or an optional drop s
 test('elapsed time starts with the first completed set, includes background time and stops at Finish',()=>{
   let now=Date.parse('2026-10-26T10:00:00Z');const c=run(['sessionSeconds'],{Date:{parse:Date.parse,now:()=>now}}),log={};
   assert.equal(c.sessionSeconds(log),0);
-  log.firstSetCompletedAt='2026-10-26T10:00:00Z';now+=45*60000;assert.equal(c.sessionSeconds(log),2700);
-  log.completedAt='2026-10-26T10:45:00Z';now+=24*60*60000;assert.equal(c.sessionSeconds(log),2700);
+  log.firstSetCompletedAt='2026-10-26T10:00:00Z';assert.equal(c.sessionSeconds(log),120);now+=45*60000;assert.equal(c.sessionSeconds(log),2820);
+  log.completedAt='2026-10-26T10:45:00Z';now+=24*60*60000;assert.equal(c.sessionSeconds(log),2820);
 });
 
 function planFixture(){
@@ -78,9 +78,9 @@ test('failed storage leaves both current week and archived weeks unchanged',()=>
 
 test('new week removes only archived-week AI recap data and Home recap selection is current-week-only',()=>{
   const logs={'27-d1':{completed:true,dayName:'Old',aiComment:'Old recap',aiCommentStatus:'ready',aiReviewProgress:{done:2,planned:3,pct:67},exercises:{press:{sets:[{done:true}]}}},'26-d1':{completed:true,aiComment:'Older history',aiCommentStatus:'ready'},'28-d1':{completed:true,aiComment:'Current',aiCommentStatus:'ready',completedAt:'2026-10-28'}};
-  const c=run(['clearWeekWorkoutReviews','latestWorkoutReview'],{});c.clearWeekWorkoutReviews(logs,27);
+  const c=run(['clearWeekWorkoutReviews','latestWorkoutReview','calendarPeriods','workoutLogDate','hasDone','isoWeekInfo','progressDateStart'],{});c.clearWeekWorkoutReviews(logs,27);
   assert.equal(logs['27-d1'].aiComment,undefined);assert.equal(logs['27-d1'].aiCommentStatus,undefined);assert.equal(logs['27-d1'].aiReviewProgress,undefined);assert.deepEqual(logs['27-d1'].exercises.press.sets,[{done:true}]);
-  assert.equal(logs['26-d1'].aiComment,'Older history');assert.equal(c.latestWorkoutReview(logs,28).aiComment,'Current');assert.equal(c.latestWorkoutReview(logs,27),null);
+  assert.equal(logs['26-d1'].aiComment,'Older history');assert.equal(c.latestWorkoutReview(logs,new Date('2026-10-28T12:00:00')).aiComment,'Current');assert.equal(c.latestWorkoutReview(logs,new Date('2026-10-20T12:00:00')),null);
 });
 
 test('weekly Worker authenticates, validates targets and preserves retryable errors',async()=>{
@@ -145,7 +145,7 @@ test('weekly Worker keeps the programme when an optional superset is not antagon
 test('leaving the workout view does not stop the elapsed session measurement',()=>{
   let stopped=0,screen='workout';const log={firstSetCompletedAt:'2026-10-26T10:00:00Z'};
   const c=run(['closeWorkout','sessionSeconds'],{activeDay:{id:'d1'},stopRestTimer:()=>stopped++,setScreen:value=>{screen=value;},Date:{parse:Date.parse,now:()=>Date.parse('2026-10-26T10:10:00Z')}});
-  c.closeWorkout();assert.equal(c.activeDay,null);assert.equal(screen,'home-screen');assert.equal(stopped,1);assert.equal(c.sessionSeconds(log),600);
+  c.closeWorkout();assert.equal(c.activeDay,null);assert.equal(screen,'home-screen');assert.equal(stopped,1);assert.equal(c.sessionSeconds(log),720);
 });
 
 test('closing the week-generation dialog discards a late AI response without committing',async()=>{
