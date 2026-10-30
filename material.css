@@ -98,10 +98,13 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .image-preview-panel .image-close{position:absolute;z-index:1;top:8px;right:8px;width:38px;height:38px;background:#332b31}
 .image-modal .image-preview-panel img{cursor:default}
 .alternative-option>.alternative-image-button{width:48px;height:60px;padding:0;background:transparent}
-.alternative-image-button img{display:block;width:48px;height:60px;object-fit:contain;border-radius:8px;background:#242326}
+.alternative-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.alternative-filters .select{min-width:0;width:100%;height:40px;padding:0 10px;font-size:13px}
+.alternative-image-button img{display:block;width:48px;height:60px;object-fit:contain;border-radius:8px;background:#242326}.alternative-image-button img[hidden]{display:none}
 .catalogue-image-button{width:44px;height:55px;flex:none}
 .catalogue-image-button img{width:44px;height:55px}
 .alternative-group-title{margin:12px 2px 5px;font-size:12px;font-weight:800;color:#ff91a3}
+.alternative-results-count{position:sticky;top:-1px;z-index:1;margin:0;padding:5px 2px;background:var(--card);color:var(--muted);font-size:11px}
+.alternative-more{position:sticky;bottom:0;width:100%;background:var(--card);}
 .alternative-group-note{margin:0 2px 6px;font-size:10px;color:var(--muted)}
 .next-week-preview{max-height:28dvh;overflow:auto;margin-top:12px;padding:10px;border:1px solid var(--line);border-radius:12px;background:#29262a;font-size:12px;line-height:1.6}
 .next-week-preview ul{margin:6px 0 0;padding-left:19px}
@@ -265,7 +268,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-svg{width:min(100%,165px)}
 .muscle-map-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px auto 2px;max-width:440px}
 .muscle-map-item{display:flex;justify-content:space-between;align-items:center;gap:8px;min-width:0;padding:8px 10px;border:1px solid #39353c;border-radius:10px;background:linear-gradient(110deg,#29272c,#242326);color:#e8e4eb;text-align:left;font-size:11px}
-.muscle-map-item.is-selected{border-color:#ad748d;background:linear-gradient(110deg,#382832,#29252d);color:#fff}
+.muscle-map-item.is-selected{border-color:#a78bfa;background:linear-gradient(110deg,#382d56,#2c263a);color:#fff}
 .muscle-map-item>span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .muscle-map-item>strong{min-width:25px;text-align:right;font-size:9px;color:#c9beca;font-variant-numeric:tabular-nums}
 .muscle-map-item:focus-visible{outline:2px solid #ff879a;outline-offset:2px}
@@ -286,7 +289,7 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .muscle-map-overlay{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
 .coach-card{margin:12px 0;padding:14px;min-width:0}.coach-card summary,.voice-meal-card summary{cursor:pointer;font-size:14px;font-weight:750;color:var(--ink)}.coach-card summary::marker,.voice-meal-card summary::marker{color:#ff879a}.coach-card .row{flex-wrap:wrap}.coach-card .small-print:empty,.voice-meal-card .small-print:empty{display:none}.coach-results{display:grid;gap:8px;margin-top:10px}.coach-choice{display:flex;align-items:flex-start;gap:10px;padding:11px;border:1px solid var(--line);border-radius:12px;background:#ffffff05;font-size:12px}.coach-choice input{margin-top:3px;accent-color:#ee2d4d;flex:none}.coach-choice>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}.coach-choice small{color:var(--muted);line-height:1.5}.coach-actions{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.coach-description{font-family:inherit;display:block;height:auto;min-height:86px;resize:vertical;padding:10px;margin:6px 0 10px;line-height:1.5;font-weight:400}.voice-meal-card{margin:12px 0}.voice-meal-card>label{display:block}.voice-meal-card .small-print{line-height:1.5}.coach-actions [hidden]{display:none!important}#voice-stop{background:#b91934;color:#fff}
 .muscle-volume-overlay{fill:#f15479;stroke:transparent;stroke-width:2;stroke-linejoin:round;mix-blend-mode:color;transition:opacity .25s ease,stroke .2s ease}
-.muscle-volume-overlay.is-selected{fill:#ff7899;stroke:#ffe1e9;stroke-width:2.5;mix-blend-mode:screen}
+.muscle-volume-overlay.is-selected{fill:#a78bfa;stroke:#e9ddff;stroke-width:3;mix-blend-mode:screen}
 .muscle-map-legend{display:flex;align-items:center;gap:7px;margin:0 auto 6px;max-width:440px;color:#aaa7b2;font-size:9px}
 .muscle-map-legend i{width:30px;height:6px;border-radius:8px;background:linear-gradient(90deg,#3a343b,#ff5577)}
 .muscle-detail{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:10px 2px 0;color:#aaa7b2;font-size:10px}
@@ -451,6 +454,12 @@ details[open]>summary:after{transform:translateY(-50%) rotate(90deg)}
 .ai-panel .ai-action-secondary{display:inline-flex;flex:none;width:auto;min-width:0;min-height:40px;padding:9px 10px;border:1px solid #574751;background:#ffffff04;border-radius:11px;color:#f2b7ca;gap:6px}
 .ai-panel .workout-ai-toggle,.ai-panel .progress-ai-toggle{flex:1;min-width:0;gap:10px;min-height:42px;padding:0}
 .ai-panel .workout-ai-toggle .workout-ai-chevron,.ai-panel .progress-ai-toggle .workout-ai-chevron{margin-left:2px}
+.muscle-map-sections{display:grid;gap:10px;margin:8px auto 2px;max-width:440px}
+.muscle-map-group h3{margin:0 0 5px;color:#c6bbc7;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.muscle-map-group .muscle-map-list{margin:0;max-width:none}
+.muscle-map-group:nth-child(2) .muscle-map-item{grid-column:1/-1}
+.progress-ai-card #progress-ai-result>p{margin:2px 0 10px;font-size:13px;line-height:1.5;font-weight:500;color:#f0eaf1}
+.progress-ai-card #progress-ai-result .ai-review-point{padding:8px 10px;font-size:11px;line-height:1.4}
 .ai-panel .small-print{font-size:12px;line-height:1.5}.ai-panel .small-print:empty{display:none}
 .ai-panel .ai-status{margin:12px 0 0;color:#c8bac8}.ai-panel .coach-results:empty{display:none}
 .ai-panel .coach-choice,.ai-food-suggestion{border-color:#574451;background:#332b35;border-radius:12px}
@@ -707,10 +716,12 @@ body.meal-editor-open #toast.toast{z-index:80}
 .endweek-modal .modal{width:min(430px,calc(100vw - 28px));padding:20px;border-color:#57475c;background:linear-gradient(145deg,#2b2731 0%,#252329 72%,#2d242c 100%);box-shadow:0 24px 70px #0008}
 .endweek-modal .modal>.row{align-items:center;margin-bottom:5px}
 .endweek-modal #endweek-title{font-size:21px;letter-spacing:-.4px}
-.endweek-modal #endweek-summary{display:inline-flex;margin:9px 0 14px;padding:7px 10px;border:1px solid #ffffff12;border-radius:9px;background:#ffffff08;color:#d2c7d5;font-size:11px;font-weight:650}
-.endweek-modal .settings-label{display:block;margin:12px 0 6px;font-size:12px}
+.endweek-section{padding:14px 0 2px;border-top:1px solid #ffffff18}
+.endweek-section h3{margin:0 0 9px;color:#ff8ca5;font-size:12px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+.endweek-modal #endweek-summary{display:block;margin:0 0 12px;padding:8px 10px;border:1px solid #ffffff12;border-radius:9px;background:#ffffff08;color:#e1d8e4;font-size:12px;font-weight:650}
+.endweek-modal .settings-label{display:block;margin:10px 0 6px;font-size:12px}
 .endweek-modal #endweek-weight,.endweek-modal #next-week-days{width:100%;min-height:44px}
-.endweek-modal .small-print{margin:6px 0 12px;font-size:11px}
+.endweek-modal .small-print{margin:6px 0 2px;font-size:11px}
 .endweek-modal .next-week-preview{min-height:46px;max-height:24dvh;margin-top:12px;padding:11px 12px;border-color:#554957;border-radius:12px;background:linear-gradient(120deg,#302b35,#29262e);font-size:12px;line-height:1.5}
 .endweek-modal .modal-buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
 .endweek-modal .modal-buttons .btn{min-width:0;min-height:46px;padding:10px;font-size:12px;line-height:1.25}
@@ -718,7 +729,7 @@ body.meal-editor-open #toast.toast{z-index:80}
 .endweek-modal #endweek-cancel{grid-column:1;grid-row:1}
 .endweek-modal.has-week-error .modal-buttons{grid-template-rows:auto auto}
 .endweek-modal.has-week-error #endweek-confirm{grid-column:1/-1;grid-row:1;min-height:48px}
-.endweek-modal.has-week-error #endweek-cancel{grid-column:1;grid-row:2}
+.endweek-modal.has-week-error #endweek-cancel{grid-column:1/-1;grid-row:2}
 .endweek-modal.has-week-error #endweek-local{grid-column:2;grid-row:2}
 .endweek-modal.has-week-error #next-week-preview{border-color:#76536a;background:linear-gradient(120deg,#342a34,#2d2730);color:#f1d9e6}
 @media(max-width:380px){.endweek-modal .modal{padding:17px}.endweek-modal #endweek-title{font-size:19px}.endweek-modal .modal-buttons .btn{padding:9px 7px;font-size:11px}}

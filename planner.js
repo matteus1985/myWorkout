@@ -1,6 +1,8 @@
 /* Pure weekly planning/progression. A saved week is a snapshot, never a moving target. */
 window.LIFT_ENGINE=(()=>{
   const C=LIFT_CATALOGUE,clone=x=>JSON.parse(JSON.stringify(x)),hasArt=item=>!!window.LIFT_REPDB_ART?.[item?.id];
+  const majorMuscleGroups=['Chest','Shoulders','Biceps','Triceps','Forearms','Core','Back','Traps','Quadriceps','Adductors','Glutes','Hamstrings','Calves'];
+  function majorMuscleGroup(name){if(['Front delts','Side delts','Rear delts','Front deltoids','Rear deltoids'].includes(name))return 'Shoulders';if(['Abs','Obliques','Hip flexors'].includes(name))return 'Core';if(name==='Upper back')return 'Back';if(name==='Upper traps')return 'Traps';if(name==='Brachialis')return 'Biceps';return majorMuscleGroups.includes(name)?name:'';}
   const templates={
     3:[['Full Body A','inclinePress','row','squat','hinge','hipThrust','overheadPress','lateralRaise','rearDelt','triceps','calfRaise'],['Full Body B','chestPress','verticalPull','lunge','hipThrust','legCurl','overheadPress','curl','triceps','calfRaise','crunch'],['Full Body C','chestPress','row','kneeExtension','hinge','rearDelt','legCurl','seatedCalf','crunch','curl','lateralRaise']],
     4:[['Upper A','inclinePress','chestPress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps'],['Lower A','squat','lunge','hinge','hipThrust','legCurl','calfRaise','crunch'],['Upper B','chestPress','row','verticalPull','overheadPress','rearDelt','lateralRaise','curl','triceps','seatedCalf'],['Lower B','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
@@ -139,7 +141,7 @@ window.LIFT_ENGINE=(()=>{
     removeAdjacentDuplicates(days);
     return {version:4,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)]};
   }
-  function volume(days){const result={};for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name);for(const group of item?.primary||[e.muscle]){result[group]||={sets:0,days:new Set()};result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(Object.entries(result).map(([k,v])=>[k,{sets:v.sets,frequency:v.days.size}]));}
+  function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus};
+  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
 })();

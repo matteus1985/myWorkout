@@ -87,12 +87,12 @@ test('photo retry preserves existing foods and stale photo responses are ignored
   assert.equal(c.draft.items.length,2);assert.equal(c.selectedDraftItems().length,1);assert.equal(f.element('#meal-photo-retry').hidden,true);
 });
 
-test('photo analysis carries identity uncertainty, rejects unusable entries and calls the model once',async()=>{
+test('photo analysis carries identity uncertainty, rejects unusable entries and retries only empty food lists',async()=>{
   const cases=[[rice],[rice,vegetables],[{...rice,name:'Mixed vegetable stew'}],[],[{...rice,name:'Invalid',grams:-2},vegetables]];
   for(const foods of cases){
     const calls=[],env={APP_TOKEN:token,AI:{async run(model,input){calls.push({model,input});return {response:JSON.stringify({foods})};}}};
     const request=new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID'})});
-    const response=await worker.fetch(request,env),result=await response.json();assert.equal(response.status,200);assert.equal(calls.length,1);
+    const response=await worker.fetch(request,env),result=await response.json();assert.equal(response.status,200);assert.equal(calls.length,foods.length===0?2:1);
     assert.equal(result.foods.length,foods.filter(food=>food.name).length);
     for(const item of result.foods)assert.equal(item.requiresConfirmation,item.name==='Cooked vegetables'||item.name==='Invalid');
   }
@@ -119,14 +119,14 @@ test('day navigation advances by a calendar day across month, year and daylight-
 
 test('Nutrition initializes against the real shell IDs and opens the new meal composer',()=>{
   const html=readFileSync(new URL('../index.html',import.meta.url),'utf8'),nodes=new Map(),events=new Map();
-  function makeNode(){const classes=new Set(),listeners=new Map();return {value:'',innerHTML:'',textContent:'',hidden:false,style:{setProperty(){}},classList:{contains:value=>classes.has(value),add:value=>classes.add(value),remove:value=>classes.delete(value)},focus(){},removeAttribute(){},setAttribute(){},addEventListener(type,fn){listeners.set(type,fn);},dispatchEvent(event){listeners.get(event.type)?.(event);},contains(){return false;}};}
+  function makeNode(){const classes=new Set(),listeners=new Map();return {value:'',innerHTML:'',textContent:'',hidden:false,clicks:0,style:{setProperty(){}},classList:{contains:value=>classes.has(value),add:value=>classes.add(value),remove:value=>classes.delete(value)},focus(){},click(){this.clicks++;},removeAttribute(){},setAttribute(){},addEventListener(type,fn){listeners.set(type,fn);},dispatchEvent(event){listeners.get(event.type)?.(event);},contains(){return false;}};}
   for(const match of html.matchAll(/id="([^"]+)"/g)){assert.equal(nodes.has(match[1]),false,'Duplicate ID '+match[1]);nodes.set(match[1],makeNode());}
   nodes.get('meal-editor').classList.add('hidden');
   const document={activeElement:null,body:makeNode(),querySelector:selector=>selector.startsWith('#')?nodes.get(selector.slice(1))||null:null,querySelectorAll:()=>[],addEventListener:(type,fn)=>events.set(type,fn),dispatchEvent:event=>events.get(event.type)?.(event)};
   const window={LIFT_FOODS:[]},state={nutrition:{profile:{},foodLogs:{},weightChecks:[],favorites:[],customFoods:[]}};
   const context={window,document,localStorage:{getItem:()=>null},Date,Math,Event,AbortController,setTimeout,clearTimeout};vm.createContext(context);vm.runInContext(source,context);
   window.LiftNutrition.init({getState:()=>state,saveState(){},showToast(){},escapeHtml:String});
-  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');assert.equal(typeof nodes.get('nutrition-diary-add-meal').onclick,'function');nodes.get('nutrition-diary-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
+  assert.equal(typeof nodes.get('nutrition-add-meal').onclick,'function');assert.equal(typeof nodes.get('nutrition-diary-add-meal').onclick,'function');assert.match(html,/id="nutrition-camera-photo"[^>]*capture="environment"/);nodes.get('nutrition-diary-add-meal').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),false);assert.equal(nodes.get('nutrition-camera-photo').clicks,1);assert.match(nodes.get('meal-draft-list').innerHTML,/Search or describe a food above/);assert.equal(nodes.get('meal-save').disabled,true);
   nodes.get('meal-cancel').onclick();assert.equal(nodes.get('meal-editor').classList.contains('hidden'),true);
   nodes.get('nutrition-date').value='2026-12-31';nodes.get('nutrition-next-day').onclick();assert.equal(nodes.get('nutrition-date').value,'2027-01-01');assert.match(nodes.get('nutrition-meals').innerHTML,/No meals logged/);
 });
@@ -136,7 +136,7 @@ async function photoWorker(run,payload={}){
   const response=await worker.fetch(new Request('https://worker.test/identify',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'application/json'},body:JSON.stringify({mode:'meal',mimeType:'image/jpeg',imageBase64:'AQID',...payload})}),{APP_TOKEN:token,AI:{async run(model,value){calls++;input=value;return run(value);}}});
   return {response,body:await response.json(),calls,input};
 }
-test('vision accepts structured and text identity responses, preserves portions to confirm, and never repeats inference',async()=>{
+test('vision accepts structured and text responses, preserves uncertain portions, and avoids fallback when foods are returned',async()=>{
   const identity={name:'Spaghetti',searchName:'pasta',preparation:'cooked',grams:null,confidence:.9};
   for(const result of [{response:{foods:[identity]}},{response:JSON.stringify({foods:[identity]})},{choices:[{message:{content:JSON.stringify({foods:[identity]})}}]}]){
     const f=await photoWorker(()=>result);assert.equal(f.response.status,200);assert.equal(f.calls,1);assert.equal(f.body.foods[0].grams,150);assert.equal(f.body.foods[0].requiresConfirmation,true);assert.equal(f.body.foods[0].nutritionPer100g,undefined);
@@ -149,6 +149,17 @@ test('photo Worker returns nutrition estimates and the app uses them immediately
   const f=fixture(),c=f.context;c.fetch=()=>{throw Error('No secondary nutrition lookup should be needed');};
   const [food]=await c.resolvePhotoFoods(response.body.foods,new AbortController().signal);assert.equal(food.nutritionResolved,true);assert.equal(food.nutritionReference,'AI photo estimate');
   c.renderAISuggestions([food]);assert.equal(c.selectedDraftItems().length,1);assert.equal(c.draft.items[0].kcal,63);c.setItemGrams(c.draft.items[0],250);assert.equal(c.draft.items[0].kcal,88);assert.equal(c.draft.items[0].carbs,20);
+});
+test('photo nutrition keeps real zero macros and rejects omitted or nonnumeric fields as a complete estimate',async()=>{
+  const zeroMacro={name:'Egg white',grams:100,confidence:.9,nutritionPer100g:{kcal:52,protein:11,carbs:0,fat:0}};
+  const accepted=await photoWorker(()=>({response:{foods:[zeroMacro]}}));assert.equal(accepted.body.foods.length,1);assert.deepEqual(accepted.body.foods[0].nutritionPer100g,{kcal:52,protein:11,carbs:0,fat:0});
+  const incomplete=await photoWorker(()=>({response:{foods:[{...zeroMacro,nutritionPer100g:{kcal:52,protein:11,fat:0}}]}}));assert.equal(incomplete.body.foods.length,1);assert.equal(incomplete.body.foods[0].nutritionPer100g,undefined);assert.equal(incomplete.body.foods[0].requiresConfirmation,true);
+  const stringValue=await photoWorker(()=>({response:{foods:[{...zeroMacro,nutritionPer100g:{...zeroMacro.nutritionPer100g,carbs:'0'}}]}}));assert.equal(stringValue.body.foods[0].nutritionPer100g,undefined);assert.equal(stringValue.body.foods[0].requiresConfirmation,true);
+});
+test('photo recognition makes one deterministic broad fallback only after an empty food list',async()=>{
+  const calls=[];const response=await photoWorker(()=>{calls.push(1);return calls.length===1?{response:{foods:[]}}:{response:{foods:[rice]}};});
+  assert.equal(response.calls,2);assert.equal(response.body.foods.length,1);assert.equal(response.body.diagnostics.attempts,2);assert.match(response.input.messages[0].content[0].text,/nutritionPer100g/);
+  assert.equal(response.input.messages[0].content[0].text.includes('broad, clearly visible food categories'),true);
 });
 test('photo service errors distinguish quota, capacity, timeout, empty, malformed and missing food data',async()=>{
   const cases=[
@@ -163,7 +174,7 @@ test('photo service errors distinguish quota, capacity, timeout, empty, malforme
     [{errors:[{code:5004,message:'Invalid image input'}]},'AI_REQUEST_REJECTED',502],
     [{errors:[{code:5035,message:'Model requires paid plan'}]},'AI_MODEL_UNAVAILABLE',503]
   ];
-  for(const [result,code,status] of cases){const f=await photoWorker(()=>result);assert.equal(f.body.code,code);assert.equal(f.response.status,status);assert.equal(f.calls,1);assert.ok(f.body.requestId);assert.ok(f.body.workerVersion);}
+  for(const [result,code,status] of cases){const f=await photoWorker(()=>result);assert.equal(f.body.code,code);assert.equal(f.response.status,status);assert.equal(f.calls,code==='NO_FOOD_FOUND'?2:1);assert.ok(f.body.requestId);assert.ok(f.body.workerVersion);}
   const rate=await photoWorker(()=>{throw new Error('HTTP 429: rate limited');});assert.notEqual(rate.body.code,'AI_QUOTA_EXHAUSTED');
 });
 test('worker reports partial results and logs metadata without image, prompt or private code',async()=>{

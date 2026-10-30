@@ -228,6 +228,14 @@
     writeMealStatus('');$('#meal-editor').classList.remove('hidden');document.body.classList.add('meal-editor-open');renderFavorites();renderDraft();document.dispatchEvent(new Event('lift:meal-open'));
     $('#meal-cancel').focus({preventScroll:true});
   }
+  function scanMealFromCamera(){
+    resumeMeal=false;
+    photoInputMode='meal';
+    openMeal();
+    const input=$('#nutrition-camera-photo');
+    input.value='';
+    input.click();
+  }
   function closeMeal(){
     if($('#meal-editor').classList.contains('hidden'))return;
     cancelPhoto();cancelFoodSearch();$('#meal-editor').classList.add('hidden');document.body.classList.remove('meal-editor-open');if(photoUrl){URL.revokeObjectURL(photoUrl);photoUrl=null;}
@@ -352,7 +360,7 @@
 
   async function saveWeight(){const kg=Number($('#weekly-weight').value),date=monday(today());if(!(kg>=30&&kg<=350)){api.showToast('Enter a weekly average weight between 30 and 350 kg.');return;}const n=nutrition(),existing=n.weightChecks.find(x=>x.date===date);if(existing)existing.kg=kg;else n.weightChecks.push({date,kg});n.profile.currentWeightKg=kg;api.saveState();render();api.showToast('Weekly average saved.');}
   function init(options){
-    api=options;void clearStoredPhotos();$('#nutrition-date').value=today();$('#nutrition-date').addEventListener('change',render);$('#nutrition-prev-day').onclick=()=>shiftDiaryDate(-1);$('#nutrition-next-day').onclick=()=>shiftDiaryDate(1);$('#nutrition-add-meal').onclick=openMeal;$('#nutrition-diary-add-meal').onclick=openMeal;if($('#nutrition-weight-link'))$('#nutrition-weight-link').onclick=()=>{const card=$('#weekly-weight-card');card.scrollIntoView({behavior:'smooth',block:'center'});$('#weekly-weight').focus({preventScroll:true});};
+    api=options;void clearStoredPhotos();$('#nutrition-date').value=today();$('#nutrition-date').addEventListener('change',render);$('#nutrition-prev-day').onclick=()=>shiftDiaryDate(-1);$('#nutrition-next-day').onclick=()=>shiftDiaryDate(1);$('#nutrition-add-meal').onclick=openMeal;$('#nutrition-diary-add-meal').onclick=scanMealFromCamera;if($('#nutrition-weight-link'))$('#nutrition-weight-link').onclick=()=>{const card=$('#weekly-weight-card');card.scrollIntoView({behavior:'smooth',block:'center'});$('#weekly-weight').focus({preventScroll:true});};
     $('#food-ai-save').onclick=saveAISettings;$('#food-ai-generate').onclick=generateAIToken;$('#food-ai-copy').onclick=copyAIToken;$('#food-ai-test').onclick=testAIConnection;renderAISettings();
     $('#meal-cancel').onclick=closeMeal;
     $('#meal-save').onclick=commitMeal;
@@ -360,6 +368,7 @@
     $('#meal-photo-retry').onclick=identifyFood;
     $('#meal-photo-settings').onclick=()=>{closeMeal();resumeMeal=true;api.showAISettings?.();};
     $('#meal-photo').addEventListener('change',selectMealPhoto);
+    $('#nutrition-camera-photo').addEventListener('change',selectMealPhoto);
     $('#meal-photo-open').onclick=()=>{photoInputMode='meal';$('#meal-photo').click();};
     document.addEventListener('keydown',event=>{
       if($('#meal-editor').classList.contains('hidden'))return;
@@ -376,9 +385,9 @@
   }
   async function requestAI(path,payload,options={}){
     if(!navigator.onLine)throw new Error('Connect to the internet to use AI.');
-    const endpoint=aiEndpoint(path),controller=new AbortController(),cancel=()=>controller.abort();
+    const endpoint=aiEndpoint(path),controller=new AbortController(),cancel=()=>controller.abort();let timedOut=false;
     options.signal?.addEventListener('abort',cancel,{once:true});if(options.signal?.aborted)cancel();
-    const timer=setTimeout(cancel,90000),audio=payload instanceof Blob;
+    const timer=setTimeout(()=>{timedOut=true;cancel();},Math.max(1000,Number(options.timeoutMs)||90000)),audio=payload instanceof Blob;
     try{
       recordAIUsage(path==='transcribe'?'transcription':'coaching');
       const response=await fetch(endpoint.url,{method:'POST',headers:{'Content-Type':audio?(payload.type||'audio/webm'):'application/json',Authorization:'Bearer '+endpoint.token},body:audio?payload:JSON.stringify(payload),signal:controller.signal});
@@ -386,6 +395,7 @@
       if(response.status===404)throw new Error('Update and deploy your Cloudflare Worker to enable these AI features.');
       if(!response.ok){const error=new Error(result.error||'AI is temporarily unavailable. Try again.');error.code=result.code;error.requestId=result.requestId;throw error;}
       return result;
+    }catch(error){if(timedOut){const timeoutError=new Error('AI_TIMEOUT');timeoutError.code='AI_TIMEOUT';throw timeoutError;}throw error;
     }finally{clearTimeout(timer);options.signal?.removeEventListener('abort',cancel);}
   }
   function nutritionContext(){
