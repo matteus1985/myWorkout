@@ -21,7 +21,7 @@
     html,body{width:100%;max-width:100%;overflow-x:clip}.screen,.tool-card,.exercise{min-width:0;max-width:100%}.field,.rest-duration,.select{font-size:16px}.set-head,.set-row{grid-template-columns:28px minmax(96px,1fr) minmax(96px,1fr) 36px;gap:4px}.stepper{display:flex;justify-content:center;align-items:center;gap:4px;min-width:0}.stepper .field{flex:0 1 58px;width:58px;max-width:58px;padding:0 3px;text-align:center;min-width:38px}.step-button{height:34px;width:24px;flex:none;padding:0;border:1px solid var(--line);border-radius:8px;background:#fff1f3;color:var(--red);font-size:18px;font-weight:800;line-height:1}.set-row .check{width:36px;height:36px}.chart-list{display:grid;gap:10px}.chart-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px}.chart-card h3{margin:0 0 8px;font-size:13px}.chart-card svg{width:100%;height:118px;display:block;overflow:visible}.chart-label{font-size:9px;fill:#775f64}.chart-line{fill:none;stroke:#e31438;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}.chart-dot{fill:#e31438}.muscle-bar{display:grid;grid-template-columns:76px minmax(0,1fr) 24px;gap:8px;align-items:center;font-size:11px;margin:9px 0}.muscle-bar>i{height:9px;background:#ffe5e9;border-radius:8px;overflow:hidden}.muscle-bar>i>b{height:100%;display:block;background:#e31438;border-radius:8px}.guide-svg{display:block;width:100%;height:190px;margin:12px auto;background:#fff6f7;border-radius:16px;border:1px solid var(--line)}.guide-svg .bone{stroke:#7d2636;stroke-width:7;stroke-linecap:round;fill:none}.guide-svg .muscle-shape{fill:#e31438;opacity:.23}.guide-svg .equip{stroke:#5d2631;stroke-width:5;fill:none;stroke-linecap:round}.guide-svg .move-arrow{stroke:#e31438;stroke-width:3;fill:none;stroke-dasharray:5 5;animation:dash 1.2s linear infinite}.guide-svg .pose-b{animation:posefade 2.2s ease-in-out infinite alternate}.guide-svg .pose-a{animation:posefade 2.2s ease-in-out infinite alternate-reverse}@keyframes posefade{from{opacity:1}to{opacity:.2}}@keyframes dash{to{stroke-dashoffset:-20}}@media(max-width:360px){.exercise{padding:12px}.set-head,.set-row{grid-template-columns:26px minmax(78px,1fr) minmax(78px,1fr) 32px;gap:2px}.stepper{gap:2px}.stepper .field{flex-basis:46px;width:46px;max-width:46px;min-width:30px}.step-button{width:18px}.set-row .check{width:32px;height:34px}}
     .guide-svg .outline{stroke:#7d2636;stroke-width:18;stroke-linecap:round;fill:none}.guide-svg .body-limb{stroke:#e8b9a8;stroke-width:12;stroke-linecap:round;fill:none}.guide-svg .muscle-shape,.guide-svg .move-muscle{fill:#e31438;opacity:.28}
   </style>
-  <link rel="stylesheet" href="material.css?v=liftlog-20261030-ui-v95">
+  <link rel="stylesheet" href="material.css?v=liftlog-20261030-onboarding-v100">
   <style>
     html:not(.app-ready) body{background:#151416;color:#f8edf1;overflow:hidden}
     html:not(.app-ready) .app,html:not(.app-ready) .tabbar{visibility:hidden}
@@ -38,7 +38,7 @@
     <main>
       <section class="screen active" id="home-screen">
         <div class="home-heading">
-          <img class="home-app-icon" src="icon.svg" alt="">
+          <img class="home-app-icon" src="icon.svg?v=liftlog-20261030-onboarding-v100" alt="">
           <div><h1>Lift Log</h1><p class="sub">Train. Track. Improve.</p></div>
           <button type="button" class="icon-button nutrition-diary-add home-scan-food" id="home-scan-food" aria-label="Scan food" title="Scan food"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h8L18 7h2v12H4z"/><circle cx="12" cy="13" r="3.5"/></svg></button>
         </div>
@@ -57,7 +57,6 @@
         <div class="panel setup-panel hidden" id="setup-level"><strong>Choose your experience level</strong><p>Your level helps us choose appropriate exercises. Your logged weights do not determine it.</p><button class="btn btn-primary btn-small" id="choose-level">Choose level</button></div>
         <div class="days" id="day-list"></div>
         <details class="weekly-volume-panel"><summary>Weekly training volume</summary><div class="volume-grid" id="week-volume"></div><p class="small-print">Direct work sets are shown. Compound exercises also train supporting muscles.</p></details><button class="btn btn-primary end-week" id="end-week">End week</button>
-        <div class="status-line"><i class="dot" id="online-dot"></i><span id="online-label">Ready to save on this iPhone</span></div>
       </section>
 
       <section class="screen" id="workout-screen">
@@ -126,6 +125,7 @@
         <div class="eyebrow">Your app, your pace</div><h1>Settings</h1>
         <p class="sub">Personalize your training, nutrition and data.</p>
         <div class="tool-grid">
+          <label class="tool-card settings-link"><span><strong>Language</strong></span><select class="select" id="app-language" aria-label="Language"><option value="en">English</option><option value="it">Italiano</option><option value="fr">Français</option><option value="de">Deutsch</option></select></label>
           <details class="tool-card settings-accordion nutrition-settings-card">
             <summary><span><strong>Nutrition profile</strong><small>Daily targets and weight goals</small></span></summary><div class="settings-accordion-body">
             <p>Used for a rough daily energy estimate and a gradual weight-gain target.</p>
@@ -140,7 +140,7 @@
             </div>
             <button class="btn btn-primary btn-small" id="nutrition-profile-save">Save nutrition profile</button>
             <p id="nutrition-estimate" class="settings-note"></p><p id="nutrition-macro-estimate" class="settings-note"></p>
-            <label class="settings-label" for="nutrition-target-edit">Daily calorie target (optional adjustment)</label><input class="field" id="nutrition-target-edit" type="number" min="1000" max="7000" step="50" placeholder="Auto estimate" inputmode="numeric"><button class="btn btn-outline btn-small" id="nutrition-target-save">Save calorie target</button>
+            <label class="settings-label" for="nutrition-target-edit">Daily calorie target (optional adjustment)</label><div class="calorie-target-row"><input class="field" id="nutrition-target-edit" type="number" min="1000" max="7000" step="50" placeholder="Auto estimate" inputmode="numeric"><button type="button" class="calorie-target-save" id="nutrition-target-save" aria-label="Save calorie target" title="Save calorie target"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg></button></div>
             <p class="settings-note">Initial target uses an estimated maintenance level plus about 10%. The formula coefficient is optional; choose Neutral if you prefer not to specify.</p>
             </div>
           </details>
@@ -156,44 +156,34 @@
             <div class="equipment-grid" id="equipment-grid"></div>
             <div class="settings-note">Bodyweight pulling exercises require a secure bar. Session length follows the planned work and rest, with no time to fill.</div>
             <button class="btn btn-primary btn-small" id="apply-plan">Update plan</button>
-            <div class="settings-note" id="plan-summary"></div>
+            <div class="settings-note ai-status" id="plan-generation-status" role="status" aria-live="polite"></div><div class="settings-note" id="plan-summary"></div>
             <div class="settings-note" id="art-cache-status">Exercise images prepare for offline use after the first online visit.</div>
             <div class="settings-note image-credit"><a href="https://repdb.co" target="_blank" rel="noopener noreferrer">Exercise data by RepDB (repdb.co)</a></div>
             </div>
           </details>
           <div class="tool-card app-lock-settings" hidden><div class="exercise-catalogue-head"><strong>App lock</strong><button type="button" class="btn btn-soft btn-small" id="face-id-enable">Set up Face ID</button></div><p>PIN lock is an informal screen barrier. The shared code is visible in the public app. Face ID is stored on this device when supported.</p><p class="settings-note" id="face-id-status" aria-live="polite"></p></div>
-          <div class="tool-card exercise-catalogue-card"><div class="exercise-catalogue-head"><strong>Exercise catalogue</strong><button class="btn btn-soft btn-small" id="browse-catalogue">Browse exercises</button></div><p id="catalogue-size"></p></div>
+          <button type="button" class="tool-card exercise-catalogue-card settings-link" id="browse-catalogue"><span><strong>Exercise catalogue</strong><small id="catalogue-size"></small></span><span class="settings-link-arrow" aria-hidden="true">›</span></button>
           <details class="tool-card settings-accordion">
             <summary><span><strong>Backup & restore</strong><small id="backup-status-settings">Last backup: Never</small></span></summary><div class="settings-accordion-body">
-            <p>Export a backup file and save it in Google Drive. We recommend doing this every week.</p>
+            <p>Save or restore your app data.</p>
             <button class="btn btn-primary btn-small" id="export-settings">Export Backup</button>
             <button class="btn btn-outline btn-small" id="import-button">Import Backup</button>
             <input class="hidden" id="import-file" type="file" accept="application/json,.json">
-            <div class="hint"><b>To save a backup:</b> tap Export Backup → Share → Save to Files → choose your Google Drive folder → Save.</div>
             </div>
           </details>
-          <details class="tool-card settings-accordion">
-            <summary><span><strong>Training guidance</strong><small>Progression and offline use</small></span></summary><div class="settings-accordion-body">
-            <strong>Weekly progression</strong>
-            <p>First, aim for one more rep while staying within the target range. Once every set reaches the top of its range with at least two reps left, the app suggests a small weight increase. Without effort logging, two successful exposures are required.</p>
-            <div class="hint">Aim to finish most work sets with 2–3 reps left. Log your effort optionally. End week prepares the next targets from completed sets; skipped work never triggers an increase.</div>
-            <strong class="settings-guidance-title">Using the app offline</strong>
-            <p>After opening the app online once, it can load without a connection. Logging and progress are saved on this iPhone.</p>
-            <div class="small-print">If you get a new iPhone, clear Safari website data, or remove the saved app, restore from a backup first.</div>
-            </div>
-          </details>
+          <button type="button" class="tool-card settings-link" id="replay-tutorial"><span><strong>App tutorial</strong><small>Review the basics and your setup</small></span><span class="settings-link-arrow" aria-hidden="true">›</span></button>
           <details class="tool-card settings-accordion nutrition-ai-settings"><summary><span><span class="ai-title-icon" aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6Z"/></svg></span><strong>AI setup</strong></span></summary><div class="settings-accordion-body ai-settings-content">
-            <p>Connect your personal Cloudflare Worker for meal photos, voice descriptions, training and nutrition suggestions. Review and correct every estimate before saving. The private code stays on this iPhone and is not included in backups.</p>
-            <label class="settings-label" for="food-ai-url">Worker address</label>
-            <input class="field" id="food-ai-url" type="url" inputmode="url" placeholder="https://your-worker.workers.dev" autocomplete="url">
+            <p>Enter your private code to enable AI features.</p>
+
+            <input id="food-ai-url" type="hidden">
             <label class="settings-label" for="food-ai-token">Private code</label>
-            <div class="ai-token-row"><input class="field" id="food-ai-token" type="password" autocomplete="off" placeholder="Create or paste the same code used in Cloudflare"><button type="button" id="food-ai-generate" class="btn btn-soft btn-small">Generate</button><button type="button" id="food-ai-copy" class="btn btn-outline btn-small">Copy</button></div>
+            <div class="ai-token-row"><input class="field" id="food-ai-token" type="password" autocomplete="off" placeholder="Enter your private code"></div>
             <div class="ai-setup-actions"><button type="button" id="food-ai-save" class="btn btn-primary btn-small">Save setup</button><button type="button" id="food-ai-test" class="btn btn-outline btn-small">Test connection</button></div>
             <p id="food-ai-status" class="settings-note" aria-live="polite">AI is optional. Manual food search works offline.</p>
             <p class="small-print">Llama 4 Scout handles food estimates and training and nutrition suggestions. Whisper transcribes recorded meals in English.</p>
             <p id="food-ai-usage" class="small-print" aria-live="polite">This device: no AI requests yet. Cloudflare’s Neuron usage is shown in its dashboard.</p>
             <p class="small-print">Photos are sent for analysis when selected. Calories and macros are approximate model estimates. Cloudflare’s free daily quota may change; analysis stops when unavailable and never switches to paid usage automatically.</p>
-            <details class="ai-setup-guide"><summary>Show setup steps</summary><ol><li>In Cloudflare, create a Worker named <strong>lift-log-food-ai</strong> and open its code editor.</li><li>Replace the sample code with <code>worker/src/index.mjs</code> from this app folder, then deploy.</li><li>In Worker Settings → Bindings, add a Workers AI binding named <code>AI</code>, then deploy again.</li><li>Generate a private code here and copy it. In Worker Settings → Variables and Secrets, add a Secret named <code>APP_TOKEN</code> with that value, then deploy.</li><li>Copy the Worker’s <code>workers.dev</code> address into Worker address, paste the same private code, tap Save setup, then Test connection.</li></ol><p class="small-print">Use Cloudflare Workers Free and do not enable paid AI usage. The free plan stops requests after its daily AI allowance; a paid plan can charge beyond its included allowance.</p></details>
+            <details class="ai-setup-guide" hidden><summary>Show setup steps</summary><ol><li>In Cloudflare, create a Worker named <strong>lift-log-food-ai</strong> and open its code editor.</li><li>Replace the sample code with <code>worker/src/index.mjs</code> from this app folder, then deploy.</li><li>In Worker Settings → Bindings, add a Workers AI binding named <code>AI</code>, then deploy again.</li><li>Generate a private code here and copy it. In Worker Settings → Variables and Secrets, add a Secret named <code>APP_TOKEN</code> with that value, then deploy.</li><li>Copy the Worker’s <code>workers.dev</code> address into Worker address, paste the same private code, tap Save setup, then Test connection.</li></ol><p class="small-print">Use Cloudflare Workers Free and do not enable paid AI usage. The free plan stops requests after its daily AI allowance; a paid plan can charge beyond its included allowance.</p></details>
           </div></details>
         </div>
       </section>
@@ -217,7 +207,7 @@
   </script>
   <div class="modal-backdrop hidden confirm-backdrop" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"><div class="modal confirm-modal"><span class="confirm-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span><h2 id="modal-title">Finish this workout?</h2><p id="modal-copy">Your entries have been saved on this iPhone.</p><div class="modal-buttons"><button class="btn btn-outline" id="modal-cancel">Keep going</button><button class="btn btn-primary" id="modal-confirm">Finish</button></div></div></div>
   <section class="app-lock hidden" id="app-lock" hidden role="dialog" aria-modal="true" aria-labelledby="app-lock-title"><div class="app-lock-card"><span class="app-lock-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></svg></span><h1 id="app-lock-title">Lift Log</h1><p>Enter your 4-digit code to continue.</p><label class="visually-hidden-input" for="app-pin">4-digit app code</label><input id="app-pin" class="field app-pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="one-time-code" aria-label="4-digit app code"><button type="button" class="btn btn-primary" id="app-pin-unlock">Unlock</button><button type="button" class="btn btn-soft app-lock-faceid" id="app-lock-faceid" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h-2a2 2 0 0 0-2 2v2m12-4h2a2 2 0 0 1 2 2v2M4 16v2a2 2 0 0 0 2 2h2m12-4v2a2 2 0 0 1-2 2h-2M9 9c.8-1 1.8-1.5 3-1.5S14.2 8 15 9m-6 2v1m6-1v1m-6 3c1.8 1.5 4.2 1.5 6 0"/></svg><span>Use Face ID</span></button><p class="app-lock-status" id="app-lock-status" role="status" aria-live="polite"></p></div></section>
-  <div class="modal-backdrop hidden endweek-modal" id="endweek-modal" role="dialog" aria-modal="true" aria-labelledby="endweek-title"><div class="modal"><div class="row"><h2 id="endweek-title">Prepare next week</h2><button type="button" class="back" id="endweek-close" aria-label="Cancel end week">×</button></div><section class="endweek-section endweek-recap" aria-labelledby="endweek-recap-title"><h3 id="endweek-recap-title">Week recap</h3><p id="endweek-summary"></p><label class="settings-label" for="endweek-weight">Average weight (kg)</label><input class="field" id="endweek-weight" type="number" min="30" max="350" step="0.1" inputmode="decimal" placeholder="e.g. 75.4" required><p class="small-print">Add this week’s average weight to track your trend.</p></section><section class="endweek-section endweek-next" aria-labelledby="endweek-next-title"><h3 id="endweek-next-title">Next week</h3><label class="settings-label" for="next-week-days">Workout days</label><select class="select" id="next-week-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option></select><div class="next-week-preview" id="next-week-preview"></div></section><div class="modal-buttons"><button class="btn btn-outline" id="endweek-cancel">Cancel</button><button type="button" class="btn btn-outline" hidden id="endweek-local">Use standard plan</button><button class="btn btn-primary" id="endweek-confirm">Create next week</button></div></div></div>
+  <div class="modal-backdrop hidden endweek-modal" id="endweek-modal" role="dialog" aria-modal="true" aria-labelledby="endweek-title"><div class="modal"><div class="row"><h2 id="endweek-title">Prepare next week</h2><button type="button" class="back" id="endweek-close" aria-label="Cancel end week">×</button></div><section class="endweek-section endweek-recap" aria-labelledby="endweek-recap-title"><h3 id="endweek-recap-title">Week recap</h3><p id="endweek-summary"></p><label class="settings-label" for="endweek-weight">Average weight (kg)</label><input class="field" id="endweek-weight" type="number" min="30" max="350" step="0.1" inputmode="decimal" placeholder="e.g. 75.4" required><p class="small-print">Add this week’s average weight to track your trend.</p></section><section class="endweek-section endweek-next" aria-labelledby="endweek-next-title"><h3 id="endweek-next-title">Next week</h3><label class="settings-label" for="next-week-days">Workout days</label><select class="select" id="next-week-days"><option value="3">3 workouts</option><option value="4">4 workouts</option><option value="5">5 workouts</option><option value="6">6 workouts</option></select><label class="settings-label" for="next-week-notes">Next week notes (optional)</label><textarea class="field" id="next-week-notes" rows="2" maxlength="600" placeholder="Notes for your next training week" style="resize:vertical;min-height:72px"></textarea><div class="next-week-preview" id="next-week-preview"></div></section><div class="modal-buttons"><button class="btn btn-outline" id="endweek-cancel">Cancel</button><button type="button" class="btn btn-outline" hidden id="endweek-local">Use standard plan</button><button class="btn btn-primary" id="endweek-confirm">Create next week</button></div></div></div>
   <div class="modal-backdrop hidden image-modal" id="image-modal" role="dialog" aria-modal="true" aria-label="Exercise image preview"><div class="image-preview-panel"><button type="button" class="back image-close" id="image-close" aria-label="Close enlarged exercise image">×</button><img id="image-preview" alt=""><strong id="image-preview-title"></strong></div></div>
   <div class="modal-backdrop guide-modal hidden" id="guide-modal" role="dialog" aria-modal="true" aria-labelledby="guide-title"><div class="modal"><div class="row"><h2 id="guide-title">Exercise guide</h2><button class="back" id="guide-close" aria-label="Close exercise guide">×</button></div><div class="exercise-guide" id="guide-content"></div></div></div>
   <div class="modal-backdrop alternative-modal hidden" id="alternative-modal" role="dialog" aria-modal="true" aria-labelledby="alternative-title"><div class="modal"><div class="row"><h2 id="alternative-title">Exercise alternatives</h2><button class="back" id="alternative-close" aria-label="Close alternatives">×</button></div><input class="field alternative-search" id="alternative-search" type="search" placeholder="Search all alternatives" aria-label="Search all exercise alternatives"><div class="alternative-filters"><select class="select" id="alternative-equipment" aria-label="Filter by equipment"><option value="">All equipment</option></select><select class="select" id="alternative-level" aria-label="Filter by level"><option value="">All levels</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></div><div class="alternative-list" id="alternative-list"></div></div></div>
@@ -252,14 +242,16 @@
       <footer class="meal-composer-footer"><div class="meal-total" id="meal-draft-total" aria-live="polite"></div><button type="button" id="meal-save" class="btn btn-primary">Save meal</button></footer>
     </div>
   </div>
-<script src="catalogue.js?v=liftlog-20261030-ui-v95"></script>
-<script src="planner.js?v=liftlog-20261030-ui-v95"></script>
-<script src="exercise-art.js?v=liftlog-20261030-ui-v95"></script>
-<script src="exercise-gif-map.js?v=liftlog-20261030-ui-v95"></script>
-<script src="nutrition-data.js?v=liftlog-20261030-ui-v95"></script>
-<script src="nutrition.js?v=liftlog-20261030-ui-v95"></script>
-<script src="app.js?v=liftlog-20261030-ui-v95"></script>
-<script src="coach.js?v=liftlog-20261030-ui-v95"></script>
+<script src="i18n-data.js?v=liftlog-i18n-v10"></script>
+<script src="i18n.js?v=liftlog-i18n-v10"></script>
+<script src="catalogue.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="planner.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="exercise-art.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="exercise-gif-map.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="nutrition-data.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="nutrition.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="app.js?v=liftlog-20261030-onboarding-v100"></script>
+<script src="coach.js?v=liftlog-20261030-onboarding-v100"></script>
 
 </body>
 </html>

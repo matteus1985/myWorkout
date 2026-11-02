@@ -763,6 +763,8 @@ body.meal-editor-open #toast.toast{z-index:80}
 #workout-screen .step-button{min-width:28px;min-height:44px;color:#efc4d6}
 #workout-screen .set-row .check{width:38px;height:38px;min-width:38px;min-height:38px}
 #workout-screen .effort-row{margin-top:7px;padding-bottom:6px}
+#workout-screen .effort-row label{flex:0 1 auto;min-width:0;white-space:normal}
+#workout-screen .effort-choices{flex:1 0 145px}
 #workout-screen .effort-choice{min-height:38px}
 #workout-screen .drop-set-row{min-height:44px}
 #workout-screen .drop-set-checkbox{width:21px;height:21px}
@@ -780,3 +782,22 @@ body.meal-editor-open #toast.toast{z-index:80}
 #progress-screen .muscle-map-group h3{letter-spacing:.04em}
 .endweek-modal .back,#workout-screen .info-button,#workout-screen .exercise-collapse{flex:none}
 @media(max-width:380px){#workout-screen .exercise{padding:11px}#workout-screen .step-button{min-width:24px}#rest-dock{gap:6px}#rest-dock .timer{font-size:16px}}
+
+/* Settings controls */
+#settings-screen .settings-accordion[open]>summary{border-bottom:0}
+#settings-screen .settings-link{width:100%;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+#settings-screen .settings-link>span:first-child{display:grid;gap:4px;min-width:0}
+#settings-screen .settings-link strong{font-size:14px}
+#settings-screen .settings-link small{font-size:11px;color:#b9aeb7}
+#settings-screen .settings-link-arrow{color:#ff718f;font-size:24px;line-height:1}
+#weight-steps .equipment-option{display:grid;grid-template-columns:minmax(0,1fr) minmax(50px,72px) auto;align-items:center;gap:6px}
+#weight-steps .weight-step-select{width:100%;min-width:0;padding-left:7px;padding-right:20px}
+#weight-steps .weight-step-unit{font-size:12px;white-space:nowrap}
+.calorie-target-row{display:flex;align-items:center;gap:8px}
+.calorie-target-row .field{flex:1;min-width:0}
+#settings-screen .calorie-target-save{display:grid;place-items:center;flex:none;width:44px;height:44px;border:1px solid #76505f;border-radius:12px;background:#342a35;color:#ff9db6;cursor:pointer}
+.calorie-target-save svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+.tutorial-backdrop{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:#0c0a10d9}
+.tutorial-dialog{width:min(100%,460px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px;border:1px solid #594458;border-radius:22px;background:#24212a;color:#f7eef5;box-shadow:0 20px 70px #0008}
+.tutorial-top{display:flex;justify-content:space-between;align-items:center;color:#c9acbe;font-size:12px;margin-bottom:18px}.tutorial-dialog h2{font-size:23px;margin:0 0 12px}.tutorial-dialog p{font-size:14px;line-height:1.5;color:#c9becb}.tutorial-dialog label{display:grid;gap:6px;font-size:12px;color:#d3c7d0;margin:10px 0}.tutorial-dialog .equipment-option{display:flex;align-items:center;margin:0}.tutorial-actions{display:flex;gap:8px;margin-top:20px}.tutorial-actions button{flex:1}.tutorial-code-row{display:flex;gap:8px}.tutorial-code-row .field{min-width:0;flex:1}.tutorial-dialog [role=alert]{color:#ff9bb2;font-size:12px}.tutorial-dialog [role=alert]:empty{display:none}

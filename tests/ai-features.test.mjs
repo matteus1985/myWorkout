@@ -27,6 +27,21 @@ test('recording is sent to English Whisper without storing audio',async()=>{
   const request=new Request('https://worker.example/transcribe',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'audio/mp4'},body:new Uint8Array(200)});
   const response=await worker.fetch(request,env);assert.equal(response.status,200);assert.equal((await response.json()).transcript,'Two eggs and toast');assert.equal(input.language,'en');assert.equal(typeof input.audio,'string');
 });
+test('selected language reaches Whisper and AI prompts; unsupported languages use English',async()=>{
+  for(const [locale,name] of [['it','Italian'],['fr','French'],['de','German'],['unexpected','English']]){
+    const expected=locale==='unexpected'?'en':locale;
+    let recording;
+    const audioEnv={APP_TOKEN:token,AI:{async run(model,input){recording=input;return {text:'Test transcript'};}}};
+    const audio=new Request('https://worker.example/transcribe?lang='+locale,{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':'audio/mp4'},body:new Uint8Array(200)});
+    assert.equal((await worker.fetch(audio,audioEnv)).status,200);
+    assert.equal(recording.language,expected);
+    const env=fakeEnv({summary:'Example'});
+    const response=await worker.fetch(jsonRequest('/coach?lang='+locale,{mode:'workout-summary',data:{dayName:'Push A',partial:false,completedSetCount:1,plannedSetCount:1,exercises:[{name:'Bench press',planned:[{weight:20,reps:8}],actual:[{done:true,weight:20,reps:8}]}]}}),env);
+    assert.equal(response.status,200);
+    assert.match(env.calls[0].input.messages[0].content,new RegExp('Respond in '+name));
+    assert.match(env.calls[0].input.messages[0].content,/JSON keys, identifiers/);
+  }
+});
 test('unsupported, oversized and silent recordings give usable errors',async()=>{
   const env={APP_TOKEN:token,AI:{async run(){return {text:''};}}};
   const req=(type,body,extra={})=>new Request('https://worker.example/transcribe',{method:'POST',headers:{Authorization:'Bearer '+token,'Content-Type':type,...extra},body});
@@ -46,7 +61,7 @@ test('workout proposal excludes invented exercises, duplicate IDs, missing histo
 test('workout review returns one concise motivating sentence in a legacy-compatible shape',async()=>{
   const env=fakeEnv({summary:'You met your planned work and are steadily building strength; keep the next session consistent.'});
   const result=await worker.fetch(jsonRequest('/coach',{mode:'workout-summary',data:{dayName:'Push A',partial:false,completedSetCount:9,plannedSetCount:9,exercises:[{name:'Bench press',planned:[{weight:20,reps:8}],actual:[{done:true,weight:20,reps:9}]}]}}),env);
-  const body=await result.json();assert.equal(result.status,200);assert.equal(typeof body.summary,'string');assert.ok(body.summary);assert.equal(body.bullets.length,1);assert.equal(body.bullets[0],body.summary);assert.match(env.calls[0].input.messages[0].content,/one concise, motivating English sentence/);assert.doesNotMatch(env.calls[0].input.messages[0].content,/bullet 1|bullet 2/);
+  const body=await result.json();assert.equal(result.status,200);assert.equal(typeof body.summary,'string');assert.ok(body.summary);assert.equal(body.bullets.length,1);assert.equal(body.bullets[0],body.summary);assert.match(env.calls[0].input.messages[0].content,/one concise, motivating sentence/);assert.doesNotMatch(env.calls[0].input.messages[0].content,/bullet 1|bullet 2/);
 });
 test('nutrition suggestions fit remaining calories and require nutrition targets',async()=>{
   const data={targets:{kcal:2500},remaining:{kcal:300,protein:20,carbs:50,fat:10}};
@@ -77,7 +92,7 @@ function catalogueFixture(){
   const lists={'#catalogue-list .catalogue-thumb':[image],'#catalogue-list [data-image-preview]':[preview],'[data-catalogue-guide]':[guide],'[data-add]':[add]};
   let scopeAction,scopeCalls=0,saves=0;
   const state={equipment:['dumbbell'],experience:'beginner'},day={exercises:[]},edits={add:[]};
-  const context={$:element,$$:selector=>lists[selector]||[],catalogueMode:'add',catalogueLimit:60,state,activeDay:day,LIFT_CATALOGUE:{exercises:[item],levels:['beginner'],equipmentLabels:{dumbbell:'Dumbbells'},find:()=>item},LIFT_REPDB_ART:{press:'image.svg'},LIFT_ENGINE:{descriptor:(item,id)=>({id,catalogId:item.id,sets:[{weight:10}]})},escapeHtml:String,escapeAttr:String,setExerciseArt(){},openImagePreview(){},showGuide(){},showToast(){},suggestionText:()=>'',openScope:(...args)=>{scopeAction=args.at(-1);scopeCalls++;},persistentDay:()=>edits,markEdited:()=>{saves++;},Date,Math};
+  const context={$:element,$$:selector=>lists[selector]||[],catalogueMode:'add',catalogueLimit:60,state,activeDay:day,LIFT_CATALOGUE:{exercises:[item],levels:['beginner'],equipmentLabels:{dumbbell:'Dumbbells'},find:()=>item},LIFT_REPDB_ART:{press:'image.svg'},LIFT_ENGINE:{descriptor:(item,id)=>({id,catalogId:item.id,sets:[{weight:10}]})},localized:String,localizedMuscle:String,escapeHtml:String,escapeAttr:String,setExerciseArt(){},openImagePreview(){},showGuide(){},showToast(){},suggestionText:()=>'',openScope:(...args)=>{scopeAction=args.at(-1);scopeCalls++;},persistentDay:()=>edits,markEdited:()=>{saves++;},Date,Math};
   vm.createContext(context);const start=appSource.indexOf('  function renderCatalogue()'),end=appSource.indexOf('  function initializeEditors()',start);vm.runInContext(appSource.slice(start,end),context);
   return {context,add,state,day,edits,element,scope:()=>scopeAction,scopeCalls:()=>scopeCalls,saves:()=>saves};
 }
@@ -86,6 +101,11 @@ test('catalogue Add binds after images and persists this-week and future additio
 });
 test('catalogue displays missing equipment instead of an apparently dead Add button',()=>{
   const f=catalogueFixture();f.state.equipment=[];f.context.renderCatalogue();f.add.onclick();assert.equal(f.scopeCalls(),0);assert.match(f.element('#catalogue-count').textContent,/Dumbbells.*Settings/);
+});
+test('catalogue search accepts both translated and original exercise names',()=>{
+  const f=catalogueFixture();f.context.localized=value=>value==='Press'?'Développé':value;
+  f.element('#catalogue-search').value='développé';f.context.renderCatalogue();assert.match(f.element('#catalogue-count').textContent,/1 exercises/);
+  f.element('#catalogue-search').value='press';f.context.renderCatalogue();assert.match(f.element('#catalogue-count').textContent,/1 exercises/);
 });
 
 function trainingFixture(){

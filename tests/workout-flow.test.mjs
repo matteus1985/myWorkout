@@ -17,7 +17,7 @@ function run(names,context){vm.createContext(context);for(const name of names)vm
 
 test('normal recovery points at the exact next set and stops after the final set',()=>{
   const log={exercises:{a:{sets:[{done:true},{done:false}]},b:{sets:[{done:false}]}}};
-  const c=run(['nextWorkoutStep','stepLabel'],{activeDay:{exercises:[{id:'a',name:'Bench',rest:150,sets:[{},{}]},{id:'b',name:'Row',rest:120,sets:[{}]}]},currentLog:()=>log});
+  const c=run(['nextWorkoutStep','stepLabel'],{activeDay:{exercises:[{id:'a',name:'Bench',rest:150,sets:[{},{}]},{id:'b',name:'Row',rest:120,sets:[{}]}]},currentLog:()=>log,localized:String});
   assert.equal(c.stepLabel(c.nextWorkoutStep(0,0)),'Bench · Set 2/2');
   log.exercises.a.sets[1].done=true;
   assert.equal(c.stepLabel(c.nextWorkoutStep(0,1)),'Row · Set 1/1');
@@ -78,9 +78,9 @@ test('failed storage leaves both current week and archived weeks unchanged',()=>
 
 test('new week removes only archived-week AI recap data and Home recap selection is current-week-only',()=>{
   const logs={'27-d1':{completed:true,dayName:'Old',aiComment:'Old recap',aiCommentStatus:'ready',aiReviewProgress:{done:2,planned:3,pct:67},exercises:{press:{sets:[{done:true}]}}},'26-d1':{completed:true,aiComment:'Older history',aiCommentStatus:'ready'},'28-d1':{completed:true,aiComment:'Current',aiCommentStatus:'ready',completedAt:'2026-10-28'}};
-  const c=run(['clearWeekWorkoutReviews','latestWorkoutReview','calendarPeriods','workoutLogDate','hasDone','isoWeekInfo','progressDateStart'],{});c.clearWeekWorkoutReviews(logs,27);
+  const c=run(['clearWeekWorkoutReviews','latestWorkoutReview','programWeekLogEntries','workoutLogDate','hasDone'],{});c.clearWeekWorkoutReviews(logs,27);
   assert.equal(logs['27-d1'].aiComment,undefined);assert.equal(logs['27-d1'].aiCommentStatus,undefined);assert.equal(logs['27-d1'].aiReviewProgress,undefined);assert.deepEqual(logs['27-d1'].exercises.press.sets,[{done:true}]);
-  assert.equal(logs['26-d1'].aiComment,'Older history');assert.equal(c.latestWorkoutReview(logs,new Date('2026-10-28T12:00:00')).aiComment,'Current');assert.equal(c.latestWorkoutReview(logs,new Date('2026-10-20T12:00:00')),null);
+  assert.equal(logs['26-d1'].aiComment,'Older history');assert.equal(c.latestWorkoutReview(logs,28).aiComment,'Current');assert.equal(c.latestWorkoutReview(logs,27),null);assert.equal(c.latestWorkoutReview(logs,29),null);
 });
 
 test('weekly Worker authenticates, validates targets and preserves retryable errors',async()=>{
