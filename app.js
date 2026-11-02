@@ -169,7 +169,7 @@
   function validateWeekPlan(raw,input){
     if(!raw||!Array.isArray(raw.days)||raw.days.length!==input.count)throw Error('AI returned the wrong number of workouts.');
     const splitTitles=weekSplitTitles(input.count);if(!splitTitles.length)throw Error('AI returned an unsupported workout count.');
-    const plan={version:5,programId:state.weekPlans?.[snapshotKey()]?.programId||'ai-weekly',week:input.week,aiGenerated:true,rulesVersion:'weekly-v9',summary:String(raw.summary||'').slice(0,500),days:raw.days.map((day,di)=>{
+    const plan={version:5,programId:state.weekPlans?.[snapshotKey()]?.programId||'ai-weekly',week:input.week,aiGenerated:true,rulesVersion:'weekly-v10',summary:String(raw.summary||'').slice(0,500),days:raw.days.map((day,di)=>{
       if(String(day.name||'').trim()!==splitTitles[di])throw Error('Workout '+(di+1)+' must be named '+splitTitles[di]+'.');
       if(!Array.isArray(day.exercises)||day.exercises.length<4||day.exercises.length>10)throw Error('AI returned an incomplete workout.');const used=new Set();
       const exercises=day.exercises.map((p,ei)=>{const c=input.catalogue.find(x=>x.id===p.catalogId);if(!c||used.has(c.id)||!Number.isInteger(p.sets)||p.sets<1||p.sets>5||!Number.isInteger(p.reps)||p.reps<c.minReps||p.reps>c.maxReps||!Number.isFinite(p.weight)||p.weight<0||p.weight>Number(c.weight)+c.step||Math.abs((p.weight-Number(c.weight))/c.step-Math.round((p.weight-Number(c.weight))/c.step))>.001||!Number.isInteger(p.rest)||p.rest<45||p.rest>240)throw Error('AI returned incompatible exercise targets.');used.add(c.id);

@@ -10,6 +10,10 @@ The app generates initial, replacement and next-week programmes using AI. It ret
 
 # Lift Log AI Worker
 
+## Pain-aware weekly planning — 2026-11-02
+
+Worker version `2026-11-02-pain-constraints-v13` (rules `weekly-v10`) now treats explicit pain, injury and exercise-avoidance notes as hard exercise-selection constraints. When those restrictions prevent a safe session, the Worker returns a localized error and the app keeps the existing plan unchanged. It may build shorter sessions down to 40 minutes; it must not fill time with movements the user says are painful. Upload `cloudflare-worker.mjs` or deploy `src/index.mjs` to activate this behavior. The three Worker files are kept identical.
+
 Replace the deployed Worker's code with `src/index.mjs`, then deploy. Keep the existing Workers AI binding named `AI` and private secret `APP_TOKEN`.
 
 This version adds authenticated `POST /transcribe`, `POST /describe-meal` and `POST /coach` endpoints. `/coach` accepts `next-workout` and `nutrition` modes. Photo recognition returns visible food identities plus approximate per-100 g calories and macros in the same model response. The app prefers an exact local catalog match, then uses the returned estimate; older responses can still resolve through USDA search. Food search and workout review routes remain compatible. `GET /health` returns version `2026-10-30-photo-v10` and capabilities including `photo-nutrition-estimates-v1` and `weekly-plan-v2`, alongside existing features. Weekly planning supplies a broader candidate catalogue and rotates exact accessory exercises used in the previous three weeks when a compatible alternative exists. Photo analysis uses deterministic generation, requires explicit numeric macro fields (including zero), and makes one broader second attempt only when the first valid response finds no food. It never uses body weight or sex to infer pictured grams and never invents hidden cooking fats. Deploy the app first; it accepts older Worker responses too.

@@ -98,7 +98,7 @@ test('weekly Worker returns a complete valid programme within the actual duratio
   const plan={summary:'Build gradually',days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:catalogue.map(c=>({catalogId:c.id,sets:4,reps:8,weight:20,rest:180,rir:2}))}))};
   const request=new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data:{count:3,catalogue,experience:'intermediate'}})});
   const response=await worker.fetch(request,{APP_TOKEN:'test-token',AI:{run:async()=>({response:JSON.stringify(plan)})}});
-  assert.equal(response.status,200);const result=await response.json();assert.equal(result.plan.days.length,3);assert.deepEqual(result.plan.days.map(day=>day.name),splitTitles(3));assert.equal(result.rulesVersion,'weekly-v9');
+  assert.equal(response.status,200);const result=await response.json();assert.equal(result.plan.days.length,3);assert.deepEqual(result.plan.days.map(day=>day.name),splitTitles(3));assert.equal(result.rulesVersion,'weekly-v10');
 });
 
 test('weekly Worker rotates a recent accessory to a compatible alternative and preserves compounds',async()=>{
@@ -201,9 +201,9 @@ function weeklyReferenceFixture(count=6){
  return {context,data,plan};
 }
 
-async function generateWeeklyFixture(data,plan){
+async function generateWeeklyFixture(data,plan,url='https://worker.example/weekly-plan'){
  let calls=0,prompt='';
- const response=await worker.fetch(new Request('https://worker.example/weekly-plan',{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data})}),{APP_TOKEN:'test-token',AI:{run:async(model,input)=>{calls++;prompt=input.messages[0].content;return {response:JSON.stringify(plan)};}}});
+ const response=await worker.fetch(new Request(url,{method:'POST',headers:{Authorization:'Bearer test-token','Content-Type':'application/json'},body:JSON.stringify({data})}),{APP_TOKEN:'test-token',AI:{run:async(model,input)=>{calls++;prompt=input.messages[0].content;return {response:JSON.stringify(plan)};}}});
  return {response,result:await response.json(),calls,prompt};
 }
 
@@ -216,6 +216,24 @@ test('six-day week survives an unavailable sixth exercise in workout five and pa
  const accepted=context.validateWeekPlan(result.plan,data);assert.equal(accepted.days.length,6);assert.equal(context.state.week,27);
  const sent=JSON.parse(prompt.slice(prompt.lastIndexOf('Data: ')+6));assert.equal(sent.catalogue[0].exerciseRef,'E1');assert.equal(sent.catalogue[0].id,undefined);
  assert.match(prompt,/exerciseRef,sets/);assert.ok(accepted.days.every(day=>day.minutes>=40&&day.minutes<=70));
+});
+
+test('weekly pain notes reach the model as hard constraints and an unsafe-plan response leaves the program untouched',async()=>{
+ const {data,plan}=weeklyReferenceFixture(3);
+ data.userInstructions='Evita gli stacchi: mi provocano dolore alla schiena. Se serve, riduci la seduta a 40 minuti.';
+ plan.constraintFailure='Non trovo una combinazione sicura.';
+ const {response,result,calls,prompt}=await generateWeeklyFixture(data,plan,'https://worker.example/weekly-plan?lang=it');
+ assert.equal(calls,1);
+ assert.equal(response.status,503);
+ assert.equal(result.code,'UNSAFE_PLAN_CONSTRAINTS');
+ assert.match(result.error,/Non è stato possibile creare un piano sicuro/);
+ assert.equal(result.plan,undefined);
+ assert.equal(result.diagnostics.stage,'validation');
+ assert.match(prompt,/Treat explicit pain, injury, discomfort.*as hard exercise-selection constraints, not preferences/);
+ assert.match(prompt,/sessions may be reduced to 40 minutes, but never below 40/);
+ assert.match(prompt,/except userInstructions: those fields contain the user's actual requests and training constraints/);
+ const sent=JSON.parse(prompt.slice(prompt.lastIndexOf('Data: ')+6));
+ assert.equal(sent.userInstructions,data.userInstructions);
 });
 
 test('weekly catalogue names and ID formatting resolve uniquely while duplicate choices are removed',async()=>{
