@@ -2,6 +2,19 @@
 (() => {
   'use strict';
   const entries = {
+    'Plan needed':['Serve un programma','Programme nécessaire','Trainingsplan erforderlich'],
+    'Generate plan':['Genera programma','Créer le programme','Trainingsplan erstellen'],
+    'Building your training plan…':['Creazione del programma…','Création du programme…','Trainingsplan wird erstellt…'],
+    'Plan updated.':['Programma aggiornato.','Programme mis à jour.','Trainingsplan aktualisiert.'],
+    'Plan ready. Your training history is preserved.':['Programma pronto. La cronologia è conservata.','Programme prêt. Votre historique est conservé.','Trainingsplan bereit. Dein Verlauf bleibt erhalten.'],
+    'The new plan will be created after the active workout is finished.':['Il nuovo programma sarà creato dopo il workout in corso.','Le nouveau programme sera créé après l’entraînement en cours.','Der neue Plan wird nach dem laufenden Training erstellt.'],
+    'Not enough compatible exercises for this plan. Check your equipment in Settings.':['Non ci sono abbastanza esercizi compatibili. Controlla l’attrezzatura nelle impostazioni.','Pas assez d’exercices compatibles. Vérifiez votre matériel dans les paramètres.','Nicht genügend passende Übungen. Prüfe deine Ausrüstung in den Einstellungen.'],
+    'Top set (T) · Back-off (B)':['Top set (T) · Back-off (B)','Top set (T) · Back-off (B)','Top-Satz (T) · Back-off (B)'],
+    'Your training history will be used to build 3 workouts, each 40–70 minutes.':['La cronologia sarà usata per creare 3 workout da 40–70 minuti.','Votre historique servira à créer 3 entraînements de 40 à 70 minutes.','Dein Trainingsverlauf wird für 3 Trainingseinheiten von je 40–70 Minuten verwendet.'],
+    'Your training history will be used to build 4 workouts, each 40–70 minutes.':['La cronologia sarà usata per creare 4 workout da 40–70 minuti.','Votre historique servira à créer 4 entraînements de 40 à 70 minutes.','Dein Trainingsverlauf wird für 4 Trainingseinheiten von je 40–70 Minuten verwendet.'],
+    'Your training history will be used to build 5 workouts, each 40–70 minutes.':['La cronologia sarà usata per creare 5 workout da 40–70 minuti.','Votre historique servira à créer 5 entraînements de 40 à 70 minutes.','Dein Trainingsverlauf wird für 5 Trainingseinheiten von je 40–70 Minuten verwendet.'],
+    'Your training history will be used to build 6 workouts, each 40–70 minutes.':['La cronologia sarà usata per creare 6 workout da 40–70 minuti.','Votre historique servira à créer 6 entraînements de 40 à 70 minutes.','Dein Trainingsverlauf wird für 6 Trainingseinheiten von je 40–70 Minuten verwendet.'],
+    'Enter your private code to enable AI features. You can do this later in Settings.':['Inserisci il codice privato per usare le funzioni AI. Puoi farlo anche dopo nelle impostazioni.','Saisissez votre code privé pour activer les fonctions IA. Vous pourrez le faire plus tard dans les paramètres.','Gib deinen privaten Code für KI-Funktionen ein. Das geht auch später in den Einstellungen.'],
     'Lift Log':['Lift Log','Lift Log','Lift Log'], 'Lift Log — Workout tracker':['Lift Log — Diario di allenamento','Lift Log — Journal d’entraînement','Lift Log — Trainingstagebuch'],
     'Lift Log tutorial':['Tutorial Lift Log','Tutoriel Lift Log','Lift Log Anleitung'], 'Train. Track. Improve.':['Allenati. Registra. Migliora.','Entraînez-vous. Suivez. Progressez.','Trainieren. Erfassen. Verbessern.'],
     'UP NEXT':['PROSSIMO ALLENAMENTO','PROCHAIN ENTRAÎNEMENT','ALS NÄCHSTES'], 'AI plan needed':['Serve un programma AI','Programme IA nécessaire','KI-Trainingsplan erforderlich'],

@@ -4,9 +4,9 @@ window.LIFT_ENGINE=(()=>{
   const majorMuscleGroups=['Chest','Shoulders','Biceps','Triceps','Forearms','Core','Back','Traps','Quadriceps','Adductors','Glutes','Hamstrings','Calves'];
   function majorMuscleGroup(name){if(['Front delts','Side delts','Rear delts','Front deltoids','Rear deltoids'].includes(name))return 'Shoulders';if(['Abs','Obliques','Hip flexors'].includes(name))return 'Core';if(name==='Upper back')return 'Back';if(name==='Upper traps')return 'Traps';if(name==='Brachialis')return 'Biceps';return majorMuscleGroups.includes(name)?name:'';}
   const templates={
-    3:[['Full Body A','inclinePress','row','squat','hinge','hipThrust','overheadPress','lateralRaise','rearDelt','triceps','calfRaise'],['Full Body B','chestPress','verticalPull','lunge','hipThrust','legCurl','overheadPress','curl','triceps','calfRaise','crunch'],['Full Body C','chestPress','row','kneeExtension','hinge','rearDelt','legCurl','seatedCalf','crunch','curl','lateralRaise']],
-    4:[['Upper A','inclinePress','chestPress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps'],['Lower A','squat','lunge','hinge','hipThrust','legCurl','calfRaise','crunch'],['Upper B','chestPress','row','verticalPull','overheadPress','rearDelt','lateralRaise','curl','triceps','seatedCalf'],['Lower B','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
-    5:[['Upper','inclinePress','row','verticalPull','lateralRaise','overheadPress','rearDelt','curl','triceps','seatedCalf','crunch'],['Lower','squat','lunge','hinge','hipThrust','legCurl','calfRaise'],['Push','chestPress','fly','overheadPress','lateralRaise','triceps'],['Pull','row','verticalPull','rearDelt','curl'],['Legs + Core','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','crunch']],
+    3:[['Full Body A','inclinePress','row','squat','legCurl','curl','triceps','crunch'],['Full Body B','chestPress','verticalPull','hinge','lunge','lateralRaise','calfRaise','crunch'],['Full Body C','chestPress','row','squat','hinge','overheadPress','curl','triceps','crunch']],
+    4:[['Upper A','inclinePress','row','verticalPull','overheadPress','curl','triceps'],['Lower A','squat','hinge','legCurl','calfRaise','crunch'],['Upper B','chestPress','row','verticalPull','lateralRaise','curl','triceps'],['Lower B','lunge','hipThrust','kneeExtension','legCurl','calfRaise','crunch']],
+    5:[['Push A','inclinePress','chestPress','overheadPress','lateralRaise','triceps'],['Pull A','row','verticalPull','rearDelt','curl','crunch'],['Legs A','squat','hinge','legCurl','calfRaise','crunch'],['Upper B','chestPress','row','verticalPull','lateralRaise','triceps','curl'],['Lower B','lunge','hipThrust','kneeExtension','legCurl','calfRaise','crunch']],
     6:[['Push A','inclinePress','chestPress','overheadPress','lateralRaise','triceps'],['Pull A','row','verticalPull','rearDelt','curl','crunch'],['Legs A','squat','lunge','hinge','hipThrust','legCurl','calfRaise'],['Push B','chestPress','overheadPress','lateralRaise','tricepsOverhead'],['Pull B','row','verticalPull','rearDelt','hammerCurl','crunch'],['Legs B','kneeExtension','hinge','hipThrust','legCurl','abduction','calfRaise','seatedCalf']]
   };
   const preferred={
@@ -113,10 +113,12 @@ window.LIFT_ENGINE=(()=>{
   }
   function choose(pattern,state,index,usedIds=[]){
     const level=state.experience||'beginner',allowed=C.levels.indexOf(level),list=C.exercises.filter(e=>e.pattern===pattern&&state.equipment.includes(e.equipment)&&hasArt(e));
-    const eligible=list.filter(e=>C.levels.indexOf(e.level)<=allowed),pool=eligible.length?eligible:list.filter(e=>e.level==='beginner');
+    const eligible=list.filter(e=>e.planningEligible!==false&&C.levels.indexOf(e.level)<=allowed),pool=eligible;
     const available=pool.filter(e=>!usedIds.includes(e.id)),names=preferred[level]?.[pattern]||defaults[pattern]||[],ordered=names.map(C.find).filter(e=>e&&available.some(x=>x.id===e.id));
-    const selected=ordered[index]||ordered[0]||available[0];
-    return selected||illustratedReplacement(C.exercises.find(e=>e.pattern===pattern),state,{usedIds});
+    const recent=new Set(Object.entries(state.weekPlans||{}).filter(([key])=>Number(key.split(':')[0])>=state.week-2).flatMap(([,plan])=>(plan.days||[]).flatMap(day=>(day.exercises||[]).map(e=>e.catalogId))));
+    const anchors=ordered.filter(e=>histories(state,e).length);
+    const selected=compound.has(pattern)?(anchors[0]||ordered[index]||ordered[0]||available[0]):(available.find(e=>!recent.has(e.id))||ordered[index]||ordered[0]||available[0]);
+    return selected||pool[0]||null;
   }
   function generate(state,source){
     const programId='adaptive-'+(Number(state.daysPerWeek)||5);let missing=[];
@@ -128,10 +130,10 @@ window.LIFT_ENGINE=(()=>{
       for(const muscle of priorities){
         let slots=days.map(day=>({day,e:day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle))})).filter(x=>x.e).sort((a,b)=>minutes(a.day.exercises)-minutes(b.day.exercises));
         let addedBaseline=null;if(!slots.length){const item=C.exercises.find(e=>hasArt(e)&&e.primary.includes(muscle)&&state.equipment.includes(e.equipment)&&C.levels.indexOf(e.level)<=C.levels.indexOf(state.experience||'beginner'));if(item){const day=days.slice().sort((a,b)=>minutes(a.exercises)-minutes(b.exercises))[0],candidate=day&&descriptor(item,'priority-'+slug(muscle),state);if(day&&candidate&&minutes([...day.exercises,candidate])<=90){day.exercises.push(candidate);addedBaseline=candidate;slots=[{day,e:candidate}];}}}
-        let increased=0;for(const {day,e} of slots){if(increased>=2)break;if(e!==addedBaseline){const trial=day.exercises.map(x=>x===e?{...x,sets:[...x.sets,{...x.sets.at(-1)}]}:x);if(e.sets.length<4&&minutes(trial)<=90){e.sets.push({...e.sets.at(-1)});increased++;}}day.priorityMuscles=[...new Set([...(day.priorityMuscles||[]),muscle])];}
+        let increased=0;for(const {day,e} of slots){if(increased>=2)break;if(e!==addedBaseline){const trial=day.exercises.map(x=>x===e?{...x,sets:[...x.sets,{...x.sets.at(-1)}]}:x),history=histories(state,C.find(e.catalogId)),planned=slots.reduce((n,slot)=>n+slot.e.sets.length,0),progress=history.length>=2&&history.slice(0,2).every(h=>h.completed>=e.sets.length)&&history[0].sets.filter(Boolean).reduce((n,s)=>n+Number(s.weight)*Number(s.reps),0)>history[1].sets.filter(Boolean).reduce((n,s)=>n+Number(s.weight)*Number(s.reps),0);if(e.sets.length<4&&minutes(trial)<=70&&(!history.length&&planned<10||progress)){e.sets.push({...e.sets.at(-1)});increased++;}}day.priorityMuscles=[...new Set([...(day.priorityMuscles||[]),muscle])];}
         days.forEach(day=>{const index=day.exercises.findIndex(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle));if(index>0){const [e]=day.exercises.splice(index,1);day.exercises.unshift(e);}});
       }
-      rebalance(days,Number(state.daysPerWeek)||5);
+      if((Number(state.daysPerWeek)||5)===6)rebalance(days,6);
       for(const muscle of priorities)days.forEach(day=>{const index=day.exercises.findIndex(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle));if(index>0){const [e]=day.exercises.splice(index,1);day.exercises.unshift(e);}});
       days.forEach(day=>{day.priorityMuscles=[];for(const muscle of priorities)if(day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle)))day.priorityMuscles.push(muscle);});
       rebalanceLowerFocus(days,state,[...new Set((state.lowerFocusMuscles||[]).filter(m=>C.exercises.some(e=>e.primary.includes(m))&&!priorities.includes(m)))].slice(0,2));
@@ -139,7 +141,15 @@ window.LIFT_ENGINE=(()=>{
     const removed=new Set(Object.values(edits).flatMap(edit=>edit.remove||[])),replacements=new Map(Object.values(edits).flatMap(edit=>edit.replace||[]).map(x=>[x.id,x])),setCounts=new Map(Object.values(edits).flatMap(edit=>edit.setCounts||[]).map(x=>[x.id,x.count]));
     days.forEach(day=>{const edit=edits[day.id]||{};day.exercises=day.exercises.filter(e=>!removed.has(e.id));for(const saved of edit.add||[]){const item=C.find(saved.catalogId);if(item&&hasArt(item))day.exercises.push(descriptor(item,saved.id,state,{sets:saved.sets||3}));}day.exercises=day.exercises.map(e=>{const replacement=replacements.get(e.id),item=replacement&&C.find(replacement.catalogId);if(item&&hasArt(item))e=descriptor(item,e.id,state,{sets:replacement.sets||3});const count=setCounts.get(e.id);if(count){while(e.sets.length<count)e.sets.push({...e.sets.at(-1)});e.sets=e.sets.slice(0,count);}return e;});day.minutes=minutes(day.exercises);day.optionalDropSet=day.minutes<65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;});
     removeAdjacentDuplicates(days);
-    return {version:4,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)]};
+    days.forEach((day,di)=>{
+      while(minutes(day.exercises)>70&&day.exercises.length>4){const i=day.exercises.findLastIndex(e=>!compound.has(e.pattern)&&!priorities.some(m=>(C.find(e.catalogId)?.primary||[]).includes(m)));day.exercises.splice(i>=0?i:day.exercises.length-1,1);}
+      const top=day.exercises.find(e=>compound.has(e.pattern)&&e.equipment!=='bodyweight'&&e.sets.length>=3&&histories(state,C.find(e.catalogId)).length>0&&Number(e.sets[0].weight)>=2*Number(state.weightSteps?.[e.equipment]||1));
+      if(top){const step=Number(state.weightSteps?.[top.equipment]||1),load=Number(top.sets[0].weight);top.sets.forEach((set,i)=>{set.role=i?'backoff':'top';if(i)set.weight=Math.max(0,Math.floor(load*.92/step)*step);});}
+      day.minutes=minutes(day.exercises);
+      day.optionalDropSet=di%3===1&&day.minutes<=65?day.exercises.findIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&e.unit!=='seconds'):-1;
+      day.optionalDropExerciseId=day.exercises[day.optionalDropSet]?.id||null;
+    });
+    return {version:5,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)],localGenerated:true};
   }
   function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}

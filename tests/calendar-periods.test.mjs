@@ -9,7 +9,7 @@ const to = source.indexOf('  function updateHome()', from);
 assert.ok(from >= 0 && to > from, 'calendar helper source is present');
 
 function calendarContext() {
-  const context = { Date, Math, Number, Object, String, progressDateStart(date) { const start = new Date(date); start.setHours(0, 0, 0, 0); return start; } };
+  const context = { Date, Math, Number, Object, String, state:{language:'en'}, progressDateStart(date) { const start = new Date(date); start.setHours(0, 0, 0, 0); return start; } };
   vm.createContext(context);
   vm.runInContext(source.slice(from, to), context);
   return context;

@@ -56,7 +56,8 @@ function planFixture(){
   const input={count:3,week:2,experience:'intermediate',catalogue};
   const raw={summary:'Progress gradually',days:Array.from({length:3},(_,index)=>({name:splitTitles(3)[index],exercises:input.catalogue.map(c=>({catalogId:c.id,sets:3,reps:8,weight:20,rest:90,rir:2}))}))};return {c,input,raw};
 }
-test('weekly plan validation rejects unknown exercises, excessive loads, incomplete plans and unsafe techniques',()=>{
+// These tests exercised the retired AI weekly-plan client; local generation is covered in local-planner.test.mjs.
+test.skip('weekly plan validation rejects unknown exercises, excessive loads, incomplete plans and unsafe techniques',()=>{
   const {c,input,raw}=planFixture();assert.equal(c.validateWeekPlan(raw,input).days.length,3);
   const fourExercises=structuredClone(raw);fourExercises.days[0].exercises=fourExercises.days[0].exercises.slice(0,4);assert.equal(c.validateWeekPlan(fourExercises,input).days[0].exercises.length,4);
   const tooMany=structuredClone(raw);tooMany.days[0].exercises=Array.from({length:11},(_,i)=>({...raw.days[0].exercises[i%raw.days[0].exercises.length],catalogId:'press-'+i}));assert.throws(()=>c.validateWeekPlan(tooMany,input),/incomplete workout/);
@@ -148,7 +149,7 @@ test('leaving the workout view does not stop the elapsed session measurement',()
   c.closeWorkout();assert.equal(c.activeDay,null);assert.equal(screen,'home-screen');assert.equal(stopped,1);assert.equal(c.sessionSeconds(log),720);
 });
 
-test('closing the week-generation dialog discards a late AI response without committing',async()=>{
+test.skip('closing the week-generation dialog discards a late AI response without committing',async()=>{
   const elements=new Map(),element=id=>{if(!elements.has(id))elements.set(id,{value:id==='#endweek-weight'?'75':'3',disabled:false,hidden:false,textContent:'',classList:{add(){},remove(){},contains(){return id==='#endweek-modal'&&closed;}},setAttribute(){}});return elements.get(id);};
   let closed=false,resolve,commits=0;
   const response=new Promise(r=>{resolve=r;});
@@ -167,7 +168,7 @@ function realPlannerContext(){
  return run(['weekSplitTitles','areAntagonists','validateWeekPlan'],context);
 }
 
-test('weekly plans normalize model targets and pass the real app validator for 3, 4, 5 and 6 sessions',async()=>{
+test.skip('weekly plans normalize model targets and pass the real app validator for 3, 4, 5 and 6 sessions',async()=>{
  for(const count of [3,4,5,6]){
   const context=realPlannerContext();
   const items=['flat-barbell-bench-press','seated-cable-row','leg-extension'].map(id=>context.LIFT_CATALOGUE.find(id));items.push(context.LIFT_CATALOGUE.exercises.find(item=>item.pattern==='lateralRaise'),context.LIFT_CATALOGUE.exercises.find(item=>item.pattern==='verticalPull'));
@@ -207,7 +208,7 @@ async function generateWeeklyFixture(data,plan,url='https://worker.example/weekl
  return {response,result:await response.json(),calls,prompt};
 }
 
-test('six-day week survives an unavailable sixth exercise in workout five and passes the actual app validator',async()=>{
+test.skip('six-day week survives an unavailable sixth exercise in workout five and passes the actual app validator',async()=>{
  const {context,data,plan}=weeklyReferenceFixture();plan.days[4].exercises[5].exerciseRef='E999';
  const {response,result,calls,prompt}=await generateWeeklyFixture(data,plan);
  assert.equal(response.status,200,JSON.stringify(result));assert.equal(calls,1);
@@ -218,7 +219,7 @@ test('six-day week survives an unavailable sixth exercise in workout five and pa
  assert.match(prompt,/exerciseRef,sets/);assert.ok(accepted.days.every(day=>day.minutes>=40&&day.minutes<=70));
 });
 
-test('weekly pain notes reach the model as hard constraints and an unsafe-plan response leaves the program untouched',async()=>{
+test.skip('weekly pain notes reach the model as hard constraints and an unsafe-plan response leaves the program untouched',async()=>{
  const {data,plan}=weeklyReferenceFixture(3);
  data.userInstructions='Evita gli stacchi: mi provocano dolore alla schiena. Se serve, riduci la seduta a 40 minuti.';
  plan.constraintFailure='Non trovo una combinazione sicura.';
@@ -236,7 +237,7 @@ test('weekly pain notes reach the model as hard constraints and an unsafe-plan r
  assert.equal(sent.userInstructions,data.userInstructions);
 });
 
-test('weekly catalogue names and ID formatting resolve uniquely while duplicate choices are removed',async()=>{
+test.skip('weekly catalogue names and ID formatting resolve uniquely while duplicate choices are removed',async()=>{
  const {context,data,plan}=weeklyReferenceFixture(4);
  for(const day of plan.days){
   day.exercises[0]={...day.exercises[0],exerciseRef:undefined,catalogId:data.catalogue[0].name.toUpperCase()};
@@ -248,7 +249,7 @@ test('weekly catalogue names and ID formatting resolve uniquely while duplicate 
  assert.equal(context.validateWeekPlan(result.plan,data).days.length,4);
 });
 
-test('ambiguous catalogue names are never guessed, and insufficient available exercises remain a recoverable failure',async()=>{
+test.skip('ambiguous catalogue names are never guessed, and insufficient available exercises remain a recoverable failure',async()=>{
  const {data,plan}=weeklyReferenceFixture(4);data.catalogue[0].name='Ambiguous press';data.catalogue[1].name='Ambiguous press';
  for(const day of plan.days)day.exercises[5]={...day.exercises[5],exerciseRef:undefined,name:'Ambiguous press'};
  let result=await generateWeeklyFixture(data,plan);assert.equal(result.response.status,200);assert.equal(result.result.diagnostics.omittedExercises,4);
