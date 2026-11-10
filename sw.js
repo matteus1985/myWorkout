@@ -1,20 +1,23 @@
-const CACHE = 'lift-log-shell-v141';
+const CACHE = 'lift-log-shell-v143';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
   './', './index.html', './manifest.json', './icon.svg', './icon.svg?v=liftlog-20261030-onboarding-v100', './sw.js',
   './i18n.js?v=liftlog-i18n-v10',
   './i18n-data.js?v=liftlog-i18n-v10',
-  './catalogue.js?v=liftlog-20261030-onboarding-v100',
+  './exercise-media-retired.js?v=liftlog-exercise-media-v2',
+  './catalogue.js?v=liftlog-exercise-catalogue-v2',
   './planner.js?v=liftlog-20261030-onboarding-v100',
   './exercise-art.js?v=liftlog-20261030-onboarding-v100',
   './exercise-gif-map.js?v=liftlog-20261030-onboarding-v100',
+  './exercise-media-overrides.js?v=liftlog-exercise-media-v2',
   './nutrition-data.js?v=liftlog-20261030-onboarding-v100',
   './nutrition.js?v=liftlog-20261030-onboarding-v100',
   './app.js?v=liftlog-20261030-onboarding-v100',
   './coach.js?v=liftlog-20261030-onboarding-v100',
   './material.css?v=liftlog-20261030-onboarding-v100',
-  './media/muscle-map-anatomy.png?v=liftlog-20261030-onboarding-v100'
+  './media/muscle-map-anatomy.png?v=liftlog-20261030-onboarding-v100',
+  './data/exercises/images/bird-dog.svg'
 ];
 
 async function cacheShellFile(cache, path) {

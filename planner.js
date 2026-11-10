@@ -123,9 +123,9 @@ window.LIFT_ENGINE=(()=>{
   function generate(state,source){
     const programId='adaptive-'+(Number(state.daysPerWeek)||5);let missing=[];
     let days;
-      const seen={};let previousDayIds=[];days=templates[Number(state.daysPerWeek)||5].map((row,di)=>{const used=[...previousDayIds];const day={id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then 1–3 progressively heavier warm-up sets for your first compound exercises.',exercises:row.slice(1).map((p,ei)=>{
-        const item=choose(p,state,seen[p]||0,used);seen[p]=(seen[p]||0)+1;if(!item){missing.push(p);return null;}used.push(item.id);return descriptor(item,'d'+(di+1)+'-slot'+ei,state);
-      }).filter(Boolean)};previousDayIds=day.exercises.map(e=>e.catalogId);return day;});
+      const seen={};const usedThisWeek=[];days=templates[Number(state.daysPerWeek)||5].map((row,di)=>{const day={id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then 1–3 progressively heavier warm-up sets for your first compound exercises.',exercises:row.slice(1).map((p,ei)=>{
+        const item=choose(p,state,seen[p]||0,usedThisWeek);seen[p]=(seen[p]||0)+1;if(!item){missing.push(p);return null;}usedThisWeek.push(item.id);return descriptor(item,'d'+(di+1)+'-slot'+ei,state);
+      }).filter(Boolean)};return day;});
       const priorities=[...new Set((state.priorityMuscles||[]).filter(m=>C.exercises.some(e=>e.primary.includes(m))))].slice(0,2);
       for(const muscle of priorities){
         let slots=days.map(day=>({day,e:day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes(muscle))})).filter(x=>x.e).sort((a,b)=>minutes(a.day.exercises)-minutes(b.day.exercises));

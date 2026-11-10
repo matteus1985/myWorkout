@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 240" role="img" aria-label="Bird dog exercise">
+  <rect width="320" height="240" rx="20" fill="#f4f5f7"/>
+  <path d="M34 190H286" stroke="#d1d5db" stroke-width="4" stroke-linecap="round"/>
+  <g fill="none" stroke="#30343b" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M91 111Q135 88 189 103L226 115"/>
+    <path d="M212 109Q235 96 247 105"/>
+    <path d="M101 113L82 165L57 177"/>
+    <path d="M119 114L132 163L156 176"/>
+    <g transform-origin="202px 108px">
+      <path d="M202 108L219 152L246 166"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 202 108;-24 202 108;0 202 108" dur="2.4s" repeatCount="indefinite"/>
+    </g>
+    <g transform-origin="100px 110px">
+      <path d="M100 110L79 146L56 150"/>
+      <animateTransform attributeName="transform" type="rotate" values="0 100 110;20 100 110;0 100 110" dur="2.4s" repeatCount="indefinite"/>
+    </g>
+  </g>
+  <circle cx="258" cy="99" r="24" fill="#30343b"/>
+  <circle cx="266" cy="94" r="3.5" fill="#fff"/>
+  <path d="M248 78Q260 68 274 78" fill="none" stroke="#30343b" stroke-width="8" stroke-linecap="round"/>
+</svg>
