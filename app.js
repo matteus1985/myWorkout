@@ -161,7 +161,7 @@
   for(const id of ['endweek-close','endweek-cancel'])$('#'+id).addEventListener('click',()=>{weekRequestVersion++;weekRequest?.abort();weekRequest=null;$('#next-week-days').disabled=false;});
   let pendingWeekPlan=null;
   let weekRequest=null,weekRequestVersion=0;
-  function refreshNextWeekPreview(){pendingWeekPlan=null;weekRequestVersion++;weekRequest?.abort();weekRequest=null;$('#endweek-modal').classList.remove('has-week-error');$('#next-week-preview').textContent='Your training history will be used to build '+$('#next-week-days').value+' workouts, each 40–70 minutes.';$('#endweek-confirm').disabled=false;$('#endweek-confirm').textContent='Create next week';$('#endweek-local').hidden=true;$('#endweek-summary').textContent=currentCalendarWeekSummary();}
+  function refreshNextWeekPreview(){pendingWeekPlan=null;weekRequestVersion++;weekRequest?.abort();weekRequest=null;$('#endweek-modal').classList.remove('has-week-error');const count=Number($('#next-week-days').value),duration=count<=4?'40–80':'40–70';$('#next-week-preview').textContent='Your training history will be used to build '+count+' workouts, each '+duration+' minutes.';$('#endweek-confirm').disabled=false;$('#endweek-confirm').textContent='Create next week';$('#endweek-local').hidden=true;$('#endweek-summary').textContent=currentCalendarWeekSummary();}
   function confirmEndWeek(){
     const weight=Number($('#endweek-weight').value),count=Number($('#next-week-days').value);
     if(!(weight>=30&&weight<=350)){showToast('Enter your average weight first.');return;}
@@ -169,7 +169,7 @@
     try{
       const nextState={...state,week:state.week+1,daysPerWeek:count,nutrition:{...state.nutrition,profile:{...state.nutrition.profile,currentWeightKg:weight}}};
       const plan=LIFT_ENGINE.generate(nextState);
-      if(plan.days.length!==count||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<40||day.minutes>70))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
+      const maxMinutes=count<=4?80:70;if(plan.days.length!==count||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<40||day.minutes>maxMinutes))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
       pendingWeekPlan={plan};commitEndWeek();
     }catch(error){$('#next-week-preview').textContent=error.message||'Could not build the plan. Check your settings.';$('#endweek-modal').classList.add('has-week-error');}
   }
@@ -187,7 +187,7 @@
     state=next;days=LIFT_ENGINE.clone(pendingWeekPlan.plan.days);pendingWeekPlan=null;activeDay=null;stopRestTimer();$('#endweek-modal').classList.add('hidden');updateHome();updateProgressScreen();renderSettings();setScreen('home-screen');showToast('New week plan is ready.');
   }
 
-  const CATALOGUE_MIGRATION='local-hypertrophy-v1';
+  const CATALOGUE_MIGRATION='local-hypertrophy-v2';
   async function generateCurrentAIPlan(preferences={},force=false){
     if(currentPlanBusy)return;
     if(state.storageRecovery){$('#plan-generation-status').textContent='Saved data could not be read. Restore a backup before updating your plan.';return;}
@@ -198,7 +198,7 @@
     currentPlanBusy=true;const status=$('#plan-generation-status'),button=$('#apply-plan');button.disabled=true;status.textContent='Building your training plan…';
     try{
       const next=LIFT_ENGINE.clone(state);Object.assign(next,preferences);delete next.pendingLocalPlan;
-      const plan=LIFT_ENGINE.generate(next);if(plan.days.length!==Number(next.daysPerWeek)||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<40||day.minutes>70))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
+      const maxMinutes=Number(next.daysPerWeek)<=4?80:70,plan=LIFT_ENGINE.generate(next);if(plan.days.length!==Number(next.daysPerWeek)||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<40||day.minutes>maxMinutes))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
       next.planRevision=(Number(next.planRevision)||0)+1;next.weekPlans[next.week+':'+next.planRevision]=plan;next.catalogueMigration=CATALOGUE_MIGRATION;
       localStorage.setItem(KEY,JSON.stringify(next));state=next;days=LIFT_ENGINE.clone(plan.days);renderSettings();updateHome();updateProgressScreen();status.textContent='Plan updated.';showToast('Plan ready. Your training history is preserved.',1800);
     }catch(error){status.textContent=error.message||'Could not create your plan.';showToast(status.textContent);}
