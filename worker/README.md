@@ -1,3 +1,7 @@
+# Candid workout reviews — 2026-11-16
+
+Worker version `2026-11-16-direct-workout-review-v14` keeps workout reviews supportive but technically grounded. It assesses completed work against the plan and comparable logged performance, calls out missed work or stalled performance plainly, and gives a high-level challenge without automatic praise or set-by-set micromanagement. Upload the complete `cloudflare-upload.js` file or deploy `src/index.mjs` to activate the change. The three Worker files are kept identical.
+
 # Progress insight update — 2026-10-30
 
 The current Worker prompt now produces a short motivational progress recap: training trend, where performance is strong, one broad improvement area, and goal trajectory only when weight check-ins support it. It limits progress reviews to a concise summary and at most two brief points. Worker version: 2026-10-30-progress-v11. Upload cloudflare-upload.js (or deploy src/index.mjs) if you want this prompt in Cloudflare.

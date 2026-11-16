@@ -60,10 +60,10 @@ window.LIFT_ENGINE=(()=>{
     })};
   }
   function descriptor(item,id,state,{sets=3,baseline=false}={}){
-    const [min,max]=range(item),planned=targets(state,item,Array.from({length:sets},()=>({weight:null,min,max})),baseline);
+    const [min,max]=item.primary.includes('Abs')?[10,15]:range(item),planned=targets(state,item,Array.from({length:sets},()=>({weight:null,min,max})),baseline);
     return {id,catalogId:item.id,name:item.name,muscle:item.primary.join(' · '),equipment:item.equipment,pattern:item.pattern,level:item.level,unit:item.unit,sets:planned.sets,rest:compound.has(item.pattern)?150:90,note:'',estimated:planned.estimated,estimateSource:planned.estimateSource||null};
   }
-  function minutes(exercises){const paired=new Set();let total=8;for(const e of exercises){const minis=e.sets.filter(s=>s.mini).length;total+=e.sets.length*.75+1.5;if(e.supersetGroup){if(!paired.has(e.supersetGroup)){paired.add(e.supersetGroup);total+=(e.sets.length-1)*e.rest/60;}}else total+=minis*.25+Math.max(0,e.sets.length-1-minis)*e.rest/60;}return Math.ceil(total/5)*5;}
+  function minutes(exercises){const paired=new Set();let total=12;for(const e of exercises){const minis=e.sets.filter(s=>s.mini).length;const unilateral=/single.arm|one.arm|single.leg|one.leg|split squat|bulgarian|bayesian/i.test(e.name);total+=e.sets.length*(unilateral?1.5:.75)+1.5;if(e.supersetGroup){if(!paired.has(e.supersetGroup)){paired.add(e.supersetGroup);total+=(e.sets.length-1)*e.rest/60;}}else total+=minis*.25+Math.max(0,e.sets.length-1-minis)*e.rest/60;}return Math.ceil(total/5)*5;}
   function removeLegAccessory(days,preferred,order){
     const groups=new Set(['Quadriceps','Hamstrings','Glutes','Calves']);
     const dayOrder=[...preferred,...days.map(d=>d.id).filter(id=>!preferred.includes(id))];
@@ -93,7 +93,7 @@ window.LIFT_ENGINE=(()=>{
         const index=day.exercises.findIndex(exercise=>{const item=C.find(exercise.catalogId);return item?.primary.includes(muscle)&&isolation.has(exercise.pattern);});
         if(index<0)continue;
         const old=day.exercises[index],dayMuscles=new Set(day.exercises.filter((_,i)=>i!==index).flatMap(exercise=>C.find(exercise.catalogId)?.primary||[]).filter(group=>!focus.has(group)));
-        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!item.primary.some(group=>['Abs','Calves'].includes(group)&&day.exercises.some((exercise,i)=>i!==index&&(C.find(exercise.catalogId)?.primary||[]).includes(group)))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
+        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!item.primary.some(group=>['Abs','Calves','Glutes'].includes(group)&&day.exercises.some((exercise,i)=>i!==index&&(C.find(exercise.catalogId)?.primary||[]).includes(group)))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
         candidates.sort((a,b)=>{const score=item=>item.primary.reduce((sum,group)=>sum+(weeklySets.get(group)||0),0);return score(a)-score(b)||a.name.localeCompare(b.name);});
         const alternative=candidates[0];if(!alternative)continue;
         day.exercises[index]=descriptor(alternative,old.id,state,{sets:old.sets.length,baseline:true});
@@ -170,7 +170,7 @@ window.LIFT_ENGINE=(()=>{
     }
     return lastPool.find(e=>!usedPatterns.includes(e.pattern))||lastPool[0]||null;
   }
-  function generate(state,source){
+  function legacyGenerate(state,source){
     const programId='adaptive-'+(Number(state.daysPerWeek)||5);let missing=[];
     let days;
       const seen={};const usedThisWeek=[];days=templates[Number(state.daysPerWeek)||5].map((row,di)=>{const usedPatterns=[],day={id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then 1–3 progressively heavier warm-up sets for your first compound exercises.',exercises:row.slice(1).map((p,ei)=>{
@@ -197,6 +197,39 @@ window.LIFT_ENGINE=(()=>{
       day.optionalDropExerciseId=day.exercises[day.optionalDropSet]?.id||null;
     });
     return {version:5,programId,week:state.week,experience:state.experience,days,missingPatterns:[...new Set(missing)],localGenerated:true};
+  }
+  const newTemplates={
+    4:[['Upper A',['Incline Barbell Bench Press',3],['Neutral-Grip Lat Pulldown',3],['Seated Dumbbell Shoulder Press',3],['Chest-Supported Row',3],['Cable Lateral Raise',3],['Rope Pushdown',2],['Cable Curl',2]],['Lower A',['Back Squat',3],['Barbell Romanian Deadlift',3],['Seated Leg Curl',3],['Standing Calf Raise',3],['Cable Crunch',5]],['Upper B',['Pull-Up',3],['Machine Chest Press',3],['Seated Cable Row',3],['Reverse Pec Deck',3],['Dumbbell Lateral Raise',3],['Overhead Cable Extension',3],['Bayesian Cable Curl',3]],['Lower B',['Bulgarian Split Squat',3],['Hip Thrust Machine',3],['Leg Extension',3],['Lying Leg Curl',3],['Seated Calf Raise',3],['Ab Crunch Machine',5]]],
+    5:[['Push',['Incline Barbell Bench Press',3],['Seated Dumbbell Shoulder Press',3],['Flat Dumbbell Press',3],['Cable Lateral Raise',4],['Rope Pushdown',3]],['Pull',['Chest-Supported Row',3],['Neutral-Grip Lat Pulldown',3],['Reverse Pec Deck',3],['Preacher Curl Machine',3],['Cable Crunch',5]],['Legs',['Back Squat',3],['Barbell Romanian Deadlift',3],['Seated Leg Curl',3],['Standing Calf Raise',3]],['Upper',['Machine Chest Press',3],['Pull-Up',3],['Seated Cable Row',3],['Dumbbell Lateral Raise',4],['Overhead Cable Extension',3],['Bayesian Cable Curl',3]],['Lower',['Bulgarian Split Squat',3],['Hip Thrust Machine',3],['Leg Extension',3],['Lying Leg Curl',3],['Seated Calf Raise',3],['Ab Crunch Machine',5]]],
+    6:[['Push A',['Incline Barbell Bench Press',3],['Seated Dumbbell Shoulder Press',3],['Flat Dumbbell Press',3],['Cable Lateral Raise',3],['Rope Pushdown',3]],['Pull A',['Chest-Supported Row',3],['Neutral-Grip Lat Pulldown',3],['Reverse Pec Deck',3],['Preacher Curl Machine',3],['Cable Crunch',5]],['Legs A',['Back Squat',3],['Barbell Romanian Deadlift',3],['Seated Leg Curl',3],['Standing Calf Raise',3]],['Push B',['Machine Chest Press',3],['Dumbbell Lateral Raise',4],['Low-to-High Cable Fly',3],['Overhead Cable Extension',3]],['Pull B',['Pull-Up',3],['Seated Cable Row',3],['Cable Rear-Delt Fly',3],['Bayesian Cable Curl',3],['Ab Crunch Machine',5]],['Legs B',['Bulgarian Split Squat',3],['Hip Thrust Machine',3],['Leg Extension',3],['Lying Leg Curl',3],['Seated Calf Raise',3]]]
+  };
+  function generate(state){
+    const count=[4,5,6].includes(Number(state.daysPerWeek))?Number(state.daysPerWeek):4,cycle=Math.max(1,Math.min(6,Number(state.mesocycleWeek)||1)),used=[];
+    const allowed=C.levels.indexOf(state.experience||'beginner');
+    const days=newTemplates[count].map((row,di)=>{const exercises=[];for(const [name,sets] of row.slice(1)){
+      const target=C.find(name);if(!target)continue;
+      const fits=x=>x&&x.planningEligible!==false&&hasArt(x)&&state.equipment.includes(x.equipment)&&C.levels.indexOf(x.level)<=allowed&&!used.includes(x.id)&&!exercises.some(e=>e.pattern===x.pattern);
+      let item=fits(target)?target:null;
+      if(!item)item=C.exercises.find(x=>fits(x)&&x.pattern===target.pattern&&x.primary.some(m=>target.primary.includes(m)));
+      if(!item){const alternatives={crunch:['legRaise','antiRotation'],legCurl:['hinge'],hinge:['legCurl'],lunge:['squat'],squat:['lunge'],verticalPull:['row'],row:['verticalPull'],inclinePress:['chestPress'],chestPress:['inclinePress'],seatedCalf:['calfRaise'],calfRaise:['seatedCalf'],tricepsOverhead:['triceps'],triceps:['tricepsOverhead'],curl:['hammerCurl'],rearDelt:['facePull']};item=C.exercises.find(x=>fits(x)&&(alternatives[target.pattern]||[]).includes(x.pattern)&&x.primary.some(m=>target.primary.includes(m)));}
+      if(!item)item=C.exercises.find(x=>fits(x)&&x.primary.some(m=>target.primary.includes(m))&&(!target.primary.includes('Abs')||['crunch','legRaise','antiRotation'].includes(x.pattern)));
+      if(!item)item=C.exercises.find(x=>x.planningEligible!==false&&hasArt(x)&&state.equipment.includes(x.equipment)&&C.levels.indexOf(x.level)<=allowed&&!exercises.some(e=>e.catalogId===x.id||e.pattern===x.pattern)&&x.pattern===target.pattern&&x.primary.some(m=>target.primary.includes(m)));
+      if(!item)continue;used.push(item.id);const e=descriptor(item,'d'+(di+1)+'-slot'+exercises.length,state,{sets});
+      if(item.primary.includes('Abs'))e.sets.forEach(s=>{s.min=10;s.max=15;s.target=Math.min(15,Math.max(10,s.target));});exercises.push(e);
+    }return {id:'d'+(di+1),name:row[0],warmup:'Warm-up: 5–8 minutes of comfortable movement, then progressively heavier preparation sets.',exercises};});
+    if(count===4){const day=days[2],a=day.exercises.find(e=>e.name==='Overhead Cable Extension'),b=day.exercises.find(e=>e.name==='Bayesian Cable Curl');if(a&&b){a.supersetGroup=b.supersetGroup='arms';}}
+    const priorities=[...new Set((state.priorityMuscles||[]).map(m=>m==='Core'?'Abs':m))].slice(0,2);rebalanceLowerFocus(days,state,(state.lowerFocusMuscles||[]).filter(m=>!priorities.includes(m)));addPriorityWork(days,state,priorities);
+    for(const day of days){
+      const abs=day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs'));if(abs&&minutes(day.exercises)>70&&abs.sets.length>4)abs.sets=abs.sets.slice(0,4);
+      while(minutes(day.exercises)>75){const e=day.exercises.findLast(x=>x.sets.length>2&&x!==abs&&!priorities.some(m=>(C.find(x.catalogId)?.primary||[]).includes(m)));if(!e)break;e.sets.pop();}
+      const top=day.exercises[0],eligible=['Incline Barbell Bench Press','Chest-Supported Row','Back Squat','Machine Chest Press'].includes(top?.name);
+      if(cycle!==6&&eligible&&top.sets.length>=3){const step=Number(state.weightSteps?.[top.equipment]||1),item=C.find(top.catalogId),spec=top.sets.map((s,i)=>({...s,min:i?8:6,max:i?10:8}));top.sets=targets(state,item,spec).sets;const load=Number(top.sets[0].weight);top.sets.forEach((s,i)=>{s.role=i?'backoff':'top';if(i&&load>0)s.weight=Math.max(step,Math.round(load*.89/step)*step);});top.note='Top set: 6–8 reps, about 1 RIR. Back-off: 8–10 reps, 1–2 RIR, approximately 10–12% less weight.';}
+      if(cycle===6)for(const e of day.exercises){e.note='Deload: aim for 3–4 reps in reserve.';e.sets=e.sets.slice(0,Math.max(1,Math.ceil(e.sets.length/2)));const step=Number(state.weightSteps?.[e.equipment]||1);for(const s of e.sets)if(Number(s.weight)>0)s.weight=Math.max(step,Math.round(Number(s.weight)*.875/step)*step);}
+      day.minutes=minutes(day.exercises);day.optionalDropSet=[4,5].includes(cycle)?day.exercises.findLastIndex(e=>['cable','machine'].includes(e.equipment)&&!compound.has(e.pattern)&&!(C.find(e.catalogId)?.primary||[]).includes('Abs')&&!e.supersetGroup):-1;day.optionalDropExerciseId=day.exercises[day.optionalDropSet]?.id||null;
+    }
+    const absDays=days.filter(day=>day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs')));
+    if(absDays.length<2)for(const day of days){if(!day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs'))){const item=C.exercises.find(x=>x.primary.includes('Abs')&&hasArt(x)&&state.equipment.includes(x.equipment)&&C.levels.indexOf(x.level)<=allowed&&!used.includes(x.id));if(item){used.push(item.id);day.exercises.push(descriptor(item,'fallback-abs-'+day.id,state,{sets:4}));}}}
+    return {version:6,programId:'adaptive-'+count,week:state.week,mesocycleWeek:cycle,experience:state.experience,days,localGenerated:true};
   }
   function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
