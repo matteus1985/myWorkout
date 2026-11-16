@@ -93,7 +93,7 @@ window.LIFT_ENGINE=(()=>{
         const index=day.exercises.findIndex(exercise=>{const item=C.find(exercise.catalogId);return item?.primary.includes(muscle)&&isolation.has(exercise.pattern);});
         if(index<0)continue;
         const old=day.exercises[index],dayMuscles=new Set(day.exercises.filter((_,i)=>i!==index).flatMap(exercise=>C.find(exercise.catalogId)?.primary||[]).filter(group=>!focus.has(group)));
-        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
+        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!item.primary.some(group=>['Abs','Calves'].includes(group)&&day.exercises.some((exercise,i)=>i!==index&&(C.find(exercise.catalogId)?.primary||[]).includes(group)))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
         candidates.sort((a,b)=>{const score=item=>item.primary.reduce((sum,group)=>sum+(weeklySets.get(group)||0),0);return score(a)-score(b)||a.name.localeCompare(b.name);});
         const alternative=candidates[0];if(!alternative)continue;
         day.exercises[index]=descriptor(alternative,old.id,state,{sets:old.sets.length,baseline:true});

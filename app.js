@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.16.4';
-  const APP_PUBLISHED_AT = '2026-11-16T14:34:00+01:00';
+  const APP_VERSION = '2026.11.16.6';
+  const APP_PUBLISHED_AT = '2026-11-16T14:49:19+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -190,7 +190,7 @@
     state=next;days=LIFT_ENGINE.clone(pendingWeekPlan.plan.days);pendingWeekPlan=null;activeDay=null;stopRestTimer();$('#endweek-modal').classList.add('hidden');updateHome();updateProgressScreen();renderSettings();setScreen('home-screen');showToast('New week plan is ready.');
   }
 
-  const CATALOGUE_MIGRATION='local-hypertrophy-v3';
+  const CATALOGUE_MIGRATION='local-hypertrophy-v4';
   async function generateCurrentAIPlan(preferences={},force=false){
     if(currentPlanBusy)return;
     if(state.storageRecovery){$('#plan-generation-status').textContent='Saved data could not be read. Restore a backup before updating your plan.';return;}
@@ -201,6 +201,7 @@
     currentPlanBusy=true;const status=$('#plan-generation-status'),button=$('#apply-plan');button.disabled=true;status.textContent='Building your training plan…';
     try{
       const next=LIFT_ENGINE.clone(state);Object.assign(next,preferences);delete next.pendingLocalPlan;
+      if(state.catalogueMigration!==CATALOGUE_MIGRATION){next.persistentEdits||={};for(const id of ['adaptive-3','adaptive-4','adaptive-5','adaptive-6'])delete next.persistentEdits[id];}
       const maxMinutes=Number(next.daysPerWeek)<=4?80:70,plan=LIFT_ENGINE.generate(next);if(plan.days.length!==Number(next.daysPerWeek)||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<40||day.minutes>maxMinutes))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
       next.planRevision=(Number(next.planRevision)||0)+1;next.weekPlans[next.week+':'+next.planRevision]=plan;next.catalogueMigration=CATALOGUE_MIGRATION;
       localStorage.setItem(KEY,JSON.stringify(next));state=next;days=LIFT_ENGINE.clone(plan.days);renderSettings();updateHome();updateProgressScreen();status.textContent='Plan updated.';showToast('Plan ready. Your training history is preserved.',1800);
