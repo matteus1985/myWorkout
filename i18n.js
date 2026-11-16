@@ -2,6 +2,7 @@
 (() => {
   'use strict';
   const entries = {
+    'Version':['Versione','Version','Version'], 'Published':['Pubblicata','Publiée','Veröffentlicht'],
     'Plan needed':['Serve un programma','Programme nécessaire','Trainingsplan erforderlich'],
     'Generate plan':['Genera programma','Créer le programme','Trainingsplan erstellen'],
     'Building your training plan…':['Creazione del programma…','Création du programme…','Trainingsplan wird erstellt…'],

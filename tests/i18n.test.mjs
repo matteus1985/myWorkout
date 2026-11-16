@@ -18,6 +18,14 @@ test('language switching translates known UI labels and keeps personal content a
   }
 });
 
+test('Settings show a localized build version and the publication time in Zurich time',()=>{
+  const root={matches:()=>false,querySelectorAll:()=>[]},document={body:root,documentElement:{},createTreeWalker:()=>({nextNode:()=>false})},context={window:{},document,NodeFilter:{SHOW_TEXT:4}};
+  vm.runInNewContext(readFileSync(new URL('../i18n.js',import.meta.url),'utf8'),context);
+  for(const [language,version,published] of [['it','Versione','Pubblicata'],['fr','Version','Publiée'],['de','Version','Veröffentlicht']]){context.window.LiftI18n.setLanguage(language);assert.equal(context.window.LiftI18n.translate('Version'),version);assert.equal(context.window.LiftI18n.translate('Published'),published);}
+  const app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+  assert.match(app,/APP_VERSION\s*=\s*'\d{4}\.\d{2}\.\d{2}\.\d+'/);assert.match(app,/APP_PUBLISHED_AT\s*=\s*'2026-11-16T\d{2}:\d{2}:\d{2}\+01:00'/);assert.match(app,/timeZone:'Europe\/Zurich'/);assert.match(html,/id="app-version-value"/);assert.match(html,/id="app-published-at"/);
+});
+
 test('all catalogue exercise names and guide strings have local translations without changing IDs',()=>{
   const catalogue={window:{}};vm.runInNewContext(readFileSync(new URL('../catalogue.js',import.meta.url),'utf8'),catalogue);
   const translations={window:{}};vm.runInNewContext(readFileSync(new URL('../i18n-data.js',import.meta.url),'utf8'),translations);

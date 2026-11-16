@@ -185,6 +185,7 @@
             <p class="small-print">Photos are sent for analysis when selected. Calories and macros are approximate model estimates. Cloudflare’s free daily quota may change; analysis stops when unavailable and never switches to paid usage automatically.</p>
             <details class="ai-setup-guide" hidden><summary>Show setup steps</summary><ol><li>In Cloudflare, create a Worker named <strong>lift-log-food-ai</strong> and open its code editor.</li><li>Replace the sample code with <code>worker/src/index.mjs</code> from this app folder, then deploy.</li><li>In Worker Settings → Bindings, add a Workers AI binding named <code>AI</code>, then deploy again.</li><li>Generate a private code here and copy it. In Worker Settings → Variables and Secrets, add a Secret named <code>APP_TOKEN</code> with that value, then deploy.</li><li>Copy the Worker’s <code>workers.dev</code> address into Worker address, paste the same private code, tap Save setup, then Test connection.</li></ol><p class="small-print">Use Cloudflare Workers Free and do not enable paid AI usage. The free plan stops requests after its daily AI allowance; a paid plan can charge beyond its included allowance.</p></details>
           </div></details>
+          <p class="settings-build-info"><span>Version</span> <span id="app-version-value"></span><span aria-hidden="true"> · </span><span>Published</span> <time id="app-published-at"></time></p>
         </div>
       </section>
     </main>
@@ -243,7 +244,7 @@
     </div>
   </div>
 <script src="i18n-data.js?v=liftlog-i18n-v10"></script>
-<script src="i18n.js?v=liftlog-i18n-v10"></script>
+<script src="i18n.js?v=liftlog-i18n-v11"></script>
 <script src="exercise-media-retired.js?v=liftlog-exercise-media-v2"></script>
 <script src="catalogue.js?v=liftlog-exercise-catalogue-v2"></script>
 <script src="planner.js?v=liftlog-local-plan-v2"></script>
@@ -252,7 +253,7 @@
 <script src="exercise-media-overrides.js?v=liftlog-exercise-media-v2"></script>
 <script src="nutrition-data.js?v=liftlog-20261030-onboarding-v100"></script>
 <script src="nutrition.js?v=liftlog-20261030-onboarding-v100"></script>
-<script src="app.js?v=liftlog-local-plan-v2"></script>
+<script src="app.js?v=liftlog-build-info-v1"></script>
 <script src="coach.js?v=liftlog-20261030-onboarding-v100"></script>
 
 </body>

@@ -1,6 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
+  const APP_VERSION = '2026.11.16.2';
+  const APP_PUBLISHED_AT = '2026-11-16T11:55:00+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -57,7 +59,8 @@
   let state = loadState();
   state.language=['en','it','fr','de'].includes(state.language)?state.language:'en';
   window.LiftI18n?.setLanguage(state.language);
-  function setAppLanguage(value){state.language=['en','it','fr','de'].includes(value)?value:'en';window.LiftI18n?.setLanguage(state.language);const select=$('#app-language');if(select)select.value=state.language;const tutorial=$('#tutorial-language');if(tutorial)tutorial.value=state.language;renderDays();saveState();}
+  function renderBuildInfo(){const version=$('#app-version-value'),published=$('#app-published-at');if(!version||!published)return;version.textContent=APP_VERSION;const date=new Date(APP_PUBLISHED_AT);published.dateTime=date.toISOString();published.textContent=new Intl.DateTimeFormat(({it:'it-CH',fr:'fr-CH',de:'de-CH'})[state.language]||'en-US',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/Zurich',timeZoneName:'short'}).format(date);}
+  function setAppLanguage(value){state.language=['en','it','fr','de'].includes(value)?value:'en';window.LiftI18n?.setLanguage(state.language);const select=$('#app-language');if(select)select.value=state.language;const tutorial=$('#tutorial-language');if(tutorial)tutorial.value=state.language;renderBuildInfo();renderDays();saveState();}
   let activeDay = null;
   let toastTimer = null;
   let restTimer = null;
@@ -473,6 +476,7 @@
   function openImagePreview(id,title){const gif=window.LIFT_EXERCISE_GIFS?.[id]||LIFT_CATALOGUE.find(id)?.animation;if(!gif)return;$('#image-preview').src=gif;$('#image-preview-title').textContent=title;$('#image-modal').classList.remove('hidden');$('#image-close').focus();}
   function updateArtCacheStatus(){const art=state.exerciseArtCache||{},total=art.total||ART_ASSET_COUNT;const el=$('#art-cache-status');if(!el)return;el.textContent=art.ready>=total?'All exercise images are ready offline.':art.ready?`Preparing offline images · ${art.ready} of ${total}`:'Exercise images prepare for offline use after the first online visit.';}
   function renderSettings(){
+    renderBuildInfo();
     $('#weekly-days').value=String(state.daysPerWeek);$('#experience-level').value=state.experience||'';
     const muscles=[...new Set(LIFT_CATALOGUE.exercises.flatMap(e=>e.primary))].sort();$('#priority-muscles').innerHTML=muscles.map(m=>`<label class="equipment-option"><input type="checkbox" value="${escapeAttr(m)}" ${state.priorityMuscles.includes(m)?'checked':''}><span>${escapeHtml(m)}</span></label>`).join('');
     $('#lower-focus-muscles').innerHTML=muscles.map(m=>`<label class="equipment-option"><input type="checkbox" value="${escapeAttr(m)}" ${state.lowerFocusMuscles.includes(m)?'checked':''}><span>${escapeHtml(m)}</span></label>`).join('');
