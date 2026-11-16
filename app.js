@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.16.2';
-  const APP_PUBLISHED_AT = '2026-11-16T11:55:00+01:00';
+  const APP_VERSION = '2026.11.16.3';
+  const APP_PUBLISHED_AT = '2026-11-16T14:26:00+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -154,9 +154,9 @@
   function updateHome(){
     $('#plan-count').textContent=days.length+' days · '+(state.experience||'Choose level');
 
-    const next=days.find(d=>!logFor(state.week,d.id)?.completed);
+    const requiredDays=days.filter(d=>!d.optional),next=requiredDays.find(d=>!logFor(state.week,d.id)?.completed);
     if(next){$('#next-title').textContent=workoutDisplayName(next,days.indexOf(next));$('#next-subtitle').textContent=next.exercises.length+' exercises · about '+next.minutes+' minutes';$('#start-next').onclick=()=>openWorkout(next.id);}
-    if(!next){$('#next-title').textContent=days.length?'Week complete':'Plan needed';$('#next-subtitle').textContent='Prepare your next training week';$('#start-next').textContent='Prepare next week';$('#start-next').onclick=days.length?endWeek:()=>generateCurrentAIPlan();}else $('#start-next').textContent=(logFor(state.week,next.id)?.firstSetCompletedAt||hasDone(logFor(state.week,next.id)))?'Resume workout →':'Start workout →';if(!days.length){$('#start-next').textContent='Generate plan';$('#next-subtitle').textContent='Your schedule will be built from your profile and training history.';}$('#start-next').disabled=!state.experience||currentPlanBusy;$('#setup-level').classList.toggle('hidden',!!state.experience);$('#choose-level').onclick=()=>setScreen('settings-screen');
+    if(!next){$('#next-title').textContent=days.length?'Week complete':'Plan needed';$('#next-subtitle').textContent='Prepare your next training week';$('#start-next').textContent=days.length?localized('End week'):'Generate plan';$('#start-next').onclick=days.length?endWeek:()=>generateCurrentAIPlan();}else $('#start-next').textContent=(logFor(state.week,next.id)?.firstSetCompletedAt||hasDone(logFor(state.week,next.id)))?'Resume workout →':'Start workout →';if(!days.length){$('#start-next').textContent='Generate plan';$('#next-subtitle').textContent='Your schedule will be built from your profile and training history.';}$('#start-next').disabled=!state.experience||currentPlanBusy;$('#setup-level').classList.toggle('hidden',!!state.experience);$('#choose-level').onclick=()=>setScreen('settings-screen');
     const logs=programWeekLogEntries().map(([,log])=>log);$('#week-sessions').textContent=logs.filter(l=>l.completed).length;$('#week-exercises').textContent=logs.reduce((n,l)=>n+[...Object.values(l.exercises||{}),...(l.variantHistory||[])].reduce((m,e)=>m+(e.sets||[]).filter(s=>s?.done).length,0),0);
     renderDays();renderVolume();renderWorkoutComment();updateBackupStatus();document.dispatchEvent(new Event('lift:training-updated'));
   }
