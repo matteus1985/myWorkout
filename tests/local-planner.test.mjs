@@ -20,13 +20,13 @@ test('each supported priority gets direct work on at least two days without stac
     const s=state(count);s.priorityMuscles=[muscle];const target=muscle==='Core'?'Abs':muscle,plan=engine.generate(s),rows=plan.days.flatMap(day=>day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes(target)).map(e=>({day,e})));
     assert.ok(new Set(rows.map(row=>row.day.id)).size>=2,`${count} days: ${muscle} needs two focused days`);
     assert.ok(rows.reduce((sum,row)=>sum+row.e.sets.length,0)>=10,`${count} days: ${muscle} needs the planned priority volume`);
-    for(const day of plan.days)assert.ok(day.exercises.filter(e=>['calfRaise','seatedCalf'].includes(e.pattern)).length<=1,`${count} days: ${day.name} has duplicate calf isolations`);
+    for(const day of plan.days)assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);
   }
   for(const count of [3,4,5,6])for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++){
     const pair=[groups[i],groups[j]],targets=[...new Set(pair.map(m=>m==='Core'?'Abs':m))];if(targets.length<2)continue;
     const s=state(count);s.priorityMuscles=pair;const plan=engine.generate(s);
     for(const muscle of targets){const rows=plan.days.flatMap(day=>day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes(muscle)).map(e=>({day,e})));assert.ok(new Set(rows.map(row=>row.day.id)).size>=2,`${count} days: combined focus ${pair} needs two days for ${muscle}`);assert.ok(rows.reduce((sum,row)=>sum+row.e.sets.length,0)>=10,`${count} days: combined focus ${pair} needs priority volume for ${muscle}`);}
-    for(const day of plan.days){assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days: combined focus ${pair} made ${day.name} invalid`);assert.ok(day.exercises.filter(e=>['calfRaise','seatedCalf'].includes(e.pattern)).length<=1,`${count} days: ${day.name} has duplicate calf isolations`);}
+    for(const day of plan.days){assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days: combined focus ${pair} made ${day.name} invalid`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);}
   }
 });
 
@@ -61,7 +61,7 @@ test('replacing a plan preserves history, while an active workout postpones the 
   const prior={completed:true,exercises:{x:{sets:[{done:true,weight:20,reps:8}]}}},oldPlan={days:[{id:'d1'}]},saved=[];
   const base={week:2,planRevision:0,daysPerWeek:3,experience:'advanced',logs:{'2-d1':prior},weekPlans:{'2:0':oldPlan}};
   const plan={days:Array.from({length:3},(_,i)=>({id:'d'+i,minutes:45,exercises:[{},{},{},{}]}))};
-  const ctx={state:structuredClone(base),days:oldPlan.days,activeDay:null,currentPlanBusy:false,CATALOGUE_MIGRATION:'local-hypertrophy-v1',LIFT_ENGINE:{clone:structuredClone,generate:()=>plan},localStorage:{setItem:(key,value)=>saved.push(JSON.parse(value))},KEY:'test',$:()=>({disabled:false,textContent:''}),renderSettings(){},updateHome(){},updateProgressScreen(){},showToast(){},saveState(){}};
+  const ctx={state:structuredClone(base),days:oldPlan.days,activeDay:null,currentPlanBusy:false,CATALOGUE_MIGRATION:'local-hypertrophy-v2',LIFT_ENGINE:{clone:structuredClone,generate:()=>plan},localStorage:{setItem:(key,value)=>saved.push(JSON.parse(value))},KEY:'test',$:()=>({disabled:false,textContent:''}),renderSettings(){},updateHome(){},updateProgressScreen(){},showToast(){},saveState(){}};
   vm.createContext(ctx);vm.runInContext(app.slice(start,end),ctx);await ctx.generateCurrentAIPlan({},true);
   assert.equal(ctx.state.planRevision,1);assert.deepEqual(ctx.state.logs,base.logs);assert.deepEqual(ctx.state.weekPlans['2:0'],oldPlan);assert.equal(saved.length,1);
   ctx.state=structuredClone(base);ctx.activeDay={id:'d1'};saved.length=0;await ctx.generateCurrentAIPlan({daysPerWeek:4},true);assert.equal(ctx.state.planRevision,0);assert.equal(ctx.state.pendingLocalPlan.daysPerWeek,4);assert.equal(saved.length,0);

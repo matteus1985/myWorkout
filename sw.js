@@ -1,4 +1,4 @@
-const CACHE = 'lift-log-shell-v146';
+const CACHE = 'lift-log-shell-v147';
 const CACHE_PREFIX = 'lift-log-shell-';
 const BASE = new URL('./', self.location.href);
 const SHELL = [
@@ -13,7 +13,7 @@ const SHELL = [
   './exercise-media-overrides.js?v=liftlog-exercise-media-v2',
   './nutrition-data.js?v=liftlog-20261030-onboarding-v100',
   './nutrition.js?v=liftlog-20261030-onboarding-v100',
-  './app.js?v=liftlog-home-endweek-review-v1',
+  './app.js?v=liftlog-calf-session-migration-v1',
   './coach.js?v=liftlog-20261030-onboarding-v100',
   './material.css?v=liftlog-20261030-onboarding-v100',
   './media/muscle-map-anatomy.png?v=liftlog-20261030-onboarding-v100',

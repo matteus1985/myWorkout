@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.16.3';
-  const APP_PUBLISHED_AT = '2026-11-16T14:26:00+01:00';
+  const APP_VERSION = '2026.11.16.4';
+  const APP_PUBLISHED_AT = '2026-11-16T14:34:00+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -190,7 +190,7 @@
     state=next;days=LIFT_ENGINE.clone(pendingWeekPlan.plan.days);pendingWeekPlan=null;activeDay=null;stopRestTimer();$('#endweek-modal').classList.add('hidden');updateHome();updateProgressScreen();renderSettings();setScreen('home-screen');showToast('New week plan is ready.');
   }
 
-  const CATALOGUE_MIGRATION='local-hypertrophy-v2';
+  const CATALOGUE_MIGRATION='local-hypertrophy-v3';
   async function generateCurrentAIPlan(preferences={},force=false){
     if(currentPlanBusy)return;
     if(state.storageRecovery){$('#plan-generation-status').textContent='Saved data could not be read. Restore a backup before updating your plan.';return;}
