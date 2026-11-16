@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.16.7';
-  const APP_PUBLISHED_AT = '2026-11-16T15:05:00+01:00';
+  const APP_VERSION = '2026.11.16.8';
+  const APP_PUBLISHED_AT = '2026-11-16T15:57:16+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -152,7 +152,7 @@
   function currentCalendarWeekLogs(date=new Date()){const period=calendarPeriods('4w',date).at(-1);return Object.entries(state.logs).filter(([,log])=>{const stamp=workoutLogDate(log);return stamp&&stamp>=period.from&&stamp<period.to;}).map(([key,log])=>({key,log,week:Number(key.split('-')[0])}));}
   function currentCalendarWeekSummary(date=new Date()){const rows=currentCalendarWeekLogs(date),completed=rows.filter(row=>row.log.completed).length,planned=rows.length?Math.max(...rows.map(row=>plannedSessionsForWeek(row.week))):Number(state.daysPerWeek)||days.length;return isoWeekLabel(date)+' · '+completed+' of '+planned+' workouts completed';}
   function updateHome(){
-    $('#plan-count').textContent=days.length+' days · '+(state.experience||'Choose level');const cycle=Number(state.mesocycleWeek)||1;$('#mesocycle-status').textContent='Mesocycle · Week '+cycle+' of 6 · '+(cycle===6?'Deload':cycle===1?'Ramp-up':cycle===5?'Peak':'Progression');
+    const cycle=Number(state.mesocycleWeek)||1;$('#mesocycle-status').textContent='Mesocycle · Week '+cycle+' of 6 · '+(cycle===6?'Deload':cycle===1?'Ramp-up':cycle===5?'Peak':'Progression');
 
     const requiredDays=days.filter(d=>!d.optional),next=requiredDays.find(d=>!logFor(state.week,d.id)?.completed);
     if(next){$('#next-title').textContent=workoutDisplayName(next,days.indexOf(next));$('#next-subtitle').textContent=next.exercises.length+' exercises · about '+next.minutes+' minutes';$('#start-next').onclick=()=>openWorkout(next.id);}
