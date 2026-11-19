@@ -91,12 +91,11 @@ body{background:var(--bg);color:var(--ink)}.brand-mark{background:var(--lime)}.t
 .image-button{display:block;flex:none;padding:0;border:0;background:none;color:inherit;line-height:0;border-radius:10px;cursor:zoom-in}
 .image-button:focus-visible{outline:2px solid #ff8297;outline-offset:3px}
 .image-button .exercise-thumb{pointer-events:none}
-.image-modal{z-index:60;background:#050405ed}
-.image-preview-panel{position:relative;width:min(92vw,560px);max-height:90dvh;display:grid;justify-items:center;gap:12px;padding:18px;border:1px solid #55464e;border-radius:22px;background:#201d21;color:#f7edf1}
-.image-preview-panel img{display:block;width:auto;height:auto;max-width:min(90vw,360px);max-height:72dvh;object-fit:contain;border-radius:14px;background:#292529}
-.image-preview-panel strong{font-size:14px;text-align:center}
-.image-preview-panel .image-close{position:absolute;z-index:1;top:8px;right:8px;width:38px;height:38px;background:#332b31}
-.image-modal .image-preview-panel img{cursor:default}
+.image-modal:not(.hidden){display:block;z-index:120;padding:0;background:transparent;pointer-events:none}
+.image-preview-panel{position:fixed;width:fit-content;max-width:min(calc(100vw - 24px),340px);max-height:78dvh;display:grid;justify-items:center;gap:0;padding:8px;border:1px solid #55464e;border-radius:16px;background:#201d21;color:#f7edf1;box-shadow:0 12px 36px #0009;pointer-events:auto;transition:left .16s ease,top .16s ease}
+.image-preview-panel img{display:block;width:auto;height:auto;max-width:min(calc(100vw - 40px),320px);max-height:calc(78dvh - 16px);object-fit:contain;border-radius:10px;background:#292529}
+.image-preview-panel strong{max-width:100%;font-size:14px;line-height:1.4;text-align:center;overflow-wrap:anywhere}
+.image-modal .image-preview-panel img{cursor:zoom-out}
 .alternative-option>.alternative-image-button{width:48px;height:60px;padding:0;background:transparent}
 .alternative-filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.alternative-filters .select{min-width:0;width:100%;height:40px;padding:0 10px;font-size:13px}
 .alternative-image-button img{display:block;width:48px;height:60px;object-fit:contain;border-radius:8px;background:#242326}.alternative-image-button img[hidden]{display:none}
@@ -802,3 +801,73 @@ body.meal-editor-open #toast.toast{z-index:80}
 .tutorial-backdrop{position:fixed;inset:0;z-index:120;display:grid;place-items:center;padding:16px;background:#0c0a10d9}
 .tutorial-dialog{width:min(100%,460px);max-height:calc(100dvh - 32px);overflow:auto;padding:22px;border:1px solid #594458;border-radius:22px;background:#24212a;color:#f7eef5;box-shadow:0 20px 70px #0008}
 .tutorial-top{display:flex;justify-content:space-between;align-items:center;color:#c9acbe;font-size:12px;margin-bottom:18px}.tutorial-dialog h2{font-size:23px;margin:0 0 12px}.tutorial-dialog p{font-size:14px;line-height:1.5;color:#c9becb}.tutorial-dialog label{display:grid;gap:6px;font-size:12px;color:#d3c7d0;margin:10px 0}.tutorial-dialog .equipment-option{display:flex;align-items:center;margin:0}.tutorial-actions{display:flex;gap:8px;margin-top:20px}.tutorial-actions button{flex:1}.tutorial-code-row{display:flex;gap:8px}.tutorial-code-row .field{min-width:0;flex:1}.tutorial-dialog [role=alert]{color:#ff9bb2;font-size:12px}.tutorial-dialog [role=alert]:empty{display:none}
+
+/* Keep workout editing in the existing prescription badge. */
+.set-count-button { cursor: pointer; font: inherit; }
+.set-count-button:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.exercise { position: relative; }
+.set-count-popover {
+  position: absolute;
+  z-index: 15;
+  top: 58px;
+  right: 12px;
+  display: grid;
+  gap: 5px;
+  width: min(190px, calc(100% - 24px));
+  padding: 7px;
+  border: 1px solid #684c60;
+  border-radius: 14px;
+  background: #29232d;
+  box-shadow: 0 8px 24px #0008;
+}
+.set-count-option {
+  min-height: 38px;
+  padding: 7px 10px;
+  border: 1px solid #554653;
+  border-radius: 10px;
+  background: #342b37;
+  color: #f6eaf2;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+}
+.set-count-option:hover:not(:disabled), .set-count-option:focus-visible { border-color: #e85c88; background: #402d3d; }
+.set-count-option:disabled { opacity: .55; }
+.set-count-option.set-count-context { color: #bcaab8; font-size: 11px; }
+.set-count-option.set-count-cancel { min-height: 32px; border-color: transparent; background: transparent; color: #c9b8c5; text-align: center; }
+#alternative-search[hidden], .alternative-filters[hidden], #scope-future[hidden] { display: none; }
+#alternative-list > button { min-height: 44px; white-space: normal; }
+
+.quick-swap-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+}
+.quick-swap-card .quick-swap-preview {
+  width: 54px;
+  min-height: 54px;
+  padding: 0;
+}
+.quick-swap-card img {
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.quick-swap-card .quick-swap-choice {
+  min-height: 54px;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #f4eaf1;
+}
+.quick-swap-choice strong { display: block; font-size: 13px; font-weight: 600; line-height: 1.35; }
+.quick-swap-choice small { display: block; margin-top: 3px; color: #c7b9c4; font-size: 11px; font-weight: 400; line-height: 1.35; }
+#alternative-list > .alternative-more { font-weight: 550; }

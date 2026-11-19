@@ -89,3 +89,22 @@ test('six-week plans have two abdominal sessions, selective techniques and a lig
   assert.ok(deload.days.every(d=>d.optionalDropSet===-1));
  }
 });
+
+test('quick swaps preserve movement and vary equipment, and future set counts match the exercise identity',()=>{
+  const s=state(5),plan=engine.generate(s),day=plan.days[0],exercise=day.exercises[0];
+  const source=catalogue.find(exercise.catalogId),used=day.exercises.map(e=>e.catalogId);
+  const alternatives=engine.quickAlternatives(source,s,used);
+  assert.ok(alternatives.length>0&&alternatives.length<=3);
+  assert.equal(new Set(alternatives.map(x=>x.equipment)).size,alternatives.length);
+  for(const item of alternatives){
+    assert.equal(item.pattern,source.pattern);
+    assert.equal(item.primary[0],source.primary[0]);
+    assert.notEqual(item.equipment,source.equipment);
+    assert.ok(!used.includes(item.id));
+  }
+  assert.equal(engine.quickAlternatives(source,{...s,equipment:[source.equipment]},used).length,0);
+  s.persistentEdits[plan.programId]={[day.id]:{setCounts:[{id:exercise.id,catalogId:exercise.catalogId,count:4}]}};
+  assert.equal(engine.generate(s).days[0].exercises[0].sets.length,4);
+  s.persistentEdits[plan.programId][day.id].setCounts[0].catalogId='different-exercise';
+  assert.equal(engine.generate(s).days[0].exercises[0].sets.length,exercise.sets.length);
+});

@@ -203,6 +203,26 @@ window.LIFT_ENGINE=(()=>{
     5:[['Push',['Incline Barbell Bench Press',3],['Seated Dumbbell Shoulder Press',3],['Flat Dumbbell Press',3],['Cable Lateral Raise',4],['Rope Pushdown',3]],['Pull',['Chest-Supported Row',3],['Neutral-Grip Lat Pulldown',3],['Reverse Pec Deck',3],['Preacher Curl Machine',3],['Cable Crunch',5]],['Legs',['Back Squat',3],['Barbell Romanian Deadlift',3],['Seated Leg Curl',3],['Standing Calf Raise',3]],['Upper',['Machine Chest Press',3],['Pull-Up',3],['Seated Cable Row',3],['Dumbbell Lateral Raise',4],['Overhead Cable Extension',3],['Bayesian Cable Curl',3]],['Lower',['Bulgarian Split Squat',3],['Hip Thrust Machine',3],['Leg Extension',3],['Lying Leg Curl',3],['Seated Calf Raise',3],['Ab Crunch Machine',5]]],
     6:[['Push A',['Incline Barbell Bench Press',3],['Seated Dumbbell Shoulder Press',3],['Flat Dumbbell Press',3],['Cable Lateral Raise',3],['Rope Pushdown',3]],['Pull A',['Chest-Supported Row',3],['Neutral-Grip Lat Pulldown',3],['Reverse Pec Deck',3],['Preacher Curl Machine',3],['Cable Crunch',5]],['Legs A',['Back Squat',3],['Barbell Romanian Deadlift',3],['Seated Leg Curl',3],['Standing Calf Raise',3]],['Push B',['Machine Chest Press',3],['Dumbbell Lateral Raise',4],['Low-to-High Cable Fly',3],['Overhead Cable Extension',3]],['Pull B',['Pull-Up',3],['Seated Cable Row',3],['Cable Rear-Delt Fly',3],['Bayesian Cable Curl',3],['Ab Crunch Machine',5]],['Legs B',['Bulgarian Split Squat',3],['Hip Thrust Machine',3],['Leg Extension',3],['Lying Leg Curl',3],['Seated Calf Raise',3]]]
   };
+  // Use standard exercises from the curated plans when no usage rankings exist.
+  const standardExercises=new Set([
+    ...Object.values(newTemplates).flatMap(days=>days.flatMap(day=>day.slice(1).map(([name])=>name))),
+    ...Object.values(preferred).flatMap(level=>Object.values(level).flat()),
+    ...Object.values(defaults).flat()
+  ].map(name=>C.find(name)?.id).filter(Boolean));
+  function compareExercisePopularity(a,b){
+    return Number(standardExercises.has(b.id))-Number(standardExercises.has(a.id));
+  }
+  function quickAlternatives(source,state,usedIds){
+    const allowed=C.levels.indexOf(state.experience||'beginner');
+    const overlap=(a,b)=>a.filter(m=>b.includes(m)).length;
+    const candidates=C.exercises.filter(item=>item.id!==source.id&&!usedIds.includes(item.id)&&
+      item.planningEligible!==false&&hasArt(item)&&item.pattern===source.pattern&&
+      item.unit===source.unit&&item.primary[0]===source.primary[0]&&item.equipment!==source.equipment&&
+      state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=allowed);
+    const similarity=item=>2*overlap(item.primary,source.primary)+overlap(item.secondary||[],source.secondary||[]);
+    candidates.sort((a,b)=>compareExercisePopularity(a,b)||similarity(b)-similarity(a)||a.name.localeCompare(b.name));
+    return candidates.filter((item,i)=>candidates.findIndex(other=>other.equipment===item.equipment)===i).slice(0,3);
+  }
   function generate(state){
     const count=[4,5,6].includes(Number(state.daysPerWeek))?Number(state.daysPerWeek):4,cycle=Math.max(1,Math.min(6,Number(state.mesocycleWeek)||1)),used=[];
     const allowed=C.levels.indexOf(state.experience||'beginner');
@@ -222,6 +242,17 @@ window.LIFT_ENGINE=(()=>{
     for(const day of days){
       const abs=day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs'));if(abs&&minutes(day.exercises)>70&&abs.sets.length>4)abs.sets=abs.sets.slice(0,4);
       while(minutes(day.exercises)>75){const e=day.exercises.findLast(x=>x.sets.length>2&&x!==abs&&!priorities.some(m=>(C.find(x.catalogId)?.primary||[]).includes(m)));if(!e)break;e.sets.pop();}
+      const overrides=state.persistentEdits?.['adaptive-'+count]?.[day.id]?.setCounts||[];
+      for(const exercise of day.exercises){
+        const override=overrides.find(x=>x.id===exercise.id&&x.catalogId===exercise.catalogId);
+        if(!Number.isSafeInteger(override?.count)||override.count<1)continue;
+        exercise.sets=descriptor(C.find(exercise.catalogId),exercise.id,state,{sets:override.count}).sets;
+      }
+      for(const exercise of day.exercises){
+        if(!exercise.supersetGroup)continue;
+        const partners=day.exercises.filter(e=>e.supersetGroup===exercise.supersetGroup);
+        if(partners.some(e=>e.sets.length!==exercise.sets.length))partners.forEach(e=>delete e.supersetGroup);
+      }
       const top=day.exercises[0],eligible=['Incline Barbell Bench Press','Chest-Supported Row','Back Squat','Machine Chest Press'].includes(top?.name);
       if(cycle!==6&&eligible&&top.sets.length>=3){const step=Number(state.weightSteps?.[top.equipment]||1),item=C.find(top.catalogId),spec=top.sets.map((s,i)=>({...s,min:i?8:6,max:i?10:8}));top.sets=targets(state,item,spec).sets;const load=Number(top.sets[0].weight);top.sets.forEach((s,i)=>{s.role=i?'backoff':'top';if(i&&load>0)s.weight=Math.max(step,Math.round(load*.89/step)*step);});top.note='Top set: 6–8 reps, about 1 RIR. Back-off: 8–10 reps, 1–2 RIR, approximately 10–12% less weight.';}
       if(cycle===6)for(const e of day.exercises){e.note='Deload: aim for 3–4 reps in reserve.';e.sets=e.sets.slice(0,Math.max(1,Math.ceil(e.sets.length/2)));const step=Number(state.weightSteps?.[e.equipment]||1);for(const s of e.sets)if(Number(s.weight)>0)s.weight=Math.max(step,Math.round(Number(s.weight)*.875/step)*step);}
@@ -233,5 +264,5 @@ window.LIFT_ENGINE=(()=>{
   }
   function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
+  return {clone,generate,quickAlternatives,compareExercisePopularity,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
 })();

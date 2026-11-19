@@ -2,6 +2,18 @@
 (() => {
   'use strict';
   const entries = {
+    'Show more':['Mostra altro','Voir plus','Mehr anzeigen'],
+    'Estimated load':['Carico stimato','Charge estimée','Geschätztes Gewicht'],
+    'Quick swap':['Scambio rapido','Remplacement rapide','Schnell tauschen'],
+    'No compatible quick swaps.':['Nessuno scambio rapido compatibile.','Aucun remplacement rapide compatible.','Keine passenden Alternativen für den Schnelltausch.'],
+    'Last load':['Ultimo carico','Dernière charge','Letztes Gewicht'],
+    'Browse catalogue':['Sfoglia il catalogo','Parcourir le catalogue','Katalog durchsuchen'],
+    'Edit set count':['Modifica numero di serie','Modifier le nombre de séries','Satzanzahl ändern'],
+    'Add one set':['Aggiungi una serie','Ajouter une série','Einen Satz hinzufügen'],
+    'Remove one set':['Togli una serie','Retirer une série','Einen Satz entfernen'],
+    'This week only':['Solo questa settimana','Cette semaine uniquement','Nur diese Woche'],
+    'This and future weeks':['Questa e le prossime settimane','Cette semaine et les suivantes','Diese und zukünftige Wochen'],
+    'Choose how long this change should apply.':['Scegli per quanto tempo applicare la modifica.','Choisissez la durée de cette modification.','Wähle, wie lange die Änderung gelten soll.'],
     'Version':['Versione','Version','Version'], 'Published':['Pubblicata','Publiée','Veröffentlicht'],
     'Plan needed':['Serve un programma','Programme nécessaire','Trainingsplan erforderlich'],
     'Generate plan':['Genera programma','Créer le programme','Trainingsplan erstellen'],
