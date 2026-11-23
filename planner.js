@@ -111,7 +111,7 @@ window.LIFT_ENGINE=(()=>{
       const sets=new Map(prior.map(item=>[item,item.sets.slice()]));
       if(day.exercises.length>10){day.exercises=prior;return false;}
       while(minutes(day.exercises)>timeLimit){
-        const candidate=day.exercises.filter(item=>item!==exercise&&isolations.has(item.pattern)&&item.sets.length>2&&!priorities.some(priority=>(C.find(item.catalogId)?.primary||[]).includes(priority))).sort((a,b)=>b.sets.length-a.sets.length)[0];
+        const candidate=day.exercises.filter(item=>item!==exercise&&isolations.has(item.pattern)&&item.sets.length>3&&!(C.find(item.catalogId)?.primary||[]).includes('Abs')&&!priorities.some(priority=>(C.find(item.catalogId)?.primary||[]).includes(priority))).sort((a,b)=>b.sets.length-a.sets.length)[0];
         if(candidate){candidate.sets.pop();continue;}
         const removable=day.exercises.filter(item=>item!==exercise&&item.sets.length<=2&&isolations.has(item.pattern)&&!priorities.some(priority=>(C.find(item.catalogId)?.primary||[]).includes(priority))&&hasOtherDayWork(day,item)).sort((a,b)=>b.rest-a.rest)[0];
         if(!removable||day.exercises.length<=4)break;day.exercises.splice(day.exercises.indexOf(removable),1);
@@ -136,10 +136,12 @@ window.LIFT_ENGINE=(()=>{
     }
     for(const muscle of priorities){
       let rows=work(muscle),weeklySets=rows.reduce((sum,row)=>sum+row.exercise.sets.length,0),cursor=0;
-      while(weeklySets<10&&rows.length){
+      while(weeklySets<8&&rows.length){
         let added=false;
         for(let attempt=0;attempt<rows.length;attempt++){
-          const row=rows[(cursor+attempt)%rows.length],prior=row.day.exercises.slice(),exercise={...row.exercise,sets:[...row.exercise.sets,{...row.exercise.sets.at(-1)}]};
+          const row=rows[(cursor+attempt)%rows.length];
+          if(row.exercise.sets.length>=5)continue;
+          const prior=row.day.exercises.slice(),exercise={...row.exercise,sets:[...row.exercise.sets,{...row.exercise.sets.at(-1)}]};
           row.day.exercises.splice(row.day.exercises.indexOf(row.exercise),1,exercise);
           if(!fitRoom(row.day,muscle,exercise,prior))continue;
           row.exercise=exercise;weeklySets++;cursor=(cursor+attempt+1)%rows.length;added=true;break;
@@ -223,6 +225,31 @@ window.LIFT_ENGINE=(()=>{
     candidates.sort((a,b)=>compareExercisePopularity(a,b)||similarity(b)-similarity(a)||a.name.localeCompare(b.name));
     return candidates.filter((item,i)=>candidates.findIndex(other=>other.equipment===item.equipment)===i).slice(0,3);
   }
+  function balanceWorkingSets(day, target=65, priorities=[]){
+    const isAbs=e=>C.find(e.catalogId)?.primary.includes('Abs');
+    const isPriority=e=>C.find(e.catalogId)?.primary.some(m=>priorities.includes(m));
+    const isShortAccessory=e=>['triceps','tricepsOverhead','curl','hammerCurl','lateralRaise','rearDelt'].includes(e.pattern)&&!isPriority(e);
+    for(const e of day.exercises){
+      const limit=isAbs(e)||isPriority(e)?5:4;
+      if(e.sets.length>limit)e.sets=e.sets.slice(0,limit);
+      const minimum=isShortAccessory(e)?2:3;
+      while(e.sets.length>0&&e.sets.length<minimum)e.sets.push({...e.sets.at(-1)});
+    }
+    const abs=day.exercises.find(isAbs);
+    if(abs?.sets.length===5&&minutes(day.exercises)>70)abs.sets.pop();
+    while(minutes(day.exercises)>target+5){
+      const extra=day.exercises.findLast(e=>!isAbs(e)&&!isPriority(e)&&!e.supersetGroup&&e.sets.length>3);
+      if(!extra)break;
+      extra.sets.pop();
+    }
+    for(const e of day.exercises){
+      if(minutes(day.exercises)>=target)break;
+      if(isAbs(e)||e.supersetGroup||e.sets.length!==3||e.sets.some(set=>set.role||set.mini))continue;
+      e.sets.push({...e.sets.at(-1)});
+      if(minutes(day.exercises)>target)e.sets.pop();
+    }
+    day.minutes=minutes(day.exercises);
+  }
   function generate(state){
     const count=[4,5,6].includes(Number(state.daysPerWeek))?Number(state.daysPerWeek):4,cycle=Math.max(1,Math.min(6,Number(state.mesocycleWeek)||1)),used=[];
     const allowed=C.levels.indexOf(state.experience||'beginner');
@@ -240,8 +267,7 @@ window.LIFT_ENGINE=(()=>{
     if(count===4){const day=days[2],a=day.exercises.find(e=>e.name==='Overhead Cable Extension'),b=day.exercises.find(e=>e.name==='Bayesian Cable Curl');if(a&&b){a.supersetGroup=b.supersetGroup='arms';}}
     const priorities=[...new Set((state.priorityMuscles||[]).map(m=>m==='Core'?'Abs':m))].slice(0,2);rebalanceLowerFocus(days,state,(state.lowerFocusMuscles||[]).filter(m=>!priorities.includes(m)));addPriorityWork(days,state,priorities);
     for(const day of days){
-      const abs=day.exercises.find(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs'));if(abs&&minutes(day.exercises)>70&&abs.sets.length>4)abs.sets=abs.sets.slice(0,4);
-      while(minutes(day.exercises)>75){const e=day.exercises.findLast(x=>x.sets.length>2&&x!==abs&&!priorities.some(m=>(C.find(x.catalogId)?.primary||[]).includes(m)));if(!e)break;e.sets.pop();}
+      balanceWorkingSets(day,count===4?65:60,priorities);
       const overrides=state.persistentEdits?.['adaptive-'+count]?.[day.id]?.setCounts||[];
       for(const exercise of day.exercises){
         const override=overrides.find(x=>x.id===exercise.id&&x.catalogId===exercise.catalogId);
@@ -260,7 +286,7 @@ window.LIFT_ENGINE=(()=>{
     }
     const absDays=days.filter(day=>day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs')));
     if(absDays.length<2)for(const day of days){if(!day.exercises.some(e=>(C.find(e.catalogId)?.primary||[]).includes('Abs'))){const item=C.exercises.find(x=>x.primary.includes('Abs')&&hasArt(x)&&state.equipment.includes(x.equipment)&&C.levels.indexOf(x.level)<=allowed&&!used.includes(x.id));if(item){used.push(item.id);day.exercises.push(descriptor(item,'fallback-abs-'+day.id,state,{sets:4}));}}}
-    return {version:6,programId:'adaptive-'+count,week:state.week,mesocycleWeek:cycle,experience:state.experience,days,localGenerated:true};
+    return {version:6,programId:'adaptive-'+count,week:state.week,mesocycleWeek:cycle,experience:state.experience,days,localGenerated:true,balancedWorkingSets:true};
   }
   function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
   function removeDuplicateMovements(day,protectedIds=new Set()){
@@ -277,5 +303,5 @@ window.LIFT_ENGINE=(()=>{
     return removed;
   }
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,quickAlternatives,compareExercisePopularity,descriptor,histories,targets,minutes,volume,removeDuplicateMovements,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
+  return {clone,generate,quickAlternatives,compareExercisePopularity,descriptor,histories,targets,minutes,volume,balanceWorkingSets,removeDuplicateMovements,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
 })();

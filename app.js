@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.23.1';
-  const APP_PUBLISHED_AT = '2026-11-23T11:23:33+01:00';
+  const APP_VERSION = '2026.11.23.2';
+  const APP_PUBLISHED_AT = '2026-11-23T11:35:38+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -106,6 +106,16 @@
   function snapshotKey(){return state.week+':'+(state.planRevision||0);}
   function savePlan(){const snapshot=state.weekPlans[snapshotKey()];if(snapshot)snapshot.days=LIFT_ENGINE.clone(days);saveState();}
   function buildDays(){
+    const snapshot=state.weekPlans?.[snapshotKey()];
+    if(snapshot?.localGenerated&&!snapshot.balancedWorkingSets&&Number(state.mesocycleWeek)!==6){
+      for(const day of snapshot.days){
+        const log=logFor(state.week,day.id);
+        if(day.customized||log?.completed||Object.keys(log?.exercises||{}).length)continue;
+        LIFT_ENGINE.balanceWorkingSets(day,snapshot.days.length===4?65:60,state.priorityMuscles||[]);
+      }
+      snapshot.balancedWorkingSets=true;
+      saveState();
+    }
     state.weekPlans||={};const key=snapshotKey();if(state.needsAdaptiveRefresh){const saved=state.weekPlans[key],prefix=String(state.week)+(state.planRevision?'-v'+state.planRevision:'')+'-',hasLog=Object.entries(state.logs).some(([k,v])=>k.startsWith(prefix)&&v.updatedAt),hasManualEdits=saved?.days?.some(d=>d.customized);if(saved&&!hasLog&&!hasManualEdits)delete state.weekPlans[key];state.needsAdaptiveRefresh=false;}if(state.weekPlans[key]){const saved=LIFT_ENGINE.clone(state.weekPlans[key].days);saved.forEach(updateDropSuggestion);return saved;}
     let plan={version:5,programId:"ai-pending",week:state.week,days:[],missingPatterns:[]};
     if(state.needsMigration){
