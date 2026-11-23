@@ -1,8 +1,8 @@
 (() => {
   'use strict';
   const KEY = 'lift-log-v1';
-  const APP_VERSION = '2026.11.19.1';
-  const APP_PUBLISHED_AT = '2026-11-19T16:46:19+01:00';
+  const APP_VERSION = '2026.11.23.1';
+  const APP_PUBLISHED_AT = '2026-11-23T11:23:33+01:00';
   const sourceDays = [
     {id:'d1',name:'Upper Strength',short:'Upper · Strength',minutes:60,exercises:[
       ex('incline-barbell','Incline Barbell Bench Press','Chest',[[70,6,7],[65,8,8],[62.5,8,9]],'barbell',150,'Keep the top set at 70 kg for now.'),
@@ -202,7 +202,7 @@
     if(activeDay||unfinished){state.pendingLocalPlan={...preferences};saveState();$('#plan-generation-status').textContent='The new plan will be created after the active workout is finished.';return;}
     currentPlanBusy=true;const status=$('#plan-generation-status'),button=$('#apply-plan');button.disabled=true;status.textContent='Building your training plan…';
     try{
-      const next=LIFT_ENGINE.clone(state);Object.assign(next,preferences);delete next.pendingLocalPlan;
+      const next=LIFT_ENGINE.clone(state);Object.assign(next,preferences);delete next.pendingLocalPlan;next.exerciseNames={};
       if(state.catalogueMigration!==CATALOGUE_MIGRATION){next.persistentEdits||={};for(const id of ['adaptive-3','adaptive-4','adaptive-5','adaptive-6'])delete next.persistentEdits[id];next.mesocycleWeek=1;if(Number(next.daysPerWeek)===3)next.daysPerWeek=4;}
       const maxMinutes=75,plan=LIFT_ENGINE.generate(next);if(plan.days.length!==Number(next.daysPerWeek)||plan.days.some(day=>day.exercises.length<4||day.exercises.length>10||day.minutes<0||day.minutes>maxMinutes))throw Error('Not enough compatible exercises for this plan. Check your equipment in Settings.');
       next.planRevision=(Number(next.planRevision)||0)+1;next.weekPlans[next.week+':'+next.planRevision]=plan;next.catalogueMigration=CATALOGUE_MIGRATION;
@@ -241,9 +241,12 @@
   function openWorkout(dayId){
     if(!state.experience){showToast('Choose your experience level in Settings first.');return;}
     activeDay=days.find(d=>d.id===dayId);if(!activeDay)return;
+    const session=currentLog(activeDay);
     const names=state.exerciseNames?.[dayId]||{};
     activeDay.exercises.forEach(e=>{const name=names[e.id],namedItem=LIFT_CATALOGUE.find(name),equipment=namedItem?.equipment;if(name&&namedItem&&LIFT_REPDB_ART[namedItem.id]&&equipment&&state.equipment.includes(equipment)&&name!==e.name){e.name=name;e.catalogId=namedItem.id;e.pattern=namedItem.pattern;e.level=namedItem.level;e.unit=namedItem.unit;e.equipment=equipment;e.note='';e.alternativeSelected=true;e.estimatedWeight=comparableLoad(e);e.sets.forEach(s=>s.weight=null);}});
-    const session=currentLog(activeDay);
+    const protectedIds=new Set(activeDay.exercises.filter(e=>{const entry=session.exercises?.[e.id];return session.completed||entry?.sets?.some(set=>set?.done)||entry?.dropSet?.done;}).map(e=>e.id));
+    const duplicateMovements=LIFT_ENGINE.removeDuplicateMovements(activeDay,protectedIds);
+    if(duplicateMovements.length){duplicateMovements.forEach(e=>delete names[e.id]);savePlan();updateHome();showToast('Removed a duplicate movement from this workout.');}
     $('#workout-day-label').textContent=logDateLabel(session)||'WORKOUT';
     $('#workout-title').textContent=activeDay.name;
     const completed=!!logFor(state.week,dayId)?.completed;$('#finish-button').textContent=completed?'Completed':'Finish';$('#finish-button').disabled=completed;$('#finish-button').setAttribute('aria-label',completed?'Workout completed':'Finish workout');

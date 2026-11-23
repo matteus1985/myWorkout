@@ -9,9 +9,10 @@ context.LIFT_CATALOGUE=context.window.LIFT_CATALOGUE;
 vm.runInContext(readFileSync(new URL('../planner.js',import.meta.url),'utf8'),context);
 const engine=context.window.LIFT_ENGINE,catalogue=context.LIFT_CATALOGUE;
 const state=(days=5)=>({daysPerWeek:days,experience:'advanced',week:2,equipment:['barbell','dumbbell','machine','smith','cable','bodyweight','band'],weightSteps:{barbell:2.5,dumbbell:2,machine:2.5,smith:2.5,cable:1,bodyweight:1,band:.5},logs:{},weekPlans:{},priorityMuscles:['Abs'],lowerFocusMuscles:[],persistentEdits:{}});
+const assertUniqueMovementPatterns=(day,label)=>{const patterns=day.exercises.map(e=>{const item=catalogue.find(e.catalogId);return item.pattern+'|'+item.primary[0];});assert.equal(new Set(patterns).size,patterns.length,`${label}: ${day.name} repeats the same movement for one muscle`);};
 
 test('local plans cover the requested 4â€“6 sessions within the duration and equipment limits',()=>{
-  for(const count of [4,5,6]){const s=state(count),plan=engine.generate(s),maxMinutes=count<=4?80:70;assert.equal(plan.days.length,count);const weekIds=plan.days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId));assert.equal(new Set(weekIds).size,weekIds.length,`${count} days: the same exercise must not repeat during the week`);for(const d of plan.days){assert.ok(d.exercises.length>=4&&d.exercises.length<=10);assert.ok(d.minutes>=40&&d.minutes<=maxMinutes);assert.ok(d.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${d.name} has stacked ab isolations`);assert.ok(d.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${d.name} has stacked calf exercises`);for(const e of d.exercises){const item=catalogue.find(e.catalogId);assert.ok(item&&s.equipment.includes(item.equipment));assert.ok(catalogue.levels.indexOf(item.level)<=catalogue.levels.indexOf(s.experience));}if(count===3){const primary=d.exercises.flatMap(e=>catalogue.find(e.catalogId).primary);assert.ok(primary.includes('Chest')&&primary.includes('Back'));assert.ok(primary.some(m=>['Quadriceps','Hamstrings','Glutes'].includes(m)));}}}
+  for(const count of [4,5,6]){const s=state(count),plan=engine.generate(s),maxMinutes=count<=4?80:70;assert.equal(plan.days.length,count);const weekIds=plan.days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId));assert.equal(new Set(weekIds).size,weekIds.length,`${count} days: the same exercise must not repeat during the week`);for(const d of plan.days){assert.ok(d.exercises.length>=4&&d.exercises.length<=10);assert.ok(d.minutes>=40&&d.minutes<=maxMinutes);const patterns=d.exercises.map(e=>catalogue.find(e.catalogId).pattern);assert.equal(new Set(patterns).size,patterns.length,`${count} days: ${d.name} repeats a movement pattern`);assert.ok(d.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${d.name} has stacked ab isolations`);assert.ok(d.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${d.name} has stacked calf exercises`);for(const e of d.exercises){const item=catalogue.find(e.catalogId);assert.ok(item&&s.equipment.includes(item.equipment));assert.ok(catalogue.levels.indexOf(item.level)<=catalogue.levels.indexOf(s.experience));}if(count===3){const primary=d.exercises.flatMap(e=>catalogue.find(e.catalogId).primary);assert.ok(primary.includes('Chest')&&primary.includes('Back'));assert.ok(primary.some(m=>['Quadriceps','Hamstrings','Glutes'].includes(m)));}}}
 });
 
 test('each supported priority gets direct work on at least two days without stacking calf isolations',()=>{
@@ -21,14 +22,14 @@ test('each supported priority gets direct work on at least two days without stac
     assert.ok(new Set(rows.map(row=>row.day.id)).size>=2,`${count} days: ${muscle} needs two focused days`);
     assert.ok(rows.reduce((sum,row)=>sum+row.e.sets.length,0)>=10,`${count} days: ${muscle} needs the planned priority volume`);
     const weekIds=plan.days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId));assert.equal(new Set(weekIds).size,weekIds.length,`${count} days with ${muscle} focus: repeated exercise`);
-    for(const day of plan.days){assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${day.name} has stacked ab isolations`);}
+    for(const day of plan.days){assertUniqueMovementPatterns(day,`${count} days with ${muscle} focus`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${day.name} has stacked ab isolations`);}
   }
   for(const count of [4,5,6])for(let i=0;i<groups.length;i++)for(let j=i+1;j<groups.length;j++){
     const pair=[groups[i],groups[j]],targets=[...new Set(pair.map(m=>m==='Core'?'Abs':m))];if(targets.length<2)continue;
     const s=state(count);s.priorityMuscles=pair;const plan=engine.generate(s);
     for(const muscle of targets){const rows=plan.days.flatMap(day=>day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes(muscle)).map(e=>({day,e})));assert.ok(new Set(rows.map(row=>row.day.id)).size>=2,`${count} days: combined focus ${pair} needs two days for ${muscle}`);assert.ok(rows.reduce((sum,row)=>sum+row.e.sets.length,0)>=10,`${count} days: combined focus ${pair} needs priority volume for ${muscle}`);}
     const weekIds=plan.days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId));assert.equal(new Set(weekIds).size,weekIds.length,`${count} days with focus ${pair}: repeated exercise`);
-    for(const day of plan.days){assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days: combined focus ${pair} made ${day.name} invalid`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${day.name} has stacked ab isolations`);}
+    for(const day of plan.days){assertUniqueMovementPatterns(day,`${count} days with focus ${pair}`);assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days: combined focus ${pair} made ${day.name} invalid`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days: ${day.name} has more than one direct calf exercise`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days: ${day.name} has stacked ab isolations`);}
   }
 });
 
@@ -38,7 +39,7 @@ test('lower-focus settings preserve the same balanced weekly distribution for 4â
     const focus=j===i?[groups[i]]:[groups[i],groups[j]],s=state(count);s.lowerFocusMuscles=focus;s.priorityMuscles=['Abs'];
     const plan=engine.generate(s),ids=plan.days.flatMap(day=>day.exercises.map(exercise=>exercise.catalogId));
     assert.equal(new Set(ids).size,ids.length,`${count} days, lower focus ${focus}: repeated exercise`);
-    for(const day of plan.days){assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days, lower focus ${focus}: invalid ${day.name}`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days, lower focus ${focus}: stacked calves in ${day.name}`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days, lower focus ${focus}: stacked abs in ${day.name}`);}
+    for(const day of plan.days){assertUniqueMovementPatterns(day,`${count} days, lower focus ${focus}`);assert.ok(day.exercises.length>=4&&day.exercises.length<=10&&day.minutes>=40&&day.minutes<=(count<=4?80:70),`${count} days, lower focus ${focus}: invalid ${day.name}`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Calves')).length<=1,`${count} days, lower focus ${focus}: stacked calves in ${day.name}`);assert.ok(day.exercises.filter(e=>catalogue.find(e.catalogId).primary.includes('Abs')).length<=1,`${count} days, lower focus ${focus}: stacked abs in ${day.name}`);}
   }
 });
 
@@ -71,11 +72,12 @@ test('end of week generates locally with the requested days and weight',()=>{
 test('replacing a plan preserves history, while an active workout postpones the replacement',async()=>{
   const app=readFileSync(new URL('../app.js',import.meta.url),'utf8'),start=app.indexOf('  async function generateCurrentAIPlan('),end=app.indexOf('  async function commentOnWorkout(',start);
   const prior={completed:true,exercises:{x:{sets:[{done:true,weight:20,reps:8}]}}},oldPlan={days:[{id:'d1'}]},saved=[];
-  const base={week:2,planRevision:0,daysPerWeek:4,experience:'advanced',logs:{'2-d1':prior},weekPlans:{'2:0':oldPlan}};
+  const base={week:2,planRevision:0,daysPerWeek:4,experience:'advanced',exerciseNames:{d5:{'d5-slot3':'lever leg extension'}},logs:{'2-d1':prior},weekPlans:{'2:0':oldPlan}};
   const plan={days:Array.from({length:4},(_,i)=>({id:'d'+i,minutes:45,exercises:[{},{},{},{}]}))};
   const ctx={state:structuredClone(base),days:oldPlan.days,activeDay:null,currentPlanBusy:false,CATALOGUE_MIGRATION:'local-hypertrophy-v2',LIFT_ENGINE:{clone:structuredClone,generate:()=>plan},localStorage:{setItem:(key,value)=>saved.push(JSON.parse(value))},KEY:'test',$:()=>({disabled:false,textContent:''}),renderSettings(){},updateHome(){},updateProgressScreen(){},showToast(){},saveState(){}};
   vm.createContext(ctx);vm.runInContext(app.slice(start,end),ctx);await ctx.generateCurrentAIPlan({},true);
   assert.equal(ctx.state.planRevision,1);assert.deepEqual(ctx.state.logs,base.logs);assert.deepEqual(ctx.state.weekPlans['2:0'],oldPlan);assert.equal(saved.length,1);
+  assert.equal(Object.keys(ctx.state.exerciseNames).length,0);
   ctx.state=structuredClone(base);ctx.activeDay={id:'d1'};saved.length=0;await ctx.generateCurrentAIPlan({daysPerWeek:4},true);assert.equal(ctx.state.planRevision,0);assert.equal(ctx.state.pendingLocalPlan.daysPerWeek,4);assert.equal(saved.length,0);
 });
 
@@ -107,4 +109,20 @@ test('quick swaps preserve movement and vary equipment, and future set counts ma
   assert.equal(engine.generate(s).days[0].exercises[0].sets.length,4);
   s.persistentEdits[plan.programId][day.id].setCounts[0].catalogId='different-exercise';
   assert.equal(engine.generate(s).days[0].exercises[0].sets.length,exercise.sets.length);
+});
+
+test('opening an old plan removes duplicate movement variants but preserves performed and user-added work',()=>{
+  const day={exercises:[
+    {id:'planned-extension',catalogId:'leg-extension'},
+    {id:'old-extension-alias',catalogId:'dataset-0585'},
+    {id:'logged-extension',catalogId:'single-leg-leg-extension'},
+    {id:'user-added-extension',catalogId:'cable-leg-extension',addedByUser:true}
+  ]};
+  const removed=engine.removeDuplicateMovements(day,new Set(['logged-extension']));
+  assert.equal(removed.length,1);
+  assert.equal(removed[0].id,'old-extension-alias');
+  assert.equal(day.exercises.length,3);
+  assert.equal(day.exercises[0].id,'planned-extension');
+  assert.equal(day.exercises[1].id,'logged-extension');
+  assert.equal(day.exercises[2].id,'user-added-extension');
 });

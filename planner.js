@@ -93,7 +93,7 @@ window.LIFT_ENGINE=(()=>{
         const index=day.exercises.findIndex(exercise=>{const item=C.find(exercise.catalogId);return item?.primary.includes(muscle)&&isolation.has(exercise.pattern);});
         if(index<0)continue;
         const old=day.exercises[index],dayMuscles=new Set(day.exercises.filter((_,i)=>i!==index).flatMap(exercise=>C.find(exercise.catalogId)?.primary||[]).filter(group=>!focus.has(group)));
-        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!item.primary.some(group=>['Abs','Calves','Glutes'].includes(group)&&day.exercises.some((exercise,i)=>i!==index&&(C.find(exercise.catalogId)?.primary||[]).includes(group)))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
+        const candidates=C.exercises.filter(item=>hasArt(item)&&state.equipment.includes(item.equipment)&&C.levels.indexOf(item.level)<=experience&&isolation.has(item.pattern)&&!item.primary.some(group=>focus.has(group))&&!item.primary.some(group=>['Abs','Calves','Glutes'].includes(group)&&day.exercises.some((exercise,i)=>i!==index&&(C.find(exercise.catalogId)?.primary||[]).includes(group)))&&!day.exercises.some((exercise,i)=>i!==index&&exercise.pattern===item.pattern&&(C.find(exercise.catalogId)?.primary||[]).some(group=>item.primary.includes(group)))&&!currentIds.has(item.id)&&item.primary.some(group=>dayMuscles.has(group)));
         candidates.sort((a,b)=>{const score=item=>item.primary.reduce((sum,group)=>sum+(weeklySets.get(group)||0),0);return score(a)-score(b)||a.name.localeCompare(b.name);});
         const alternative=candidates[0];if(!alternative)continue;
         day.exercises[index]=descriptor(alternative,old.id,state,{sets:old.sets.length,baseline:true});
@@ -263,6 +263,19 @@ window.LIFT_ENGINE=(()=>{
     return {version:6,programId:'adaptive-'+count,week:state.week,mesocycleWeek:cycle,experience:state.experience,days,localGenerated:true};
   }
   function volume(days){const result=Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:0,days:new Set()}]));for(const d of days)for(const e of d.exercises){const item=C.find(e.catalogId)||C.find(e.name),groups=[...new Set((item?.primary||[e.muscle]).map(majorMuscleGroup).filter(Boolean))];for(const group of groups){result[group].sets+=e.sets.filter(s=>!s.mini).length;result[group].days.add(d.id);}}return Object.fromEntries(majorMuscleGroups.map(group=>[group,{sets:result[group].sets,frequency:result[group].days.size}]));}
+  function removeDuplicateMovements(day,protectedIds=new Set()){
+    const seen=new Set(),removed=[],kept=[];
+    for(const exercise of day.exercises||[]){
+      const item=C.find(exercise.catalogId)||C.find(exercise.name),pattern=item?.pattern&&item.primary?.[0]?item.pattern+'|'+item.primary[0]:'';
+      const protectedExercise=exercise.addedByUser||protectedIds.has(exercise.id);
+      if(!pattern||!seen.has(pattern)||protectedExercise){
+        kept.push(exercise);if(pattern)seen.add(pattern);continue;
+      }
+      removed.push(exercise);
+    }
+    if(removed.length)day.exercises=kept;
+    return removed;
+  }
   function slug(value){return String(value).toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');}
-  return {clone,generate,quickAlternatives,compareExercisePopularity,descriptor,histories,targets,minutes,volume,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
+  return {clone,generate,quickAlternatives,compareExercisePopularity,descriptor,histories,targets,minutes,volume,removeDuplicateMovements,templates,illustratedReplacement,removeAdjacentDuplicates,reduceLegVolumePlan,rebalanceLowerFocus,majorMuscleGroups,majorMuscleGroup};
 })();
